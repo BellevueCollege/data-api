@@ -15,11 +15,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('admin/login', ['as' => 'admin.login', 'uses' => 'AdminController@loginShow']);
+Route::post('admin/login', 'AdminController@loginPost');
+
 Route::group(['middleware' => 'auth:admin'], function ($router) {
 
-    Route::get('admin/login', ['as' => 'admin.login', 'uses' => 'AdminController@loginShow']);
-    Route::post('admin/login', 'AdminController@loginPost');
     Route::get('admin', ['as' => 'admin.index', 'uses' => 'AdminController@index']);
-    Route::get('admin/add', 'AdminController@addClient');
+    Route::get('admin/client/add', ['as' => 'admin.client.add', 'uses' => 'AdminController@addClientShow']);
+    Route::post('admin/client/add', ['as' => 'admin.client.add', 'uses' => 'AdminController@addClientPost']);
+    Route::get('admin/client/{id}/delete', ['as' => 'admin.client.delete', 'uses' => 'AdminController@deleteClient']);
+    Route::get('admin/logout', ['as' => 'admin.logout', 'uses' => 'AdminController@logout']);
 
 });

@@ -4,18 +4,13 @@ namespace App\Models;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
-
-
-//use Illuminate\Database\Eloquent\Model;
-//use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-//use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Support\Str;
 
 class Client extends Authenticatable implements JWTSubject {
     use Notifiable;
 
     protected $connection = 'da';
-    protected $fillable = ['id', 'name', 'clientid', 'clienturl'];
+    protected $fillable = ['id', 'clientname', 'clientid', 'clienturl'];
     protected $hidden   = ['created_at', 'updated_at', 'password'];
 
     /**
@@ -35,5 +30,15 @@ class Client extends Authenticatable implements JWTSubject {
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public static function generateClientID() 
+    {
+        return (string) Str::uuid();
+    }
+
+    public static function generateClientKey()
+    {
+        return (string) Str::uuid();
     }
 }
