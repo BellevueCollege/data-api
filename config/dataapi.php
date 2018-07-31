@@ -7,5 +7,6 @@ return [
     'timezone'              => 'America/Los_Angeles',
     'common_course_char'    => '&',
     'app_version'           => '0.0.3',
+    'admin_group'           => env('ADMIN_GROUP', null),
 
 ];

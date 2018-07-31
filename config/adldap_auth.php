@@ -89,7 +89,7 @@ return [
         // Adldap\Laravel\Scopes\UidScope::class,
 
         // Only allow developers to log in.
-        App\Scopes\DevelopersScope::class,
+        App\Scopes\AdminGroupScope::class,
 
     ],
 
