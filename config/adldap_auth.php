@@ -88,6 +88,9 @@ return [
         // Uncomment if you're using OpenLDAP.
         // Adldap\Laravel\Scopes\UidScope::class,
 
+        // Only allow developers to log in.
+        App\Scopes\DevelopersScope::class,
+
     ],
 
     'usernames' => [

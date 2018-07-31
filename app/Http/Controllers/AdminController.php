@@ -45,7 +45,7 @@ class AdminController extends Controller
         }
         
         // Failed so send back to login
-        return redirect()->route('admin.login')->withErrors('Your username or password is incorrect.');
+        return redirect()->route('admin.login')->withErrors('Your username or password is incorrect. Or you may not be in the correct group to have authorization to this dashboard.');
 
     }
 
