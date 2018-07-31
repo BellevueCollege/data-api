@@ -22,7 +22,7 @@ class CourseYearQuarterController extends ApiController {
     **/
     public function getCourseYearQuarter($yqrid, $subjectid, $coursenum) {
         
-        DB::connection('ods')->enableQueryLog();
+        //DB::connection('ods')->enableQueryLog();
         $cyq = CourseYearQuarter::where('YearQuarterID', '=', $yqrid)
             ->where('Department', '=', $subjectid)
             ->where('CourseNumber', '=', $coursenum)
