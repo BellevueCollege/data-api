@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>DataAPI Admin - Login</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
@@ -65,7 +65,7 @@ body {
   <body class="text-center">
     <form class="form-signin" action="{{url('admin/login')}}" method="post">
       @csrf
-      <h1 class="h3 mb-3 font-weight-normal">DataAPI Admin Log in</h1>
+      <h1 class="h3 mb-3 font-weight-normal">DataAPI Admin</h1>
       <p>Log in with your BC credentials.</p>
 
       @if ($errors->any())
