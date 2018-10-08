@@ -37,6 +37,7 @@ Route::prefix('v1')->group(function () {
   
     Route::get('subject/{slug}','SubjectController@getSubject');
       
+    Route::get('course/{courseid}', 'CourseController@getCourse');
     Route::get('courses/multiple', 'CourseController@getMultipleCourses');
     //$router->get('courses/{courseid}','CourseController@getCourse');
     

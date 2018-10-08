@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Exceptions\MissingParameterException;
 use League\Fractal\Manager;
+use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use App\Http\Transformers\CourseTransformer;
 use App\Http\Serializers\CustomDataArraySerializer;
@@ -37,7 +38,15 @@ class CourseController extends ApiController{
   
         $course  = Course::where('CourseID', '=', $courseid)->first();
   
-        return $this->respond($course);
+        $data = $course;
+        if ( !is_null($course) ) {
+            $item = new Item($course, new CourseTransformer, "course");
+
+            $fractal = new Manager;
+            $fractal->setSerializer(new CustomDataArraySerializer);
+            $data = $fractal->createData($item)->toArray();
+        }
+        return $this->respond($data);
     }
     
     /**
