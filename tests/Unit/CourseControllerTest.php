@@ -14,7 +14,7 @@ class CourseControllerTest extends TestCase
         //$this->assertEquals(200, $this->response->status());
     }*/
     
-    public function testGetCourse() {
+    public function testGetCourseByCourseID() {
         //test a valid course number
         //$this->get('/api/v1/course/ACCT 101');
         $response = $this->get('/api/v1/course/ACCT 101')
@@ -26,9 +26,28 @@ class CourseControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
     
-    public function testGetCourseBadCourse() {
+    public function testGetCourseBadCourseByCourseID() {
         //should return empty object so don't need to check json, just need to make sure it doesn't error
         $response = $this->get('/api/v1/course/XYZ 100');
+        
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testGetCourseBySubjectAndNumber() {
+        //test a valid course retrieval by subject and number
+        $response = $this->get('/api/v1/course/ACCT/101')
+                        ->assertJsonFragment([
+                            /*'areas' => [],*/
+                            'subject' => 'ACCT',
+                            'courseNumber' => '101'
+                        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+    
+    public function testGetCourseBadCourseBySubjectAndNumber() {
+        //test response for a bad subject/number combo
+        //should return empty object so don't need to check json, just need to make sure it doesn't error
+        $response = $this->get('/api/v1/course/XYZ/100');
         
         $this->assertEquals(200, $response->getStatusCode());
     }

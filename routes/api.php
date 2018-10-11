@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::get('subjects/{yqrid}', 'SubjectController@getSubjectsByYearQuarter');
 
     Route::get('course/{courseid}', 'CourseController@getCourse');
+    Route::get('course/{subject}/{coursenum}', 'CourseController@getCourseBySubjectAndNumber');
     Route::get('courses/multiple', 'CourseController@getMultipleCourses');
 
     Route::get('quarters', 'YearQuarterController@getViewableYearQuarters');

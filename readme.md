@@ -6,7 +6,9 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 ### Class/course data
 
-- `api/v1/course/{CourseID}` - Return course info for given course
+- `api/v1/course/{CourseID}` - Return course info for given course given the CourseID
+
+- `api/v1/course/{Subject}/{CourseNumber}` - Return course info for given course given the subject and course number
 
 - `api/v1/courses/multiple?courses[]={courseid}&courses[]={courseid}...`       
   - Uses `courses[]` query parameter in repeating fashion to specify multiple courses for which to have information returned.

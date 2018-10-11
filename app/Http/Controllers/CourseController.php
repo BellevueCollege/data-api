@@ -31,8 +31,6 @@ class CourseController extends ApiController{
   
     /**
      Get a course based on a given CourseID. 
-     Status: inactive
-     Not currently routed.
     **/
     public function getCourse($courseid){
   
@@ -49,6 +47,15 @@ class CourseController extends ApiController{
         return $this->respond($data);
     }
     
+    /**
+     Get a course based on a given subject and course number. 
+    **/
+    public function getCourseBySubjectAndNumber($subject, $coursenum){
+  
+        $courseid = str_pad($subject, 5) . $coursenum;
+        return $this->getCourse($courseid);
+    }
+
     /**
      Get multiple courses based on course numbers passed via courses[] query parameter
     **/
