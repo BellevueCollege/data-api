@@ -18,14 +18,14 @@ class CourseYearQuarterControllerTest extends TestCase
        //catalog/{yqrid}/{subjectid}/{coursenum}
         
        //try valid offering
-       $response = $this->get('/api/v1/catalog/B561/ABE/053')
+       $response = $this->get('/api/v1/classes/B561/ABE/053')
             ->assertJsonFragment([
                 'subject' => 'ABE', 
                 'courseNumber' => '053'
             ]);
        $this->assertEquals(200, $response->getStatusCode());
           
-       $response = $this->get('/api/v1/catalog/B562/ADFIT/020')
+       $response = $this->get('/api/v1/classes/B562/ADFIT/020')
             ->assertJsonFragment([
                 'subject' => 'ADFIT', 
                 'courseNumber' => '020'
@@ -36,21 +36,21 @@ class CourseYearQuarterControllerTest extends TestCase
     public function testGetCourseYearQuarterBadYQR(){
        //try invalid term
        //should return empty object so don't need to check json, just need to make sure it doesn't error
-       $response = $this->get('/api/v1/catalog/xysdf/ADFIT/020');
+       $response = $this->get('/api/v1/classes/xysdf/ADFIT/020');
        $this->assertEquals(200, $response->getStatusCode()); 
     }
    
     public function testGetCourseYearQuarterBadSubject() {    
        //try invalid subject
        //should return empty object so don't need to check json, just need to make sure it doesn't error
-       $response = $this->get('/api/v1/catalog/B561/xysdf/020');
+       $response = $this->get('/api/v1/classes/B561/xysdf/020');
        $this->assertEquals(200, $response->getStatusCode()); 
     }
    
     public function testGetCourseYearQuarterBadCourseNumber() {    
        //try invalid coursenum
        //should return empty object so don't need to check json, just need to make sure it doesn't error
-       $response = $this->get('/api/v1/catalog/B561/ADFIT/xysdf');
+       $response = $this->get('/api/v1/classes/B561/ADFIT/xysdf');
        $this->assertEquals(200, $response->getStatusCode());  
     }
     
@@ -58,7 +58,7 @@ class CourseYearQuarterControllerTest extends TestCase
         //catalog/{yqrid}/{subjectid}
         
         //try valid term and subject
-        $response = $this->get('/api/v1/catalog/B561/ABE')
+        $response = $this->get('/api/v1/classes/B561/ABE')
             ->assertJsonFragment([
                 'subject' => 'ABE', 
             ]);
@@ -68,14 +68,14 @@ class CourseYearQuarterControllerTest extends TestCase
     public function testGetCourseYearQuartersBySubjectBadTerm() {
        //try invalid term
        //should return empty object so don't need to check json, just need to make sure it doesn't error
-       $response = $this->get('/api/v1/catalog/xysdf/ADFIT');
+       $response = $this->get('/api/v1/classes/xysdf/ADFIT');
        $this->assertEquals(200, $response->getStatusCode()); 
     }
     
     public function testGetCourseYearQuartersBySubjectBadSubject() {
        //try invalid subject
        //should return empty object so don't need to check json, just need to make sure it doesn't error
-       $response = $this->get('/api/v1/catalog/B561/xysdf');
+       $response = $this->get('/api/v1/classes/B561/xysdf');
        $this->assertEquals(200, $response->getStatusCode()); 
         //var_dump($response->content());
     }

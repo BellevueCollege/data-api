@@ -14,14 +14,14 @@ use DB;
 
 class YearQuarterController extends ApiController {
   
-  const WRAPPER = "terms";
-  
-  /**
-  * Return all YearQuarters
-  * Status: inactive
-  * No active route. No set serialization.
-  **/
-  public function index(){
+    const WRAPPER = "quarters";
+    
+    /**
+     * Return all YearQuarters
+    * Status: inactive
+    * No active route. No set serialization.
+    **/
+    public function index(){
   
         $yqrs  = YearQuarter::all();
         $collection = new Collection($yqrs, new YearQuarterTransformer);
@@ -43,7 +43,7 @@ class YearQuarterController extends ApiController {
         $data = $yqr;
         //only serialize if not empty
         if ( !is_null($yqr) ) {
-            $item = new Item($yqr, new YearQuarterTransformer, self::WRAPPER);
+            $item = new Item($yqr, new YearQuarterTransformer, "quarter");
             $fractal = new Manager;
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($item)->toArray();
@@ -61,7 +61,7 @@ class YearQuarterController extends ApiController {
         $data = $yqr;
         //only serialize if not empty
         if ( !is_null($yqr) ) {
-            $item = new Item($yqr, new YearQuarterTransformer, self::WRAPPER);
+            $item = new Item($yqr, new YearQuarterTransformer, "quarter");
         
             $fractal = new Manager;
             $fractal->setSerializer(new CustomDataArraySerializer);

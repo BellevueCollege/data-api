@@ -35,9 +35,10 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
             'title'             => $cyq->title,
             'subject'           => trim($cyq->Department),
             'courseNumber' 	    => trim($cyq->CourseNumber),
-            'description'       => $cd_desc,
+            'description'       => utf8_encode($cd_desc),
             'note'              => $cyq->course->note,
             'credits'           => $cyq->course->Credits,
+            'quarter'           => $cyq->YearQuarterID,
             'isVariableCredits'  => (bool)$cyq->course->VariableCredits,
             'isCommonCourse'    => $cyq->course->isCommonCourse,
         ];

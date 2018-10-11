@@ -14,7 +14,7 @@ use DB;
 
 class SubjectController extends ApiController{
   
-  const WRAPPER = "areas";
+  const WRAPPER = "subjects";
   
   /**
   * Return all subjects
@@ -43,7 +43,7 @@ class SubjectController extends ApiController{
         $data = $subject;
         //handle gracefully if null
         if( !is_null($subject) ) {
-            $item = new Item($subject, new SubjectTransformer, self::WRAPPER);
+            $item = new Item($subject, new SubjectTransformer, "subject");
 
             $fractal = new Manager;
         

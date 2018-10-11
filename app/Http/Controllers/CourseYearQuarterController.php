@@ -15,7 +15,7 @@ use DB;
 
 class CourseYearQuarterController extends ApiController {
   
-    const WRAPPER = "courses";
+    const WRAPPER = "classes";
     
     /**
     * Return a CourseYearQuarter based on a YearQuarterID, subject, and course number.

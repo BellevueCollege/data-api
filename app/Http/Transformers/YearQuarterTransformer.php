@@ -14,8 +14,8 @@ class YearQuarterTransformer extends TransformerAbstract {
     public function transform(YearQuarter $yqr)
     {
         return [
-            'code'			=> $yqr->YearQuarterID,
-            'description' 	=> $yqr->Title
+            'quarter'		=> $yqr->YearQuarterID,
+            'title'      	=> $yqr->Title
         ];
     }
 	

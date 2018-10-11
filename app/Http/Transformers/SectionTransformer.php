@@ -14,12 +14,12 @@ class SectionTransformer extends TransformerAbstract {
     public function transform(Section $sec)
     {
         return [
-            'crn'       	=> $sec->ClassID,
-            'courseSection' => $sec->Section,
+            'id'           	=> $sec->ClassID,
+            'section' => $sec->Section,
+            'itemNumber'    => $sec->ItemNumber,
 			'instructor'	=> $sec->InstructorName,
             'beginDate'     => $sec->getFormattedDate($sec->StartDate),
             'endDate'       => $sec->getFormattedDate($sec->EndDate),
-			//'building'		=> $sec->Building,
 			'room'			=> $sec->location,
             'schedule'      => trim($sec->schedule),
         ];

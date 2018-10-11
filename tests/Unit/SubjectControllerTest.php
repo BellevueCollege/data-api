@@ -15,10 +15,10 @@ class SubjectControllerTest extends TestCase
     public function testIndex()
     {
         //test subject index
-        $response = $this->get('/api/v1/subject')
+        $response = $this->get('/api/v1/subjects')
             ->assertJsonFragment([
                 /*'areas' => [],*/
-                'area' => 'HIST'
+                'subject' => 'HIST'
             ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -29,7 +29,7 @@ class SubjectControllerTest extends TestCase
         //Try valid subjects
         $response = $this->get('/api/v1/subject/ENGR')
             ->assertJsonFragment([
-                'area' => 'ENGR', 
+                'subject' => 'ENGR', 
                 'name' => 'Engineering'
             ]);
         
@@ -37,7 +37,7 @@ class SubjectControllerTest extends TestCase
             
         $response = $this->get('/api/v1/subject/ACCT&')
             ->assertJsonFragment([
-                'area' => 'ACCT&', 
+                'subject' => 'ACCT&', 
                 'name' => 'Accounting-Transfer'
             ]);
             
@@ -45,7 +45,7 @@ class SubjectControllerTest extends TestCase
        
         $response = $this->get('/api/v1/subject/ADFIT')
             ->assertJsonFragment([
-                'area' => 'ADFIT', 
+                'subject' => 'ADFIT', 
                 'name' => 'Adult Fitness'
             ]);
             
@@ -62,14 +62,14 @@ class SubjectControllerTest extends TestCase
     public function testGetSubjectsByYearQuarter() 
     {
         //try with valid quarter
-        $response = $this->get('/api/v1/catalog/catalogAreas/B563');
+        $response = $this->get('/api/v1/subjects/B563');
         
         $this->assertEquals(200, $response->getStatusCode());
     }
     
     public function testGetSubjectsByYearQuarterBadYQR(){
         //try with invalid quarter, should return empty json
-        $response = $this->get('/api/v1/catalog/catalogAreas/xyzsdf');
+        $response = $this->get('/api/v1/subjects/xyzsdf');
         
         $this->assertEquals(200, $response->getStatusCode());
     }
