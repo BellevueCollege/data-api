@@ -33,24 +33,24 @@ Route::prefix('v1')->group(function () {
         'as' => 'login', 'uses' => 'AuthController@login'
     ]);
 
-    Route::get('subject','SubjectController@index');
-  
     Route::get('subject/{slug}','SubjectController@getSubject');
-      
+    Route::get('subjects','SubjectController@index');
+    Route::get('subjects/{yqrid}', 'SubjectController@getSubjectsByYearQuarter');
+
     Route::get('course/{courseid}', 'CourseController@getCourse');
     Route::get('courses/multiple', 'CourseController@getMultipleCourses');
-    //$router->get('courses/{courseid}','CourseController@getCourse');
-    
-    Route::get('quarters/current', 'YearQuarterController@getCurrentYearQuarter');
-    
+
+    Route::get('quarters', 'YearQuarterController@getViewableYearQuarters');
+    Route::get('quarter/current', 'YearQuarterController@getCurrentYearQuarter');
+    Route::get('quarter/{yqrid}', 'YearQuarterController@getYearQuarter');
+
+    Route::get('classes/{yqrid}/{subjectid}', 'CourseYearQuarterController@getCourseYearQuartersBySubject');
+    Route::get('classes/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');
+
     //API endpoints specific to ModoLabs requirements
-    Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
+    /*Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
     Route::get('catalog/terms/{yqrid}', 'YearQuarterController@getYearQuarter');
     Route::get('catalog/catalogAreas/{yqrid}', 'SubjectController@getSubjectsByYearQuarter');
     Route::get('catalog/{yqrid}/{subjectid}', 'CourseYearQuarterController@getCourseYearQuartersBySubject');
-    Route::get('catalog/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');
-    
-    //Route::get('employee/{username}','EmployeeController@getEmployeeByUsername');
-
-    //Route::get('student/{username}','StudentController@getStudentByUsername');
+    Route::get('catalog/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');*/
 });
