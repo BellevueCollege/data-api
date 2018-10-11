@@ -4,23 +4,26 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 ## API Endpoints
 
-### Class data
+### Class/course data
 
-- `api/v1/courses/multiple?courses[]={courseid}&courses[]={courseid}...` - Uses `courses[]` query parameter in repeating fashion to specify multiple courses for which to have information returned.
+- `api/v1/course/{CourseID}` - Return course info for given course
 
-- `api/v1/quarters/current` - Returns the current term/quarter.
+- `api/v1/courses/multiple?courses[]={courseid}&courses[]={courseid}...`       
+  - Uses `courses[]` query parameter in repeating fashion to specify multiple courses for which to have information returned.
+
+- `api/v1/quarters` - Return active/viewable quarters
+
+- `api/v1/quarter/current` - Returns the current quarter.
     
-#### Modolabs-specific endpoints
+- `api/v1/quarter/{YearQuarterID}` - Return info for the specified quarter
 
-- `api/v1/catalog/terms` - Return active/viewable terms/quarters
+- `api/v1/subjects` - Return all subjects
+- `api/v1/subjects/{YearQuarterID}` - Return subjects offered for specified quarter
+- `api/v1/subject/{Subject}` - Return subject info for given subject (slug)
 
-- `api/v1/catalog/terms/{YearQuarterID}` - Return term info for the specified term/quarter
+- `api/v1/classes/{YearQuarterID}/{Subject}` - Return course and class/section info offered given specified quarter and subject/department
 
-- `api/v1/catalog/catalogAreas/{YearQuarterID}` - Return subjects offered for specified term/quarter
-
-- `api/v1/catalog/{YearQuarterID}/{Subject}` - Return courses offered given specified term/quarter and subject/department
-
-- `api/v1/catalog/{YearQuarterID}/{Subject}/{CourseNumber}` - Return specific course offered given term/quarter, subject/department, and course number
+- `api/v1/classes/{YearQuarterID}/{Subject}/{CourseNumber}` - Return specific course and section/class info given a quarter, subject/department, and course number
 
 ### People data
 
