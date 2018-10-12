@@ -34,7 +34,7 @@ class CourseController extends ApiController{
     **/
     public function getCourse($courseid){
   
-        $course  = Course::where('CourseID', '=', $courseid)->first();
+        $course  = Course::where('CourseID', '=', $courseid)->active()->first();
   
         $data = $course;
         if ( !is_null($course) ) {
