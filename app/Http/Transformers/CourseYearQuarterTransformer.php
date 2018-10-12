@@ -23,13 +23,13 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
     public function transform(CourseYearQuarter $cyq)
     {
         //filter to get the active course description
-        $cd_active = $cyq->course->coursedescriptions()->activedescription($cyq->YearQuarterID)->first();
-       
-        //set the description
+        $all_desc = $cyq->course->coursedescriptions();        
         $cd_desc = null;
-        if ( !is_null($cd_active) ) {
+        if ( !is_null($all_desc) ) 
+        {
+            $cd_active = $all_desc->activedescription($cyq->YearQuarterID)->first();
             $cd_desc = $cd_active->Description;
-        }  
+        }
         
         return [
             'title'             => $cyq->title,

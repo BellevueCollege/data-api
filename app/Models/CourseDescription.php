@@ -29,6 +29,7 @@ class CourseDescription extends Model
         }
         
         return $query->where('EffectiveYearQuarterBegin', '<=', $yqr)
+            ->orWhereNull('EffectiveYearQuarterBegin')
             ->orderBy('EffectiveYearQuarterBegin', 'desc')
             ->take(1);
     }

@@ -114,8 +114,9 @@ class Course extends Model
      public function scopeActive($query) {
          $yqr = YearQuarter::current()->first();
 
-         return $query->where('EffectiveYearQuarterBegin', '<=', $yqr->YearQuarterID)
-            ->where('EffectiveYearQuarterEnd', '>=', $yqr->YearQuarterID);
+         return $this->scopeActiveAsOfYearQuarter($query, $yqr->YearQuarterID);
+         /*return $query->where('EffectiveYearQuarterBegin', '<=', $yqr->YearQuarterID)
+            ->where('EffectiveYearQuarterEnd', '>=', $yqr->YearQuarterID);*/
      }
      
      /** 
@@ -124,6 +125,7 @@ class Course extends Model
      public function scopeActiveAsOfYearQuarter($query, $yqrid) {
 
          return $query->where('EffectiveYearQuarterBegin', '<=', $yqrid)
+            ->orWhereNull('EffectiveYearQuarterBegin')
             ->where('EffectiveYearQuarterEnd', '>=', $yqrid);
      }
 }

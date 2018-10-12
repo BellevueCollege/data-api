@@ -15,11 +15,11 @@ class CourseTransformer extends TransformerAbstract {
     public function transform(Course $course)
     {
         //filter to get the active course description
-        $cd_active = $course->coursedescriptions()->activedescription()->first();
-       
-        //set the description
+        $all_desc = $course->coursedescriptions();
         $cd_desc = null;
-        if ( !is_null($cd_active) ) {
+        if ( !is_null($all_desc) ) 
+        {
+            $cd_active = $all_desc->activedescription()->first();
             $cd_desc = $cd_active->Description;
         }
         
