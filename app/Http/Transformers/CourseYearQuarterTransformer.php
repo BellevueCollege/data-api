@@ -28,14 +28,17 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
         if ( !is_null($all_desc) ) 
         {
             $cd_active = $all_desc->activedescription($cyq->YearQuarterID)->first();
-            $cd_desc = $cd_active->Description;
+            
+            if ( !empty($cd_active) ) {
+                $cd_desc = utf8_encode($cd_active->Description);
+            }
         }
         
         return [
             'title'             => $cyq->title,
             'subject'           => trim($cyq->Department),
             'courseNumber' 	    => trim($cyq->CourseNumber),
-            'description'       => utf8_encode($cd_desc),
+            'description'       => $cd_desc,
             'note'              => $cyq->course->note,
             'credits'           => $cyq->course->Credits,
             'quarter'           => $cyq->YearQuarterID,

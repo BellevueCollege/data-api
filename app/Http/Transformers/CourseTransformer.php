@@ -4,6 +4,7 @@ use App\Models\Course;
 use App\Models\YearQuarter;
 use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
+use Illuminate\Support\Facades\Log;
 
 class CourseTransformer extends TransformerAbstract {
 
@@ -17,10 +18,14 @@ class CourseTransformer extends TransformerAbstract {
         //filter to get the active course description
         $all_desc = $course->coursedescriptions();
         $cd_desc = null;
+
         if ( !is_null($all_desc) ) 
         {
             $cd_active = $all_desc->activedescription()->first();
-            $cd_desc = $cd_active->Description;
+
+            if ( !empty($cd_active) ) {
+                $cd_desc = utf8_encode($cd_active->Description);
+            }
         }
         
         $subject = null;
@@ -40,7 +45,7 @@ class CourseTransformer extends TransformerAbstract {
             'subject'           => $subject,
             'courseNumber' 	    => $course_num,
             'courseId'          => $course->CourseID,
-            'description'       => utf8_encode($cd_desc),
+            'description'       => $cd_desc,
             'note'              => $course->note,
             'credits'           => $course->Credits,
             'isVariableCredits'  => (bool)$course->VariableCredits,
