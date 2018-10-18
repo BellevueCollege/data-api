@@ -52,6 +52,33 @@ class CourseControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testGetCoursesBySubject() {
+        //test valid retrieval of courses by subject
+        $this->get('/api/v1/courses/ACCT&')
+                ->assertStatus(200)
+                ->assertJsonFragment([
+                    'courseId' => 'ACCT&202'
+                ])
+                ->assertJsonFragment([
+                    'courseId' => 'ACCT&201'
+                ])
+                ->assertJsonFragment([
+                    'courseId' => 'ACCT&203'
+                ])
+                ->assertJsonMissing([
+                    'courseId' => 'ACCT 101'
+                ]);
+        
+        //$this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testGetCoursesByBadSubject() {
+        //should return empty object so don't need to check json, just need to make sure it doesn't error
+        $response = $this->get('/api/v1/courses/XYZ');
+        
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testGetMultipleCourses() {
         //valid course numbers
         $response = $this->get('/api/v1/courses/multiple', [ 'courses[]' => 'ACCT 101', 'courses[]' => 'BTS 293', 'courses[]' => 'ADFIT 020' ]);

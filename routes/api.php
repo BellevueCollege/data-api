@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
     Route::get('course/{courseid}', 'CourseController@getCourse');
     Route::get('course/{subject}/{coursenum}', 'CourseController@getCourseBySubjectAndNumber');
     Route::get('courses/multiple', 'CourseController@getMultipleCourses');
+    Route::get('courses/{subject}', 'CourseController@getCoursesBySubject');
 
     Route::get('quarters', 'YearQuarterController@getViewableYearQuarters');
     Route::get('quarter/current', 'YearQuarterController@getCurrentYearQuarter');

@@ -56,6 +56,24 @@ class CourseController extends ApiController{
         return $this->getCourse($courseid);
     }
 
+        /**
+     Get active courses based on a given subject. 
+    **/
+    public function getCoursesBySubject($subject){
+  
+        $courses = Course::whereRaw("LTRIM(RTRIM(LEFT(CourseID, 5))) = ?", array($subject))->orderBy('CourseID', 'asc')->active()->get();
+
+        $data = $courses;
+        if ( !is_null($courses) ) {
+            $collection = new Collection($courses, new CourseTransformer, self::WRAPPER);
+
+            $fractal = new Manager;
+            $fractal->setSerializer(new CustomDataArraySerializer);
+            $data = $fractal->createData($collection)->toArray();
+        }
+        return $this->respond($data);
+    }
+
     /**
      Get multiple courses based on course numbers passed via courses[] query parameter
     **/
