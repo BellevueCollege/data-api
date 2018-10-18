@@ -10,6 +10,8 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 - `api/v1/course/{Subject}/{CourseNumber}` - Return course info for given course given the subject and course number
 
+- `api/v1/courses/{Subject}` - Return active courses for a given subject
+
 - `api/v1/courses/multiple?courses[]={courseid}&courses[]={courseid}...`       
   - Uses `courses[]` query parameter in repeating fashion to specify multiple courses for which to have information returned.
 
@@ -35,9 +37,6 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 - `api/v1/student/{username}` - Return basic student information given a username _(protected)_
 
-
-## To Do
-The existing routes/endpoints and data transformation/serialization for class data is currently very geared toward what is required by Modolabs. This API will likely evolve to abstract the transformation/serialization of the data from the controller functions that gather the data. In this way there is flexibility to have data wrapped and presented differently depending on the type of endpoint/call. 
 
 ## Terminology
 
