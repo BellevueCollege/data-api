@@ -18,6 +18,15 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
+/** Protected endpoints accessible only internally **/
+Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
+
+    //Route::post('auth/login', 'AuthController@loginPost');
+    Route::get('internal/employee/{username}','EmployeeController@getEmployeeByUsername');
+    Route::get('internal/student/{username}','StudentController@getStudentByUsername');
+
+});
+
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
     //Route::post('auth/login', 'AuthController@loginPost');

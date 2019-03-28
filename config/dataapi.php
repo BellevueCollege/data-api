@@ -8,5 +8,5 @@ return [
     'common_course_char'    => '&',
     'app_version'           => '1.0',
     'admin_group'           => env('ADMIN_GROUP', null),
-
+    'api_internal_domain'   => env('API_INTERNAL_DOMAIN', 'internal.localhost.test'),
 ];
