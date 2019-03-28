@@ -20,4 +20,13 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
     /*protected $hidden = [
         'SSN'
     ];*/
+
+    /**
+     * Define blocks relationship
+     */
+    public function blocks()
+    {
+        return $this->hasMany('App\Models\Block', 'SID', 'SID');
+        //'App\Models\Block'
+    }
 }

@@ -11,6 +11,10 @@ class StudentTransformer extends TransformerAbstract {
     * YearQuarter should be output in the API.
     **/
 
+    protected $defaultIncludes = [
+        'blocks'
+    ];
+
     public function transform(Student $stu)
     {
         return [
@@ -20,8 +24,26 @@ class StudentTransformer extends TransformerAbstract {
             'email'         => $stu->Email,
             'phoneDaytime'  => $stu->DaytimePhone,
             'phoneEvening'  => $stu->EveningPhone,
-            'username'      => $stu->NTUserName
+            'username'      => $stu->NTUserName,
         ];
     }
-	
+    
+    /**
+     * Include blocks for student
+     *
+     * @return League\Fractal\Resource\Collection
+     */
+    public function includeBlocks(Student $stu)
+    {
+        $blocks = $stu->blocks;
+
+        if ( $blocks->count() == 0) {
+            //return null resource
+            return $this->null();
+        }
+        //set resource key as false so data isn't "double wrapped" with a blocks identifier
+        $blocks_transformed = $this->collection($blocks, new BlockTransformer, false);
+
+        return $blocks_transformed;
+    }
 }

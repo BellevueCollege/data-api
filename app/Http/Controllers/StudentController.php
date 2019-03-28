@@ -10,7 +10,7 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\Collection;
 use App\Http\Transformers\StudentTransformer;
-//use App\Http\Serializers\CustomDataArraySerializer;
+use App\Http\Serializers\CustomDataArraySerializer;
 use DB;
   
 class StudentController extends ApiController{
@@ -21,7 +21,7 @@ class StudentController extends ApiController{
     **/
     public function getStudentByUsername($username){
   
-        $stu = Student::where('NTUserName', '=', $username)->first();
+        $stu = Student::with('blocks','blocks.reason')->where('NTUserName', '=', $username)->first();
         
         $data = $stu;
 
@@ -30,8 +30,8 @@ class StudentController extends ApiController{
             $item = new Item($stu, new StudentTransformer);
 
             $fractal = new Manager;
-        
-            //$fractal->setSerializer(new CustomDataArraySerializer);
+            $fractal->setSerializer(new CustomDataArraySerializer);
+
             $data = $fractal->createData($item)->toArray();
         }
         
