@@ -33,10 +33,17 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 - `api/v1/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used.
 
-- `api/v1/employee/{username}` - Return basic employee information given a username _(protected)_
+- `api/v1/employee/{username}` - Return basic employee information given a username _(protected)_ _(deprecated)_
 
-- `api/v1/student/{username}` - Return basic student information given a username _(protected)_
+- `api/v1/student/{username}` - Return basic student information given a username _(protected)_ _(deprecated)_
 
+### Internal only
+
+We are moving to a model where some protected endpoints are only available on a locked down, internal subdomain
+
+- `api/v1/internal/employee/{username}` - Return basic employee information given a username _(protected)_
+
+- `api/v1/internal/student/{username}` - Return basic student information given a username _(protected)_
 
 ## Terminology
 

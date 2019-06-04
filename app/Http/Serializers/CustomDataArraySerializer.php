@@ -41,5 +41,15 @@ class CustomDataArraySerializer extends \League\Fractal\Serializer\ArraySerializ
         }
         return array($resourceKey ?: 'data' => $data);
     }
+
+    /**
+     * Serialize null resource.
+     *
+     * @return array
+     */
+    public function null()
+    {
+        return null;
+    }
 }
 ?>
