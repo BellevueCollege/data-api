@@ -45,6 +45,14 @@ We are moving to a model where some protected endpoints are only available on a 
 
 - `api/v1/internal/student/{username}` - Return basic student information given a username _(protected)_
 
+## Admin Interface
+
+There is a simple admin interface to allow creation and removal of API credentials. 
+It is only available on the internal subdomain.
+
+* `admin/login` - Login interface _(protected)_
+
+
 ## Terminology
 
 For explanation on terminology/objects used in the DataAPI, [refer to the terminology documentation](terminology.md).

@@ -12,13 +12,17 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return ''; //Return blank for main URL
 });
 
-Route::get('admin/login', ['as' => 'admin.login', 'uses' => 'AdminController@loginShow']);
-Route::post('admin/login', 'AdminController@loginPost');
+Route::group(['domain' => config('dataapi.api_internal_domain')], function ($router) {
 
-Route::group(['middleware' => 'auth:admin'], function ($router) {
+    Route::get('admin/login', ['as' => 'admin.login', 'uses' => 'AdminController@loginShow']);
+    Route::post('admin/login', 'AdminController@loginPost');
+
+});
+
+Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:admin'], function ($router) {
 
     Route::get('admin', ['as' => 'admin.index', 'uses' => 'AdminController@index']);
     Route::get('admin/client/add', ['as' => 'admin.client.add', 'uses' => 'AdminController@addClientShow']);
