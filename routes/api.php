@@ -21,23 +21,33 @@ use Illuminate\Http\Request;
 /** Protected endpoints accessible only internally **/
 Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
-    //Route::post('auth/login', 'AuthController@loginPost');
     Route::get('internal/employee/{username}','EmployeeController@getEmployeeByUsername');
     Route::get('internal/student/{username}','StudentController@getStudentByUsername');
 
 });
 
+// These endpoints should be removed after apps are migrated
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
-    //Route::post('auth/login', 'AuthController@loginPost');
     Route::get('employee/{username}','EmployeeController@getEmployeeByUsername');
     Route::get('student/{username}','StudentController@getStudentByUsername');
 
 });
 
+/** Unprotected endpoints accessible only internally **/
+Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1'], function ($router) {
+
+    Route::post('internal/auth/login', [
+        'as' => 'login', 'uses' => 'AuthController@login'
+    ]);
+
+});
+
+
 /*** Unprotected api endpoints ***/
 Route::prefix('v1')->group(function () {
 
+    // This endpoint should be removed after apps are migrated
     Route::post('auth/login', [
         'as' => 'login', 'uses' => 'AuthController@login'
     ]);
