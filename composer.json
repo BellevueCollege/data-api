@@ -11,7 +11,7 @@
         "laravel/tinker": "^1.0",
         "league/fractal": "^0.15.0",
         "tymon/jwt-auth": "^1.0",
-        "adldap2/adldap2-laravel": "4.0.7"
+        "adldap2/adldap2-laravel": "^5.0"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

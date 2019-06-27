@@ -85,7 +85,7 @@ return [
             |
             */
 
-            'connection_settings' => [
+            'settings' => [
 
                 /*
                 |--------------------------------------------------------------------------
@@ -127,7 +127,7 @@ return [
                 |
                 */
 
-                'domain_controllers' => explode(' ', env('ADLDAP_CONTROLLERS', 'corp-dc1.corp.acme.org corp-dc2.corp.acme.org')),
+                'hosts' => explode(' ', env('ADLDAP_CONTROLLERS', 'corp-dc1.corp.acme.org corp-dc2.corp.acme.org')),
 
                 /*
                 |--------------------------------------------------------------------------
@@ -169,21 +169,7 @@ return [
 
                 'base_dn' => env('ADLDAP_BASEDN', 'dc=corp,dc=acme,dc=org'),
 
-                /*
-                |--------------------------------------------------------------------------
-                | Administrator Account Suffix / Prefix
-                |--------------------------------------------------------------------------
-                |
-                | This option allows you to set a different account prefix and suffix
-                | for your configured administrator account upon binding.
-                |
-                | If left empty or set to `null`, your `account_prefix` and
-                | `account_suffix` options above will be used.
-                |
-                */
 
-                'admin_account_prefix' => env('ADLDAP_ADMIN_ACCOUNT_PREFIX', ''),
-                'admin_account_suffix' => env('ADLDAP_ADMIN_ACCOUNT_SUFFIX', ''),
 
                 /*
                 |--------------------------------------------------------------------------
@@ -198,8 +184,8 @@ return [
                 |
                 */
 
-                'admin_username' => env('ADLDAP_ADMIN_USERNAME', 'username'),
-                'admin_password' => env('ADLDAP_ADMIN_PASSWORD', 'password'),
+                'username' => env('ADLDAP_ADMIN_USERNAME', 'username'),
+                'password' => env('ADLDAP_ADMIN_PASSWORD', 'password'),
 
                 /*
                 |--------------------------------------------------------------------------
