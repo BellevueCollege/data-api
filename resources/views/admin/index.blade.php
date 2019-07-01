@@ -29,7 +29,7 @@
                 <td><a href="{{$client->clienturl}}">{{ $client->clientname }}</a></td>
                 <td>{{ $client->clientid }}</td>
                 <td>
-                    <a class="btn btn-secondary btn-sm" href="{{route('admin.client.delete', [ 'id' => $client->id ])}}" role="button">Delete</a>
+                    <a class="btn btn-secondary btn-sm" href="{{ url('admin/client/' . $client->id . '/delete' ) }}" role="button">Delete</a>
                 </td>
             </tr>
         @endforeach
@@ -37,6 +37,6 @@
     </table>
 
     <p>
-        <a class="btn btn-primary" href="{{route('admin.client.add')}}">Add new client</a>
+        <a class="btn btn-primary" href="{{ url('admin/client/add') }}">Add new client</a>
     </p>
 @endsection
