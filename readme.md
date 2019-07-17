@@ -2,9 +2,9 @@
 
 The Data API is a RESTful, read-only web service for accessing Bellevue College data in JSON format.
 
-## API Endpoints
+## API Endpoints 🌐
 
-### Class/course data
+### Class/course data 🎓
 
 - `api/v1/course/{CourseID}` - Return course info for given course given the CourseID
 
@@ -29,7 +29,7 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 - `api/v1/classes/{YearQuarterID}/{Subject}/{CourseNumber}` - Return specific course and section/class info given a quarter, subject/department, and course number
 
-### People data (Internal Only)
+### People data 👩‍🎓👨‍🎓 (🔒Internal Only)
 
 We are moving to a model where some protected endpoints are only available on a locked down, internal subdomain
 
@@ -39,16 +39,7 @@ We are moving to a model where some protected endpoints are only available on a 
 
 - `api/v1/internal/student/{username}` - Return basic student information given a username _(protected)_
 
-#### External People Data Endpoints (Deprecated)
-
-- `api/v1/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used. _(deprecated)_
-
-- `api/v1/employee/{username}` - Return basic employee information given a username _(protected)_ _(deprecated)_
-
-- `api/v1/student/{username}` - Return basic student information given a username _(protected)_ _(deprecated)_
-
-
-## Admin Interface (Internal Only)
+## Admin Interface 👩‍💻 (🔒Internal Only)
 
 There is a simple admin interface to allow creation and removal of API credentials. 
 It is only available on the internal subdomain.
@@ -56,6 +47,17 @@ It is only available on the internal subdomain.
 * `admin/login` - Login interface _(protected)_
 
 
-## Terminology
+## Terminology ℹ️
 
 For explanation on terminology/objects used in the DataAPI, [refer to the terminology documentation](terminology.md).
+
+## Build Status 🚀
+
+| Master | Dev |
+|---|---|
+| [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-master)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=20) | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-dev)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=19) |
+
+## The BadgeZone 💫
+
+[![emoji-log](https://cdn.rawgit.com/ahmadawais/stuff/ca97874/emoji-log/flat-round.svg)](https://github.com/ahmadawais/Emoji-Log/)
+
