@@ -10,8 +10,6 @@ use App\Models\Client;
 
 class AdminController extends Controller
 {
-    protected $redirectTo = '/admin';
-
     public function __construct()
     {
         //$this->middleware('auth:admin', ['except' => 'admin.login']); //->except(['admin/login','admin/logout']);
@@ -26,7 +24,7 @@ class AdminController extends Controller
     public function loginShow()
     {
         if ( Auth::check() ) {
-            return redirect()->route('admin.index');
+            return redirect('admin');
         }
         return view('admin.login');
     }
@@ -41,17 +39,17 @@ class AdminController extends Controller
         $req_creds = $request->only('samaccountname', 'password');
         if ( Auth::guard('admin')->attempt($req_creds) ) {
             // Passed so send to admin dashboard!
-            return redirect()->route('admin.index');
+            return redirect('admin');
         }
         
         // Failed so send back to login
-        return redirect()->route('admin.login')->withErrors('Your username or password is incorrect. Or you may not be in the correct group to have authorization to this dashboard.');
+        return redirect('admin')->withErrors('Your username or password is incorrect. Or you may not be in the correct group to have authorization to this dashboard.');
 
     }
 
     public function logout(Request $request) {
         Auth::guard('admin')->logout();
-        return redirect()->route('admin.login');
+        return redirect('admin/login');
     }
 
     public function deleteClient($id){
@@ -69,7 +67,7 @@ class AdminController extends Controller
     }
 
     public function addClientShow() {
-        return view('admin.addclient');
+        return view('admin.addclient'); 
     }
 
     public function addClientPost(Request $request) {

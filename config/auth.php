@@ -78,7 +78,7 @@ return [
             'model' => App\Models\Client::class,
         ],
         'adldap' => [
-            'driver' => 'adldap',
+            'driver' => 'ldap',
             //'model' => App\Models\User::class,
         ],
         // 'users' => [
