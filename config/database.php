@@ -60,6 +60,15 @@ return [
             'password'  => env('CS_DB_PASSWORD', ''),
             'prefix'    => '',
         ],
+        'pciforms' => [
+            'driver'    => env('PCIFORMS_DB_DRIVER', 'sqlsrv'),
+            'host'      => env('PCIFORMS_DB_HOST', ''),
+            'port'      => env('PCIFORMS_DB_PORT', null),
+            'database'  => env('PCIFORMS_DB_DATABASE', ''),
+            'username'  => env('PCIFORMS_DB_USERNAME', ''),
+            'password'  => env('PCIFORMS_DB_PASSWORD', ''),
+            'prefix'    => '',
+        ]
 
     ],
 

@@ -1,6 +1,6 @@
 # Bellevue College Data API
 
-The Data API is a RESTful, read-only web service for accessing Bellevue College data in JSON format.
+The Data API is a RESTful, primarily read-only web service for accessing Bellevue College data in JSON format.
 
 ## API Endpoints 🌐
 
@@ -29,9 +29,13 @@ The Data API is a RESTful, read-only web service for accessing Bellevue College 
 
 - `api/v1/classes/{YearQuarterID}/{Subject}/{CourseNumber}` - Return specific course and section/class info given a quarter, subject/department, and course number
 
-### People data 👩‍🎓👨‍🎓 (🔒Internal Only)
+### Form Data ⌨️
 
-We are moving to a model where some protected endpoints are only available on a locked down, internal subdomain
+Form Data endpoints are write-only, and accept POSTS with specific parameters and store the data for future reporting. Due to external requirements, they require HTTP Basic authentication using a Client ID and Client Key generated within the Admin interface.
+
+- `api/v1/forms/pci/transactions` - Accepts POST of transaction data _(protected - HTTP Basic Auth)_
+
+### People data 👩‍🎓👨‍🎓 (🔒Internal Only)
 
 - `api/v1/internal/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used. _(protected)_
 

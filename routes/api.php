@@ -18,7 +18,11 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-/** Protected endpoints accessible only internally **/
+/** 
+ * Protected endpoints accessible only internally
+ * 
+ * Protected by JSON Web Token Auth
+ **/
 Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
     Route::get('internal/employee/{username}','EmployeeController@getEmployeeByUsername');
@@ -35,6 +39,20 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
 
 });
 
+/**
+ * Form Data Endpoints
+ * 
+ * Protected by Basic Auth
+**/
+Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
+    Route::prefix('forms/pci')->group(function () {
+
+        Route::get('transactions','TransactionController@getTransaction');
+
+        Route::post('transactions','TransactionController@postTransaction');
+
+    });
+});
 
 /*** Unprotected api endpoints ***/
 Route::prefix('v1')->group(function () {
