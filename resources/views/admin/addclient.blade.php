@@ -10,8 +10,8 @@
             New client {{$clientname}} added successfully. The client will use the following ID and key to authenticate against the API. Note 
             the key now as it is not retrievable.
             <ul class="mb-0 mt-1">
-                <li>Client ID: {{ $clientid }}</li>
-                <li>Client key: {{ $clientkey }}</li>
+                <li>Client ID: <input class="form-control" type="text" value="{{ $clientid }}" readonly></li>
+                <li>Client key: <input class="form-control" type="text" value="{{ $clientkey }}" readonly></li>
             </ul>
         </div>
     @endif
