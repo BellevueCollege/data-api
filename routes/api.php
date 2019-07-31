@@ -47,7 +47,7 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
 Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
     Route::prefix('forms/pci')->group(function () {
 
-        Route::get('transactions','TransactionController@getTransaction');
+        Route::get('transactions','TransactionController@getTransactions');
 
         Route::post('transactions','TransactionController@postTransaction');
 
