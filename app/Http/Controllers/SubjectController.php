@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
   
 use App\Models\Subject;
+use App\Models\SubjectPrefix;
 use App\Http\Transformers\SubjectTransformer;
+use App\Http\Transformers\SubjectPrefixTransformer;
 use App\Http\Controllers\Controller;
 use App\Http\Serializers\CustomDataArraySerializer;
 use Illuminate\Http\Request;
@@ -20,11 +22,10 @@ class SubjectController extends ApiController{
   * Return all subjects
   **/
   public function index(Manager $fractal){
-        $subjects  = Subject::all();
-        
+        $subjects = SubjectPrefix::with('subject')->get();
         $data = $subjects;
         if ( !is_null($subjects) ) {
-            $collection = new Collection($subjects, new SubjectTransformer, self::WRAPPER);
+            $collection = new Collection($subjects, new SubjectPrefixTransformer, self::WRAPPER);
 
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($collection)->toArray();
@@ -38,12 +39,12 @@ class SubjectController extends ApiController{
     **/
     public function getSubject($slug){
   
-        $subject  = Subject::where('Slug', '=', $slug)->first();
+        $subject  = SubjectPrefix::where('CoursePrefixID', '=', $slug)->first();
         
         $data = $subject;
         //handle gracefully if null
         if( !is_null($subject) ) {
-            $item = new Item($subject, new SubjectTransformer, "subject");
+            $item = new Item($subject, new SubjectPrefixTransformer, "subject");
 
             $fractal = new Manager;
         

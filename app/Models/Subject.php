@@ -11,6 +11,10 @@ class Subject extends Model
      protected $connection = 'cs';
      protected $primaryKey = 'SubjectID';
      public $timestamps = false;
-  
+    
+    public function prefixes()
+    {
+        return $this->hasMany('App\Models\SubjectPrefix', 'SubjectID');
+    }
 }
 ?>
