@@ -10,6 +10,7 @@ class GraduationApplication
 {
     //
     public static function createRecord($sid,
+                                        $email,
                                         $received,
                                         $quarter,
                                         $programCode,
@@ -18,50 +19,43 @@ class GraduationApplication
                                         $entryID,
                                         $isUpdate)
     {
-        /*
-        $tsql = 'EXEC [usp_InsertTransactionDetails]'
-                    . '@TranStatus = :TransactionStatus,'
-                    . '@SettleTime = :SettlementTime,'
-                    . '@TransID = :TransactionID,'
-                    . '@Fname = :FirstName,'
-                    . '@Lname = :LastName,'
-                    . '@BillStreet1 = :BillingStreet1,'
-                    . '@BillStreet2 = :BillingStreet2,'
-                    . '@City = :City,'
-                    . '@State = :State,'
-                    . '@Zip = :Zip,'
-                    . '@PayAmt = :PaymentAmount,'
-                    . '@FormID = :FormID,'
-                    . '@SID = :SID,'
-                    . '@Email = :Email;';
-        */
-        $input_data = array( 
-            'SID'           => $sid, 
-            'Received'      => $received,
-            'Quarter'       => $quarter,
-            'ProgramCode'   => $programCode,
-            'Concentration' => $concentration,
-            'DiplomaName'   => $diplomaName,
-            'EntryID'       => $entryID,
-            'IsUpdate'      => $isUpdate,
-        );
         
-        // debug
-        Log::debug('Database Write Disabled- Graduation Application: ' . print_r($input_data, true));
+        $tsql = 'EXEC [usp_InsertIntoGradApps]'
+                    . '@grSID = :grSID,'
+                    //. '@BCEmail = :BCEmail,' // Disabled as it is not needed at this time
+                    . '@grReceived = :grReceived,'
+                    . '@grQuarter = :grQuarter,'
+                    . '@grProgramCode = :grProgramCode,'
+                    . '@grConcentration = :grConcentration,'
+                    . '@grDiplomaName = :grDiplomaName,'
+                    . '@EntryID = :EntryID,'
+                    . '@IsUpdate = :IsUpdate;';
+        
+        $input_data = array( 
+            'grSID'           => $sid, 
+            //'BCEmail'         => $email, // Disabled as it is not needed at this time
+            'grReceived'      => $received,
+            'grQuarter'       => $quarter,
+            'grProgramCode'   => $programCode,
+            'grConcentration' => $concentration,
+            'grDiplomaName'   => $diplomaName,
+            'EntryID'         => $entryID,
+            'IsUpdate'        => $isUpdate,
+        );
 
         /**
          * Write to Database
          */
-        /*
+        
         try
         {
-            $update = DB::connection('pciforms')->update($tsql, $input_data);
+            $update = DB::connection('evalforms')->update($tsql, $input_data);
         }
         catch(\Exception $error)
         {
             return response()->json([
                 'message' => 'Database Error: ' . $error->getMessage()], 503);
         }
-        */
+        
     }
 }
