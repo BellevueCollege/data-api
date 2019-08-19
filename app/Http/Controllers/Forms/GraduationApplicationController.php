@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Forms;
 
 use App\Models\Forms\GraduationApplication;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -15,11 +16,12 @@ class GraduationApplicationController extends Controller
          * Validate Request
          */
         $this->validate($request, [
-            'sid'           => 'required|numeric|max:999999999',
+            'sid'           => 'numeric|max:999999999',
+            'email'         => 'string|max:50',
             'received'      => 'date',
             'quarter'       => 'string|max:4',
             'program'       => 'string|max:100',
-            'program_code'  => 'string|max:6',
+            'program_code'  => 'string|max:10',
             'concentration' => 'string|max:50',
             'diploma_name'  => 'string|max:100',
             'entry_id'      => 'string|max:50',
@@ -40,8 +42,26 @@ class GraduationApplicationController extends Controller
             $program_code = $program_code[0] ?? null;
         }
 
+        /**
+         * Pull SID based on email if none is provided
+         */
+        $sid;
+        if ($request->input('email') && !$request->input('sid'))
+        {
+            $stu = Student::where('Email', '=', $request->input('email', null))->first();
+            $sid = $stu->SID;
+        }
+        else
+        {
+            $sid = $request->input('sid');
+        }
+
+        /**
+         * Send to model
+         */
         return GraduationApplication::createRecord(
-            $request->input('sid', null),
+            $sid,
+            $request->input('email', null), // doesn't write
             $request->input('received', null),
             $request->input('quarter', null),
             $program_code ?? null,
