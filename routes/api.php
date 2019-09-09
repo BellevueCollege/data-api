@@ -18,19 +18,15 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-/** Protected endpoints accessible only internally **/
+/** 
+ * Protected endpoints accessible only internally
+ * 
+ * Protected by JSON Web Token Auth
+ **/
 Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
     Route::get('internal/employee/{username}','EmployeeController@getEmployeeByUsername');
     Route::get('internal/student/{username}','StudentController@getStudentByUsername');
-
-});
-
-// These endpoints should be removed after apps are migrated
-Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
-
-    Route::get('employee/{username}','EmployeeController@getEmployeeByUsername');
-    Route::get('student/{username}','StudentController@getStudentByUsername');
 
 });
 
@@ -43,14 +39,23 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
 
 });
 
+/**
+ * Form Data Endpoints
+ * 
+ * Protected by Basic Auth
+**/
+Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
+    Route::prefix('forms/pci')->group(function () {
+
+        Route::get('transactions','TransactionController@getTransactions');
+
+        Route::post('transactions','TransactionController@postTransaction');
+
+    });
+});
 
 /*** Unprotected api endpoints ***/
 Route::prefix('v1')->group(function () {
-
-    // This endpoint should be removed after apps are migrated
-    Route::post('auth/login', [
-        'as' => 'login', 'uses' => 'AuthController@login'
-    ]);
 
     Route::get('subject/{slug}','SubjectController@getSubject');
     Route::get('subjects','SubjectController@index');

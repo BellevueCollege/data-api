@@ -44,6 +44,10 @@ return [
             'driver' => 'jwt',
             'provider' => 'clients',
         ],
+        'api-basic' => [
+            'driver' => 'session',
+            'provider' => 'clients',
+        ],
         'admin' => [
             'driver' => 'session',
             'provider' => 'adldap'
