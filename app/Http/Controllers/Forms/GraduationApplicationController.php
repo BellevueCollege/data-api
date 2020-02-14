@@ -27,11 +27,9 @@ class GraduationApplicationController extends Controller
             'entry_id'      => 'string|max:50',
             'is_update'     => 'boolean',
         ]);
-
         /**
          * Look for pipe (|) separated program code at end of program string
          */
-        $program_code;
         if ($request->input('program_code'))
         {
             $program_code = $request->input('program_code');
@@ -45,7 +43,6 @@ class GraduationApplicationController extends Controller
         /**
          * Pull SID based on email if none is provided
          */
-        $sid;
         if ($request->input('email') && !$request->input('sid'))
         {
             $stu = Student::where('Email', '=', $request->input('email', null))->first();

@@ -19,7 +19,7 @@ class GraduationApplication
                                         $entryID,
                                         $isUpdate)
     {
-        
+
         $tsql = 'EXEC [usp_InsertIntoGradApps]'
                     . '@grSID = :grSID,'
                     //. '@BCEmail = :BCEmail,' // Disabled as it is not needed at this time
@@ -30,9 +30,9 @@ class GraduationApplication
                     . '@grDiplomaName = :grDiplomaName,'
                     . '@EntryID = :EntryID,'
                     . '@IsUpdate = :IsUpdate;';
-        
-        $input_data = array( 
-            'grSID'           => $sid, 
+
+        $input_data = array(
+            'grSID'           => $sid,
             //'BCEmail'         => $email, // Disabled as it is not needed at this time
             'grReceived'      => $received,
             'grQuarter'       => $quarter,
@@ -46,7 +46,6 @@ class GraduationApplication
         /**
          * Write to Database
          */
-        
         try
         {
             $update = DB::connection('evalforms')->update($tsql, $input_data);
@@ -56,6 +55,6 @@ class GraduationApplication
             return response()->json([
                 'message' => 'Database Error: ' . $error->getMessage()], 503);
         }
-        
+
     }
 }
