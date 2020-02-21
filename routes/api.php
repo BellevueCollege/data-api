@@ -18,9 +18,9 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-/** 
+/**
  * Protected endpoints accessible only internally
- * 
+ *
  * Protected by JSON Web Token Auth
  **/
 Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
@@ -41,7 +41,7 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
 
 /**
  * Form Data Endpoints
- * 
+ *
  * Protected by Basic Auth
 **/
 Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
@@ -58,6 +58,7 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
         // Route::get('transactions','TransactionController@getTransactions');
 
         Route::post('graduation-application','Forms\GraduationApplicationController@post');
+        Route::post('transfer-credit-evaluation','Forms\TransferCreditEvaluationController@post');
 
     });
 });

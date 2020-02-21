@@ -16,14 +16,14 @@ class TransferCreditEvaluationController extends Controller
          * Validate Request
          */
         $this->validate($request, [
-            'email'         => 'string|max:50',
-            'received'      => 'date',
-            'quarter'       => 'string|max:4',
-            'program'       => 'string|max:100',
-            'program_code'  => 'string|max:10',
-            'concentration' => 'string|max:50',
-            'diploma_name'  => 'string|max:100',
-            'entry_id'      => 'string|max:50',
+            'sid'                      => 'numeric|max:999999999',
+            'email'                    => 'string|max:50',
+            'received'                 => 'date',
+            'program'                  => 'string|max:100',
+            'program_code'             => 'string|max:10',
+            'military'                 => 'boolean',
+            'international_transcript' => 'boolean',
+            'entry_id'                 => 'string|max:50',
         ]);
 
         /**
@@ -51,14 +51,11 @@ class TransferCreditEvaluationController extends Controller
          */
         return TransferCreditEvaluation::createRecord(
             $sid,
-            $request->input('email', null), // doesn't write
             $request->input('received', null),
-            $request->input('quarter', null),
             $program_code ?? null,
-            $request->input('concentration', null),
-            $request->input('diploma_name', null),
+            $request->input('military', null),
+            $request->input('international_transcript', null),
             $request->input('entry_id', null),
-            $request->input('is_update', false)
         );
     }
 }
