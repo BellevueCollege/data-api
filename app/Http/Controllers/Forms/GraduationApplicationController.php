@@ -16,16 +16,17 @@ class GraduationApplicationController extends Controller
          * Validate Request
          */
         $this->validate($request, [
-            'sid'           => 'numeric|max:999999999',
-            'email'         => 'string|max:50',
-            'received'      => 'date',
-            'quarter'       => 'string|max:4',
-            'program'       => 'string|max:100',
-            'program_code'  => 'string|max:10',
-            'concentration' => 'string|max:50',
-            'diploma_name'  => 'string|max:100',
-            'entry_id'      => 'string|max:50',
-            'is_update'     => 'boolean',
+            'sid'               => 'numeric|max:999999999',
+            'email'             => 'string|max:50',
+            'received'          => 'date',
+            'quarter'           => 'string|max:4',
+            'program'           => 'string|max:100',
+            'program_code'      => 'string|max:10',
+            'concentration'     => 'string|max:50',
+            'diploma_name'      => 'string|max:100',
+            'requirements_year' => 'string|max:20',
+            'entry_id'          => 'string|max:50',
+            'is_update'         => 'boolean',
         ]);
         /**
          * Look for pipe (|) separated program code at end of program string
@@ -64,6 +65,7 @@ class GraduationApplicationController extends Controller
             $program_code ?? null,
             $request->input('concentration', null),
             $request->input('diploma_name', null),
+            $request->input('requirements_year', null),
             $request->input('entry_id', null),
             $request->input('is_update', false)
         );

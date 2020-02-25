@@ -9,16 +9,18 @@ use Illuminate\Database\QueryException;
 class GraduationApplication
 {
     //
-    public static function createRecord($sid,
-                                        $email,
-                                        $received,
-                                        $quarter,
-                                        $programCode,
-                                        $concentration,
-                                        $diplomaName,
-                                        $entryID,
-                                        $isUpdate)
-    {
+    public static function createRecord(
+        $sid,
+        $email,
+        $received,
+        $quarter,
+        $programCode,
+        $concentration,
+        $diplomaName,
+        $reqYear,
+        $entryID,
+        $isUpdate
+    ) {
 
         $tsql = 'EXEC [usp_InsertIntoGradApps]'
                     . '@grSID = :grSID,'
@@ -28,6 +30,7 @@ class GraduationApplication
                     . '@grProgramCode = :grProgramCode,'
                     . '@grConcentration = :grConcentration,'
                     . '@grDiplomaName = :grDiplomaName,'
+                    . '@grReqYear = :grReqYear,'
                     . '@EntryID = :EntryID,'
                     . '@IsUpdate = :IsUpdate;';
 
@@ -39,6 +42,7 @@ class GraduationApplication
             'grProgramCode'   => $programCode,
             'grConcentration' => $concentration,
             'grDiplomaName'   => $diplomaName,
+            'grReqYear'       => $reqYear,
             'EntryID'         => $entryID,
             'IsUpdate'        => $isUpdate,
         );
