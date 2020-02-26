@@ -7,9 +7,138 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+
 class GraduationApplicationController extends Controller
 {
-    //
+    /**
+     * @OA\Post(
+     *      path="api/v1/forms/evaluations/graduation-application",
+     *      summary="Graduation Application Data",
+     *      @OA\Parameter(
+     *         name="sid",
+     *         in="query",
+     *         description="Student ID Number",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         description="Email Address",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="received",
+     *         in="query",
+     *         description="Received Date",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="date",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="quarter",
+     *         in="query",
+     *         description="Quarter Code (B901)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="program",
+     *         in="query",
+     *         description="Program name with pipe-separated program code (Program Name | 5AA)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="program_code",
+     *         in="query",
+     *         description="Program code only (5AA)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="concentration",
+     *         in="query",
+     *         description="Concentration (not used, but will write to DB)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="diploma_name",
+     *         in="query",
+     *         description="Student's name as printed on diploma",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="requirements_year",
+     *         in="query",
+     *         description="Requirements year (2019-2020)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="entry_id",
+     *         in="query",
+     *         description="Entry ID from source system",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="is_update",
+     *         in="query",
+     *         description="Is this an update of an existing record? (Still records as a new record)",
+     *         required=false,
+     *         explode=false,
+     *         @OA\Schema(
+     *             type="boolean",
+     *         )
+     *      ),
+     *      security={
+     *           {"JWTAuth": {}}
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           { "basicAuth": {} }
+     *       }
+     *     )
+     *
+     * Records Graduation Application and returns nothing
+     */
     public function post(Request $request)
     {
         /**
