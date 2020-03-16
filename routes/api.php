@@ -52,6 +52,14 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
         Route::post('transactions','TransactionController@postTransaction');
 
     });
+
+    Route::prefix('forms/evaluations')->group(function () {
+
+        // Route::get('transactions','TransactionController@getTransactions');
+
+        Route::post('graduation-application','Forms\GraduationApplicationController@post');
+
+    });
 });
 
 /*** Unprotected api endpoints ***/
