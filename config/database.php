@@ -68,6 +68,15 @@ return [
             'username'  => env('PCIFORMS_DB_USERNAME', ''),
             'password'  => env('PCIFORMS_DB_PASSWORD', ''),
             'prefix'    => '',
+        ],
+        'evalforms' => [
+            'driver'    => env('EVALFORMS_DB_DRIVER', 'sqlsrv'),
+            'host'      => env('EVALFORMS_DB_HOST', ''),
+            'port'      => env('EVALFORMS_DB_PORT', null),
+            'database'  => env('EVALFORMS_DB_DATABASE', ''),
+            'username'  => env('EVALFORMS_DB_USERNAME', ''),
+            'password'  => env('EVALFORMS_DB_PASSWORD', ''),
+            'prefix'    => '',
         ]
 
     ],
