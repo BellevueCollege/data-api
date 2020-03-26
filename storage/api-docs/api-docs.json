@@ -1,0 +1,260 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Bellevue College Data API",
+        "description": "Bellevue College Data API Description",
+        "contact": {
+            "email": "webmaster@bellevuecollege.edu"
+        },
+        "version": "1.3"
+    },
+    "paths": {
+        "api/v1/forms/evaluations/graduation-application": {
+            "post": {
+                "summary": "Graduation Application Data",
+                "operationId": "App\\Http\\Controllers\\Forms\\GraduationApplicationController::post",
+                "parameters": [
+                    {
+                        "name": "sid",
+                        "in": "query",
+                        "description": "Student ID Number",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email Address",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "received",
+                        "in": "query",
+                        "description": "Received Date",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter Code (B901)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "program",
+                        "in": "query",
+                        "description": "Program name with pipe-separated program code (Program Name | 5AA)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "program_code",
+                        "in": "query",
+                        "description": "Program code only (5AA)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "concentration",
+                        "in": "query",
+                        "description": "Concentration (not used, but will write to DB)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "diploma_name",
+                        "in": "query",
+                        "description": "Student's name as printed on diploma",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "requirements_year",
+                        "in": "query",
+                        "description": "Requirements year (2019-2020)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "entry_id",
+                        "in": "query",
+                        "description": "Entry ID from source system",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "is_update",
+                        "in": "query",
+                        "description": "Is this an update of an existing record? (Still records as a new record)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/forms/evaluations/transfer-credit-evaluation": {
+            "post": {
+                "summary": "Transfer Credit Evaluation Data",
+                "operationId": "App\\Http\\Controllers\\Forms\\TransferCreditEvaluationController::post",
+                "parameters": [
+                    {
+                        "name": "sid",
+                        "in": "query",
+                        "description": "Student ID Number",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email Address",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "received",
+                        "in": "query",
+                        "description": "Received Date",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },
+                    {
+                        "name": "program",
+                        "in": "query",
+                        "description": "Program name with pipe-separated program code (Program Name | 5AA)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "program_code",
+                        "in": "query",
+                        "description": "Program code only (5AA)",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "military",
+                        "in": "query",
+                        "description": "Student military designation",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "international_transcript",
+                        "in": "query",
+                        "description": "Student has an international transcript",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "entry_id",
+                        "in": "query",
+                        "description": "Entry ID from source system",
+                        "required": false,
+                        "explode": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "jwtAuth": {
+                "type": "http",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "basicAuth": {
+                "type": "http",
+                "in": "header",
+                "scheme": "basic"
+            }
+        }
+    }
+}
