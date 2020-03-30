@@ -63,8 +63,23 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
     });
 });
 
+/**
+ * Protected Endpoints Available on Public Domain
+ */
+Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
+
+    Route::prefix('directory')->group(function () {
+        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
+        Route::get('employees', 'EmployeeController@getDirectoryEmployees');
+    });
+});
+
 /*** Unprotected api endpoints ***/
 Route::prefix('v1')->group(function () {
+
+    Route::post('auth/login', [
+        'as' => 'login', 'uses' => 'AuthController@login'
+    ]);
 
     Route::get('subject/{slug}','SubjectController@getSubject');
     Route::get('subjects','SubjectController@index');
