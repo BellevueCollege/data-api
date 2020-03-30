@@ -25,7 +25,7 @@ use Illuminate\Http\Request;
  **/
 Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
-    Route::get('internal/employee/{username}','EmployeeController@getEmployeeByUsername');
+    Route::get('internal/employee/{username}', 'EmployeeController@getEmployeeByUsername');
     Route::get('internal/student/{username}','StudentController@getStudentByUsername');
 
 });
@@ -68,10 +68,9 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
  */
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
-    Route::prefix('directory')->group(function () {
-        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
-        Route::get('employees', 'EmployeeController@getDirectoryEmployees');
-    });
+    Route::get('employee/{username}', 'EmployeeController@getEmployeeByUsername');
+    Route::get('employees', 'EmployeeController@getEmployees');
+
 });
 
 /*** Unprotected api endpoints ***/
