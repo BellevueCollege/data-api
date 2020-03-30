@@ -77,6 +77,15 @@ return [
             'username'  => env('EVALFORMS_DB_USERNAME', ''),
             'password'  => env('EVALFORMS_DB_PASSWORD', ''),
             'prefix'    => '',
+        ],
+        'empdirectory' => [
+            'driver'    => env('EMPDIR_DB_DRIVER', 'sqlsrv'),
+            'host'      => env('EMPDIR_DB_HOST', ''),
+            'port'      => env('EMPDIR_DB_PORT', null),
+            'database'  => env('EMPDIR_DB_DATABASE', ''),
+            'username'  => env('EMPDIR_DB_USERNAME', ''),
+            'password'  => env('EMPDIR_DB_PASSWORD', ''),
+            'prefix'    => '',
         ]
 
     ],
