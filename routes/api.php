@@ -68,9 +68,10 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
  */
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
-    Route::get('employee/{username}', 'EmployeeController@getEmployeeByUsername');
-    Route::get('employees', 'EmployeeController@getEmployees');
-
+    Route::prefix('directory')->group(function () {
+        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
+        Route::get('employees', 'EmployeeController@getDirectoryEmployees');
+    });
 });
 
 /*** Unprotected api endpoints ***/

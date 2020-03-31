@@ -63,14 +63,12 @@ class EmployeeController extends ApiController
      */
     public function getEmployeeByUsername(Request $request, $username)
     {
-
-        $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->first();
-
+        $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->first();
 
         $data = $emp;
         //handle gracefully if null
         if (! is_null($emp)) {
-            $item = new Item($emp, new EmployeeDirectoryTransformer);
+            $item = new Item($emp, new EmployeeTransformer);
             $fractal = new Manager;
             $data = $fractal->createData($item)->toArray();
         }
@@ -120,21 +118,23 @@ class EmployeeController extends ApiController
      *     }
      * )
      */
+
     public function getDirectoryEmployeeByUsername(Request $request, $username)
     {
-        $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->first();
+
+        $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->first();
+
 
         $data = $emp;
         //handle gracefully if null
         if (! is_null($emp)) {
-            $item = new Item($emp, new EmployeeTransformer);
+            $item = new Item($emp, new EmployeeDirectoryTransformer);
             $fractal = new Manager;
             $data = $fractal->createData($item)->toArray();
         }
 
         return $this->respond($data);
     }
-
 
     /**
      * Get a list of all directory employee usernames
