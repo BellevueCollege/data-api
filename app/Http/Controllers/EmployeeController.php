@@ -17,51 +17,173 @@ use App\Http\Serializers\CustomDataArraySerializer;
 //use App\Http\Serializers\CustomDataArraySerializer;
 use DB;
 
-class EmployeeController extends ApiController{
+class EmployeeController extends ApiController
+{
 
     /**
      * Get an employee by username
      * Status: active
-    **/
-    public function getEmployeeByUsername(Request $request, $username ){
+     *
+     * @OA\Get(
+     *      path="/api/v1/internal/employee/{username}",
+     *      operationId="getEmployeeByUsername",
+     *      tags={"Employees", "Internal"},
+     *      summary="Get employee information",
+     *      description="Returns employee data",
+     *      @OA\Parameter(
+     *          name="username",
+     *          description="Employee Username",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Employee")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     security={
+     *         {"jwtAuth": {"read:true"}}
+     *     }
+     * )
+     */
+    public function getEmployeeByUsername(Request $request, $username)
+    {
 
-        /**
-         * Pull the 'type' peram to determine data format to return
-         */
+        $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->first();
 
-        $type = $request->input('type');
-
-        /**
-         * If type === directory return Directory type info, otherwise do standard
-         */
-        if ( 'directory' === $type )
-        {
-            $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->first();
-        } else {
-            $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode','=','A')->first();
-        }
 
         $data = $emp;
         //handle gracefully if null
-        if ( ! is_null($emp) ) {
-            if ( 'directory' === $type ) {
-                $item = new Item($emp, new EmployeeDirectoryTransformer);
-                $fractal = new Manager;
-                $data = $fractal->createData($item)->toArray();
-            } else {
-                $item = new Item($emp, new EmployeeTransformer);
-                $fractal = new Manager;
-                $data = $fractal->createData($item)->toArray();
-            }
+        if (! is_null($emp)) {
+            $item = new Item($emp, new EmployeeDirectoryTransformer);
+            $fractal = new Manager;
+            $data = $fractal->createData($item)->toArray();
         }
 
         return $this->respond($data);
     }
 
+
     /**
-     * Get All Employees, Only Returning AD Username
+     * Get an employee by username from the directory
+     * Status: active
+     *
+     * @OA\Get(
+     *      path="/api/v1/directory/employee/{username}",
+     *      operationId="getDirectoryEmployeeByUsername",
+     *      tags={"Employees", "Directory"},
+     *      summary="Get employee directory information",
+     *      description="Returns employee directory data",
+     *      @OA\Parameter(
+     *          name="username",
+     *          description="Employee Username",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/DirectoryEmployee")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     security={
+     *         {"jwtAuth": {"read:true"}}
+     *     }
+     * )
      */
-    public function getEmployees() {
+    public function getDirectoryEmployeeByUsername(Request $request, $username)
+    {
+        $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->first();
+
+        $data = $emp;
+        //handle gracefully if null
+        if (! is_null($emp)) {
+            $item = new Item($emp, new EmployeeTransformer);
+            $fractal = new Manager;
+            $data = $fractal->createData($item)->toArray();
+        }
+
+        return $this->respond($data);
+    }
+
+
+    /**
+     * Get a list of all directory employee usernames
+     * Status: active
+     *
+     * @OA\Get(
+     *      path="/api/v1/directory/employees",
+     *      operationId="getDirectoryEmployees",
+     *      tags={"Employees", "Directory"},
+     *      summary="Get directory employee usernames",
+     *      description="Returns a list of usernames of employees in the directory",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="employees",
+     *                  description="List of employees",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="username",
+     *                          type="string",
+     *                          description="Employee username",
+     *                      ),
+     *                  ),
+     *              ),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     security={
+     *         {"jwtAuth": {"read:true"}}
+     *     }
+     * )
+     */
+    public function getDirectoryEmployees()
+    {
         $emps = EmployeeDirectory::whereNotNull('ADAccountName')->get();
         $collection = new Collection($emps, new EmployeesTransformer, 'employees');
         $fractal = new Manager;
@@ -69,6 +191,4 @@ class EmployeeController extends ApiController{
         $data = $fractal->createData($collection)->toArray();
         return $this->respond($data);
     }
-
 }
-
