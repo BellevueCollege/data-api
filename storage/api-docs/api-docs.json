@@ -2,14 +2,242 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Bellevue College Data API",
-        "description": "Bellevue College Data API Description",
+        "description": "The Bellevue College Data API is used to serve and collect BC data.",
         "contact": {
-            "email": "webmaster@bellevuecollege.edu"
+            "email": "admin@admin.com"
         },
-        "version": "1.3"
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.4"
     },
+    "servers": [
+        {
+            "url": "http://data-api.test",
+            "description": "Primary API Server"
+        },
+        {
+            "url": "no.data-api.test",
+            "description": "Private API Server"
+        }
+    ],
     "paths": {
-        "api/v1/forms/evaluations/graduation-application": {
+        "/api/v1/internal": {
+            "servers": [
+                {
+                    "url": "no.data-api.test",
+                    "description": "Private API Server"
+                }
+            ]
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "summary": "Get JWT auth token",
+                "description": "Get JSON Web Token for Authentication",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "clientid": {
+                                        "description": "Get a JWT via given credentials.",
+                                        "type": "string"
+                                    },
+                                    "clientkey": {
+                                        "description": "Get a JWT via given credentials.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "JWT Access Token",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "Token Type- always 'bearer'",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Token expiration time in seconds",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/internal/employee/{username}": {
+            "get": {
+                "tags": [
+                    "Employees",
+                    "Internal"
+                ],
+                "summary": "Get employee information",
+                "description": "Returns employee data",
+                "operationId": "getEmployeeByUsername",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Employee Username",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Employee"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": [
+                            "read:true"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/directory/employee/{username}": {
+            "get": {
+                "tags": [
+                    "Employees",
+                    "Directory"
+                ],
+                "summary": "Get employee directory information",
+                "description": "Returns employee directory data",
+                "operationId": "getDirectoryEmployeeByUsername",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Employee Username",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DirectoryEmployee"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": [
+                            "read:true"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/directory/employees": {
+            "get": {
+                "tags": [
+                    "Employees",
+                    "Directory"
+                ],
+                "summary": "Get directory employee usernames",
+                "description": "Returns a list of usernames of employees in the directory",
+                "operationId": "getDirectoryEmployees",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "employees": {
+                                            "description": "List of employees",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "username": {
+                                                        "description": "Employee username",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": [
+                            "read:true"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/forms/evaluations/graduation-application": {
             "post": {
                 "summary": "Graduation Application Data",
                 "operationId": "App\\Http\\Controllers\\Forms\\GraduationApplicationController::post",
@@ -135,7 +363,9 @@
                 },
                 "security": [
                     {
-                        "basicAuth": []
+                        "basicAuth": [
+                            "write:true"
+                        ]
                     }
                 ]
             }
@@ -172,7 +402,7 @@
                         "required": false,
                         "explode": false,
                         "schema": {
-                            "type": "date"
+                            "type": "string"
                         }
                     },
                     {
@@ -236,13 +466,145 @@
                 },
                 "security": [
                     {
-                        "basicAuth": []
+                        "basicAuth": [
+                            "write:true"
+                        ]
                     }
                 ]
             }
         }
     },
     "components": {
+        "schemas": {
+            "DirectoryEmployee": {
+                "title": "Directory Employee",
+                "description": "Employee Directory information",
+                "properties": {
+                    "firstName": {
+                        "title": "First Name",
+                        "description": "Employee first name",
+                        "type": "string",
+                        "example": "Joanne"
+                    },
+                    "lastName": {
+                        "title": "Last Name",
+                        "description": "Employee last name",
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "aliasName": {
+                        "title": "Alias Name",
+                        "description": "Preferred first name",
+                        "type": "string",
+                        "example": "Jo"
+                    },
+                    "displayName": {
+                        "title": "Display Name",
+                        "description": "Display name, using AKA as first name",
+                        "type": "string",
+                        "example": "Jo Doe"
+                    },
+                    "title": {
+                        "title": "Title",
+                        "description": "Job title- prefers acting title",
+                        "type": "string",
+                        "example": "Manager"
+                    },
+                    "department": {
+                        "title": "Department",
+                        "description": "Name of department to which employee reports",
+                        "type": "string",
+                        "example": "English Department"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Employee email address",
+                        "type": "string",
+                        "example": "j.doe@bellevuecollege.edu"
+                    },
+                    "phone": {
+                        "title": "Phone",
+                        "description": "Phone number without separators",
+                        "type": "string",
+                        "example": "4255641000"
+                    },
+                    "displayPhone": {
+                        "title": "Display Phone",
+                        "description": "Phone number with separators",
+                        "type": "string",
+                        "example": "425.564.1000"
+                    },
+                    "office": {
+                        "title": "Office",
+                        "description": "Office Number",
+                        "type": "string",
+                        "example": "U101A"
+                    },
+                    "mailstop": {
+                        "title": "mailstop",
+                        "description": "Mailing office",
+                        "type": "string",
+                        "example": "U100"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "DirectoryEmployee"
+                }
+            },
+            "Employee": {
+                "title": "Employee",
+                "description": "Employee information",
+                "properties": {
+                    "SID": {
+                        "title": "SID",
+                        "description": "Employee ID",
+                        "type": "integer",
+                        "example": "950000000"
+                    },
+                    "firstName": {
+                        "title": "First Name",
+                        "description": "Employee first name",
+                        "type": "string",
+                        "example": "Joanne"
+                    },
+                    "lastName": {
+                        "title": "Last Name",
+                        "description": "Employee last name",
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "aliasName": {
+                        "title": "Alias Name",
+                        "description": "Preferred first name",
+                        "type": "string",
+                        "example": "Jo"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Employee email address",
+                        "type": "string",
+                        "example": "j.doe@bellevuecollege.edu"
+                    },
+                    "phone": {
+                        "title": "Phone",
+                        "description": "Phone number without separators",
+                        "type": "string",
+                        "example": "4255641000"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "description": "Employee username",
+                        "type": "string",
+                        "example": "j.doe"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Employee"
+                }
+            }
+        },
         "securitySchemes": {
             "jwtAuth": {
                 "type": "http",
@@ -256,5 +618,19 @@
                 "scheme": "basic"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Employees",
+            "description": "API Endpoints for Employee Data"
+        },
+        {
+            "name": "Directory",
+            "description": "API Endpoints for Employee Directory Data"
+        },
+        {
+            "name": "Internal",
+            "description": "API Endpoints available on the internal domain"
+        }
+    ]
 }
