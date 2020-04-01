@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Forms;
 
-use App\Models\Forms\GraduationApplication;
+use App\Models\Forms\TransferCreditEvaluation;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-
-class GraduationApplicationController extends Controller
+class TransferCreditEvaluationController extends Controller
 {
     /**
      * @OA\Post(
-     *      path="api/v1/forms/evaluations/graduation-application",
-     *      summary="Graduation Application Data",
+     *      path="/api/v1/forms/evaluations/transfer-credit-evaluation",
+     *      summary="Transfer Credit Evaluation Data",
      *      @OA\Parameter(
      *         name="sid",
      *         in="query",
@@ -45,16 +44,6 @@ class GraduationApplicationController extends Controller
      *         )
      *      ),
      *      @OA\Parameter(
-     *         name="quarter",
-     *         in="query",
-     *         description="Quarter Code (B901)",
-     *         required=false,
-     *         explode=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *      ),
-     *      @OA\Parameter(
      *         name="program",
      *         in="query",
      *         description="Program name with pipe-separated program code (Program Name | 5AA)",
@@ -75,33 +64,23 @@ class GraduationApplicationController extends Controller
      *         )
      *      ),
      *      @OA\Parameter(
-     *         name="concentration",
+     *         name="military",
      *         in="query",
-     *         description="Concentration (not used, but will write to DB)",
+     *         description="Student military designation",
      *         required=false,
      *         explode=false,
      *         @OA\Schema(
-     *             type="string",
+     *             type="boolean",
      *         )
      *      ),
      *      @OA\Parameter(
-     *         name="diploma_name",
+     *         name="international_transcript",
      *         in="query",
-     *         description="Student's name as printed on diploma",
+     *         description="Student has an international transcript",
      *         required=false,
      *         explode=false,
      *         @OA\Schema(
-     *             type="string",
-     *         )
-     *      ),
-     *      @OA\Parameter(
-     *         name="requirements_year",
-     *         in="query",
-     *         description="Requirements year (2019-2020)",
-     *         required=false,
-     *         explode=false,
-     *         @OA\Schema(
-     *             type="string",
+     *             type="boolean",
      *         )
      *      ),
      *      @OA\Parameter(
@@ -112,16 +91,6 @@ class GraduationApplicationController extends Controller
      *         explode=false,
      *         @OA\Schema(
      *             type="string",
-     *         )
-     *      ),
-     *      @OA\Parameter(
-     *         name="is_update",
-     *         in="query",
-     *         description="Is this an update of an existing record? (Still records as a new record)",
-     *         required=false,
-     *         explode=false,
-     *         @OA\Schema(
-     *             type="boolean",
      *         )
      *      ),
      *      security={
@@ -145,27 +114,22 @@ class GraduationApplicationController extends Controller
          * Validate Request
          */
         $this->validate($request, [
-            'sid'               => 'numeric|max:999999999',
-            'email'             => 'string|max:50',
-            'received'          => 'date',
-            'quarter'           => 'string|max:4',
-            'program'           => 'string|max:100',
-            'program_code'      => 'string|max:10',
-            'concentration'     => 'string|max:50',
-            'diploma_name'      => 'string|max:100',
-            'requirements_year' => 'string|max:20',
-            'entry_id'          => 'string|max:50',
-            'is_update'         => 'boolean',
+            'sid'                      => 'numeric|max:999999999',
+            'email'                    => 'string|max:50',
+            'received'                 => 'date',
+            'program'                  => 'string|max:100',
+            'program_code'             => 'string|max:10',
+            'military'                 => 'boolean',
+            'international_transcript' => 'boolean',
+            'entry_id'                 => 'string|max:50',
         ]);
+
         /**
          * Look for pipe (|) separated program code at end of program string
          */
-        if ($request->input('program_code'))
-        {
+        if ($request->input('program_code')) {
             $program_code = $request->input('program_code');
-        }
-        else
-        {
+        } else {
             preg_match('/\|\s*\K\S+/', $request->input('program'), $program_code);
             $program_code = $program_code[0] ?? null;
         }
@@ -173,30 +137,23 @@ class GraduationApplicationController extends Controller
         /**
          * Pull SID based on email if none is provided
          */
-        if ($request->input('email') && !$request->input('sid'))
-        {
+        if ($request->input('email') && !$request->input('sid')) {
             $stu = Student::where('Email', '=', $request->input('email', null))->first();
             $sid = $stu->SID;
-        }
-        else
-        {
+        } else {
             $sid = $request->input('sid');
         }
 
         /**
          * Send to model
          */
-        return GraduationApplication::createRecord(
+        return TransferCreditEvaluation::createRecord(
             $sid,
-            $request->input('email', null), // doesn't write
             $request->input('received', null),
-            $request->input('quarter', null),
             $program_code ?? null,
-            $request->input('concentration', null),
-            $request->input('diploma_name', null),
-            $request->input('requirements_year', null),
+            $request->input('military', null),
+            $request->input('international_transcript', null),
             $request->input('entry_id', null),
-            $request->input('is_update', false)
         );
     }
 }

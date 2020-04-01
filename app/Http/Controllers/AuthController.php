@@ -11,6 +11,21 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @OA\SecurityScheme(
+ *     type="http",
+ *     securityScheme="jwtAuth",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     in="header"
+ * )
+ * @OA\SecurityScheme(
+ *     type="http",
+ *     securityScheme="basicAuth",
+ *     scheme="basic",
+ *     in="header",
+ * )
+ */
 class AuthController extends Controller
 {
     /**
