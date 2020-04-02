@@ -99,7 +99,13 @@ class EmployeeController extends ApiController
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/DirectoryEmployee")
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="object",
+     *                  ref="#/components/schemas/DirectoryEmployee"
+     *              )
+     *          )
      *       ),
      *      @OA\Response(
      *          response=400,

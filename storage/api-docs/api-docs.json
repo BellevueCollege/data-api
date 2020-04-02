@@ -10,7 +10,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.4"
+        "version": "1.5"
     },
     "servers": [
         {
@@ -159,7 +159,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/DirectoryEmployee"
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/DirectoryEmployee"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
