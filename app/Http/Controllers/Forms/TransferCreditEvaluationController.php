@@ -40,7 +40,7 @@ class TransferCreditEvaluationController extends Controller
      *         required=false,
      *         explode=false,
      *         @OA\Schema(
-     *             type="date",
+     *             type="string",
      *         )
      *      ),
      *      @OA\Parameter(
@@ -94,7 +94,7 @@ class TransferCreditEvaluationController extends Controller
      *         )
      *      ),
      *      security={
-     *           {"JWTAuth": {}}
+     *           {"jwt_auth": {}}
      *      },
      *      @OA\Response(
      *          response=200,
@@ -102,7 +102,7 @@ class TransferCreditEvaluationController extends Controller
      *       ),
      *       @OA\Response(response=400, description="Bad request"),
      *       security={
-     *           { "basicAuth": {} }
+     *           { "basicAuth": {"write:true"} }
      *       }
      *     )
      *

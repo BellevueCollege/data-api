@@ -18,7 +18,7 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'api' => 'api/documentation',
+        'api' => 'documentation',
 
         /*
         |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'docs' => 'docs',
+        'docs' => 'api/v1/docs',
 
         /*
         |--------------------------------------------------------------------------
@@ -232,6 +232,8 @@ return [
     |--------------------------------------------------------------------------
      */
     'constants' => [
-        'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
+        'PUBLIC_URL' => env('APP_URL', 'https://www2.bellevuecollege.edu/data'),
+        'PRIVATE_URL' => env('API_INTERNAL_DOMAIN', 'no.bellevuecollege.edu/data'),
+        'APP_VERSION' => config('dataapi.app_version')
     ],
 ];

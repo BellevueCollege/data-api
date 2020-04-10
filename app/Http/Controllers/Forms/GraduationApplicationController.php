@@ -12,7 +12,7 @@ class GraduationApplicationController extends Controller
 {
     /**
      * @OA\Post(
-     *      path="api/v1/forms/evaluations/graduation-application",
+     *      path="/api/v1/forms/evaluations/graduation-application",
      *      summary="Graduation Application Data",
      *      @OA\Parameter(
      *         name="sid",
@@ -133,7 +133,7 @@ class GraduationApplicationController extends Controller
      *       ),
      *       @OA\Response(response=400, description="Bad request"),
      *       security={
-     *           { "basicAuth": {} }
+     *           { "basicAuth": {"write:true"} }
      *       }
      *     )
      *

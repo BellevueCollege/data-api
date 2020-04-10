@@ -4,6 +4,12 @@ The Data API is a RESTful, primarily read-only web service for accessing Bellevu
 
 ## API Endpoints 🌐
 
+### OpenAPI 3.0 Documentation
+As endpoints are added or updated, OpenAPI documentation is being added.
+
+- [JSON OpenAPI Documentation Endpoint](https://www2.bellevuecollege.edu/data/api/v1/docs/)
+- [Swagger Docs for API (in progress)](https://www2.bellevuecollege.edu/data/documentation/)
+
 ### Class/course data 🎓
 
 - `api/v1/course/{CourseID}` - Return course info for given course given the CourseID
@@ -35,6 +41,12 @@ Form Data endpoints are write-only, and accept POSTS with specific parameters an
 
 - `api/v1/forms/pci/transactions` - Accepts POST of transaction data _(protected - HTTP Basic Auth)_
 
+### Directory data 👩‍🎓👨‍🎓
+- `api/v1/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used. _(protected)_
+- `api/v1/directory/employees` - Return list of all employee usernames _(protected)_
+- `api/v1/directory/employee/{username}` - Return employee directory information given a username _(protected)_
+
+
 ### People data 👩‍🎓👨‍🎓 (🔒Internal Only)
 
 - `api/v1/internal/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used. _(protected)_
@@ -54,6 +66,11 @@ It is only available on the internal subdomain.
 ## Terminology ℹ️
 
 For explanation on terminology/objects used in the DataAPI, [refer to the terminology documentation](terminology.md).
+
+API Documentation is being written through [L5-Swagger](https://github.com/DarkaOnLine/L5-Swagger). Run the following to compile:
+```bash
+php artisan l5-swagger:generate 
+```
 
 ## Build Status 🚀
 

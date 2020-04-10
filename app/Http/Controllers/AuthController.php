@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Hash;
  *     securityScheme="jwtAuth",
  *     scheme="bearer",
  *     bearerFormat="JWT",
- *     in="header"
+ *     in="header",
  * )
  * @OA\SecurityScheme(
  *     type="http",
@@ -42,6 +42,50 @@ class AuthController extends Controller
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
+     *
+     * @OA\Post(
+     *     path="/api/v1/auth/login",
+     *     operationId="login",
+     *     summary="Get JWT auth token",
+     *     description="Get JSON Web Token for Authentication",
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="clientid",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="clientkey",
+     *                      type="string",
+     *                 )
+     *             )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="access_token",
+     *                  description="JWT Access Token",
+     *                  type="string",
+     *              ),
+     *              @OA\Property(
+     *                  property="token_type",
+     *                  description="Token Type- always 'bearer'",
+     *                  type="string",
+     *              ),
+     *              @OA\Property(
+     *                  property="expires_in",
+     *                  description="Token expiration time in seconds",
+     *                  type="integer",
+     *              ),
+     *          ),
+     *     )
+     * )
      */
     public function login()
     {
