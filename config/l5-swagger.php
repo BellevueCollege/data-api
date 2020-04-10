@@ -232,8 +232,8 @@ return [
     |--------------------------------------------------------------------------
      */
     'constants' => [
-        'PUBLIC_URL' => env('APP_URL', 'http://my-default-host.com'),
-        'PRIVATE_URL' => env('API_INTERNAL_DOMAIN', 'http://my-default-host.com'),
+        'PUBLIC_URL' => env('APP_URL', 'https://www2.bellevuecollege.edu/data'),
+        'PRIVATE_URL' => env('API_INTERNAL_DOMAIN', 'no.bellevuecollege.edu/data'),
         'APP_VERSION' => config('dataapi.app_version')
     ],
 ];
