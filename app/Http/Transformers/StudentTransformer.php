@@ -4,10 +4,11 @@ use App\Models\Student;
 use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
 
-class StudentTransformer extends TransformerAbstract {
+class StudentTransformer extends TransformerAbstract
+{
 
     /**
-    * Fractal transformer for a YearQuarter. Defines how data for a 
+    * Fractal transformer for a YearQuarter. Defines how data for a
     * YearQuarter should be output in the API.
     **/
 
@@ -18,8 +19,9 @@ class StudentTransformer extends TransformerAbstract {
     public function transform(Student $stu)
     {
         return [
-            'SID'			=> $stu->SID,
-            'firstName' 	=> $stu->FirstName,
+            'SID'           => $stu->SID,
+            'EMPLID'        => $stu->EMPLID,
+            'firstName'     => $stu->FirstName,
             'lastName'      => $stu->LastName,
             'email'         => $stu->Email,
             'phoneDaytime'  => $stu->DaytimePhone,
@@ -27,7 +29,7 @@ class StudentTransformer extends TransformerAbstract {
             'username'      => $stu->NTUserName,
         ];
     }
-    
+
     /**
      * Include blocks for student
      *
@@ -37,7 +39,7 @@ class StudentTransformer extends TransformerAbstract {
     {
         $blocks = $stu->blocks;
 
-        if ( $blocks->count() == 0) {
+        if ($blocks->count() == 0) {
             //return null resource
             return $this->null();
         }
