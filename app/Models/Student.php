@@ -24,9 +24,4 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
     /**
      * Define blocks relationship
      */
-    public function blocks()
-    {
-        return $this->hasMany('App\Models\Block', 'SID', 'SID');
-        //'App\Models\Block'
-    }
 }
