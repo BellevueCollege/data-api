@@ -1,11 +1,11 @@
 <?php
-  
+
 namespace App\Http\Controllers;
-  
+
 use App\Models\Subject;
 use App\Models\SubjectPrefix;
 use App\Http\Transformers\SubjectTransformer;
-use App\Http\Transformers\SubjectPrefixTransformer;
+// use App\Http\Transformers\SubjectPrefixTransformer;
 use App\Http\Controllers\Controller;
 use App\Http\Serializers\CustomDataArraySerializer;
 use Illuminate\Http\Request;
@@ -14,51 +14,55 @@ use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use DB;
 
-class SubjectController extends ApiController{
-  
-  const WRAPPER = "subjects";
-  
+class SubjectController extends ApiController
+{
+
+    const WRAPPER = "subjects";
+
   /**
   * Return all subjects
   **/
-  public function index(Manager $fractal){
-        $subjects = SubjectPrefix::with('subject')->get();
+    public function index(Manager $fractal)
+    {
+        $subjects = Subject::all();
         $data = $subjects;
-        if ( !is_null($subjects) ) {
-            $collection = new Collection($subjects, new SubjectPrefixTransformer, self::WRAPPER);
+        if (!is_null($subjects)) {
+            $collection = new Collection($subjects, new SubjectTransformer, self::WRAPPER);
 
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($collection)->toArray();
         }
-        
+
         return $this->respond($data);
     }
-  
+
     /**
     * Return a subject based on a provided slug
     **/
-    public function getSubject($slug){
-  
-        $subject  = SubjectPrefix::where('CoursePrefixID', '=', $slug)->first();
-        
+    public function getSubject($slug)
+    {
+
+        $subject  = Subject::where('SUBJECT', '=', $slug)->first();
+
         $data = $subject;
         //handle gracefully if null
-        if( !is_null($subject) ) {
-            $item = new Item($subject, new SubjectPrefixTransformer, "subject");
+        if (!is_null($subject)) {
+            $item = new Item($subject, new SubjectTransformer, "subject");
 
             $fractal = new Manager;
-        
+
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($item)->toArray();
         }
-        
+
         return $this->respond($data);
     }
-    
+
     /**
     * Return subjects based on a provided YearQuarterID
     **/
-    public function getSubjectsByYearQuarter($yqr) {
+    public function getSubjectsByYearQuarter($yqr)
+    {
 
         //DB::connection('cs')->enableQueryLog();
         $subjects = DB::connection('cs')
@@ -70,21 +74,20 @@ class SubjectController extends ApiController{
             ->orderBy('vw_SubjectDetails.Slug', 'asc')
             ->get();
          //$queries = DB::connection('cs')->getQueryLog();
-         //dd($queries);  
+         //dd($queries);
 
          $data = $subjects;
-         if ( !is_null($subjects) && !$subjects->isEmpty() ) {
+        if (!is_null($subjects) && !$subjects->isEmpty()) {
             //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
             $subjects_hydrated = Subject::hydrate($subjects->toArray());
             $collection = new Collection($subjects_hydrated, new SubjectTransformer, self::WRAPPER);
-         
+
             //set data serializer
             $fractal = new Manager;
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($collection)->toArray();
-         }
+        }
 
          return $this->respond($data);
     }
 }
-?>
