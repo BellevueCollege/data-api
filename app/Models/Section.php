@@ -1,7 +1,7 @@
 <?php namespace App\Models;
-  
+
 use Illuminate\Database\Eloquent\Model;
-  
+
 class Section extends Model
 {
     /**
@@ -9,7 +9,7 @@ class Section extends Model
     **/
      protected $table = 'vw_Class';
      protected $connection = 'ods';
-     protected $primaryKey = 'ClassID';
+     protected $primaryKey = 'PSClassID';
      public $incrementing = false;
      public $timestamps = false;
 
@@ -19,7 +19,7 @@ class Section extends Model
      public function day() {
          return $this->hasOne('App\Models\Day', 'DayID', 'DayID');
      }
-     
+
      /**
      * This accessor wraps some logic around the room/location for a class.
      **/
@@ -31,7 +31,7 @@ class Section extends Model
              return trim($this->Room);
          }
      }
-     
+
      /**
      * This accessor wraps logic around the section schedule
      **/
@@ -41,16 +41,16 @@ class Section extends Model
 
          $st_str = $st->format("g:ia");
          $et_str = $et->format("g:ia");
-         
-         $schedule = $this->day->Title . " " . $st_str . "-" . $et_str;
+
+         $schedule = $this->day->Title ?? '' . " " . $st_str . "-" . $et_str;
          if ( $this->isOnlineSection() ) {
              //online section so don't include day/time info
              $schedule = "Online";
          }
          return $schedule;
-         
+
      }
-     
+
      /**
      * Format a date to the format we want to use for section dates
      **/
@@ -59,7 +59,7 @@ class Section extends Model
 
          return $dateobj->format("m-d-Y");
      }
-     
+
      /**
      * Logic to determine of section is an online section
      **/
