@@ -11,6 +11,9 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
     protected $table = 'vw_Student';
     protected $primaryKey = 'EMPLID';
     public $timestamps = false;
+    protected $casts = [
+        'EMPLID' => 'string',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.

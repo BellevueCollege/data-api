@@ -16,6 +16,9 @@ class Employee extends Model //implements AuthenticatableContract, AuthorizableC
      protected $table = 'vw_Employee';
      protected $primaryKey = 'EMPLID';
      public $timestamps = false;
+     protected $casts = [
+        'EMPLID' => 'string',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.
