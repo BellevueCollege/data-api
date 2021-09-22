@@ -86,15 +86,6 @@ return [
             'username'  => env('EMPDIR_DB_USERNAME', ''),
             'password'  => env('EMPDIR_DB_PASSWORD', ''),
             'prefix'    => '',
-        ],
-        'datalink' => [
-            'driver'    => env('DATALINK_DB_DRIVER', 'sqlsrv'),
-            'host'      => env('DATALINK_DB_HOST', ''),
-            'port'      => env('DATALINK_DB_PORT', null),
-            'database'  => env('DATALINK_DB_DATABASE', ''),
-            'username'  => env('DATALINK_DB_USERNAME', ''),
-            'password'  => env('DATALINK_DB_PASSWORD', ''),
-            'prefix'    => '',
         ]
 
     ],

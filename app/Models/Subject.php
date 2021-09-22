@@ -7,8 +7,8 @@ class Subject extends Model
     /**
     * Model for a course subject
     **/
-     protected $table = 'SYSADM_CS.PS_SUBJECT_TBL';
-     protected $connection = 'datalink';
+     protected $table = 'vw_PSSubject';
+     protected $connection = 'ods';
      protected $primaryKey = null;
      public $timestamps = false;
      public $incrementing = false;
