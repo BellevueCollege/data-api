@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Subject;
 use App\Models\SubjectPrefix;
 use App\Http\Transformers\SubjectTransformer;
-// use App\Http\Transformers\SubjectPrefixTransformer;
 use App\Http\Controllers\Controller;
 use App\Http\Serializers\CustomDataArraySerializer;
 use Illuminate\Http\Request;
@@ -65,13 +64,13 @@ class SubjectController extends ApiController
     {
 
         //DB::connection('cs')->enableQueryLog();
-        $subjects = DB::connection('cs')
-            ->table('vw_SubjectDetails')
-            ->join('vw_Class', 'vw_SubjectDetails.Slug', '=', 'vw_Class.Department')
+        $subjects = DB::connection('ods')
+            ->table('vw_PSSubject')
+            ->join('vw_Class', 'vw_PSSubject.SUBJECT', '=', 'vw_Class.Department')
             ->where('vw_Class.YearQuarterID', '=', $yqr)
-            ->select('vw_SubjectDetails.Slug', 'vw_SubjectDetails.SubjectTitle as Title')
-            ->groupBy('vw_SubjectDetails.Slug', 'vw_SubjectDetails.SubjectTitle')
-            ->orderBy('vw_SubjectDetails.Slug', 'asc')
+            ->select('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR as DESCR')
+            ->groupBy('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR')
+            ->orderBy('vw_PSSubject.SUBJECT', 'asc')
             ->get();
          //$queries = DB::connection('cs')->getQueryLog();
          //dd($queries);
