@@ -7,10 +7,10 @@ use League\Fractal\TransformerAbstract;
 class CourseYearQuarterTransformer extends TransformerAbstract {
 
     /**
-    * Fractal transformer for a CourseYearQuarter. Defines how 
+    * Fractal transformer for a CourseYearQuarter. Defines how
     * CourseYearQuarter data will be output in the API.
     **/
-    
+
      /**
      * List of resources possible to include
      *
@@ -23,17 +23,17 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
     public function transform(CourseYearQuarter $cyq)
     {
         //filter to get the active course description
-        $all_desc = $cyq->course->coursedescriptions();        
+        $all_desc = $cyq->course->coursedescriptions();
         $cd_desc = null;
-        if ( !is_null($all_desc) ) 
+        if ( !is_null($all_desc) )
         {
             $cd_active = $all_desc->activedescription($cyq->YearQuarterID)->first();
-            
+
             if ( !empty($cd_active) ) {
                 $cd_desc = utf8_encode($cd_active->Description);
             }
         }
-        
+
         return [
             'title'             => $cyq->title,
             'subject'           => trim($cyq->Department),
@@ -42,11 +42,12 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
             'note'              => $cyq->course->note,
             'credits'           => $cyq->course->Credits,
             'quarter'           => $cyq->YearQuarterID,
-            'isVariableCredits'  => (bool)$cyq->course->VariableCredits,
+            'strm'              => $cyq->STRM,
+            'isVariableCredits' => (bool)$cyq->course->VariableCredits,
             'isCommonCourse'    => $cyq->course->isCommonCourse,
         ];
     }
-    
+
     /**
      * Include sections for class
      *
@@ -65,5 +66,5 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
 
         return $sections_transformed;
     }
-	
+
 }
