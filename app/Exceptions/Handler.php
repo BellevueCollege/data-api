@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 
@@ -33,7 +33,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -45,11 +45,11 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         //only return prettified errors if we're not in debug mode
         if ( !getenv('APP_DEBUG') ) {
-    
+
             //provide more helpful errors for most likely exception types
             if ( $exception instanceof PDOException ) {
                 return response()->json(['error' => 500, 'message' => "Database unavailable."], 500);
@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
                 return response()->json(['error' => 400, 'message' => "Misc error occurred."], 400);
             }
         }
-        
+
         return parent::render($request, $exception);
     }
 
@@ -71,7 +71,7 @@ class Handler extends ExceptionHandler
         if ( $request->is('*api/*') ) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
-    
+
         return redirect('admin/login');
     }
 }
