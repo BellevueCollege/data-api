@@ -29,6 +29,7 @@ class SectionTransformer extends TransformerAbstract
             'id'            => $sec->ClassID,
             'section'       => $sec->Section,
             'itemNumber'    => $sec->ItemNumber,
+            'classNumber'   => $sec->ClassNumber,
             'instructor'    => $sec->InstructorName,
             'beginDate'     => $sec->getFormattedDate($sec->StartDate),
             'endDate'       => $sec->getFormattedDate($sec->EndDate),
