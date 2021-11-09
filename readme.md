@@ -74,7 +74,7 @@ php artisan l5-swagger:generate
 
 ## Build Status 🚀
 
-| Master | Dev |
+| Trunk | Dev |
 |---|---|
 | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-master)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=20) | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-dev)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=19) |
 
