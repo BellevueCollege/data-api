@@ -9,8 +9,11 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
     //use Authenticatable, Authorizable;
     protected $connection = 'ods';
     protected $table = 'vw_Student';
-    protected $primaryKey = 'SID';
+    protected $primaryKey = 'EMPLID';
     public $timestamps = false;
+    protected $casts = [
+        'EMPLID' => 'string',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -24,9 +27,4 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
     /**
      * Define blocks relationship
      */
-    public function blocks()
-    {
-        return $this->hasMany('App\Models\Block', 'SID', 'SID');
-        //'App\Models\Block'
-    }
 }

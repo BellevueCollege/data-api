@@ -25,7 +25,7 @@ As endpoints are added or updated, OpenAPI documentation is being added.
 
 - `api/v1/quarter/current` - Returns the current quarter.
     
-- `api/v1/quarter/{YearQuarterID}` - Return info for the specified quarter
+- `api/v1/quarter/{YearQuarterID}?format={`strm` or `yrq`}` - Return info for the specified quarter. Defaults to lookup by YRQ. STRM can be used if format is set to `strm`.
 
 - `api/v1/subjects` - Return all subjects
 - `api/v1/subjects/{YearQuarterID}` - Return subjects offered for specified quarter
@@ -74,7 +74,7 @@ php artisan l5-swagger:generate
 
 ## Build Status 🚀
 
-| Master | Dev |
+| Trunk | Dev |
 |---|---|
 | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-master)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=20) | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-dev)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=19) |
 
