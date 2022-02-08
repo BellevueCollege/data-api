@@ -51,8 +51,20 @@ class CourseController extends ApiController{
     **/
     public function getCourseBySubjectAndNumber($subject, $coursenum){
 
-        $courseid = str_pad($subject, 5) . $coursenum;
-        return $this->getCourse($courseid);
+        $course  = Course::where('CourseSubject', '=', $subject)
+                    ->where('CatalogNumber', '=', $coursenum)
+                    ->active()
+                    ->first();
+
+        $data = $course;
+        if ( !is_null($course) ) {
+            $item = new Item($course, new CourseTransformer, "course");
+
+            $fractal = new Manager;
+            $fractal->setSerializer(new CustomDataArraySerializer);
+            $data = $fractal->createData($item)->toArray();
+        }
+        return $this->respond($data);
     }
 
         /**
