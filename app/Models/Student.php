@@ -8,11 +8,12 @@ class Student extends Model //implements AuthenticatableContract, AuthorizableCo
 {
     //use Authenticatable, Authorizable;
     protected $connection = 'ods';
-    protected $table = 'vw_Student';
+    protected $table = 'vw_Student_Unfiltered';
     protected $primaryKey = 'EMPLID';
     public $timestamps = false;
     protected $casts = [
-        'EMPLID' => 'string',
+        'EMPLID'        => 'string',
+        'PrivateRecord' => 'boolean',
     ];
 
     /**
