@@ -24,6 +24,7 @@ class StudentTransformer extends TransformerAbstract
             'phoneDaytime'  => $stu->DaytimePhone,
             'phoneEvening'  => $stu->EveningPhone,
             'username'      => $stu->NTUserName,
+            'ferpaBlock'    => $stu->PrivateRecord,
         ];
     }
 }
