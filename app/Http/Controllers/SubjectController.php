@@ -21,9 +21,19 @@ class SubjectController extends ApiController
   /**
   * Return all subjects
   **/
-    public function index(Manager $fractal)
+    public function index(Manager $fractal, Request $request)
     {
-        $subjects = Subject::all();
+        if ($request->input('filter') === 'active-credit') {
+            $subjects = Subject::
+                where('DESCR', 'not like', 'CE%')
+                ->where('DESCR', 'not like', '% (Inactive)')
+                ->orderBy('SUBJECT', 'ASC')
+                ->get();
+        } else {
+            $subjects = Subject::
+            orderBy('SUBJECT', 'ASC')
+            ->get();
+        }
         $data = $subjects;
         if (!is_null($subjects)) {
             $collection = new Collection($subjects, new SubjectTransformer, self::WRAPPER);
