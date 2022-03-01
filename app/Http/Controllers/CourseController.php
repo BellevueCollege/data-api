@@ -31,7 +31,8 @@ class CourseController extends ApiController{
     /**
      Get a course based on a given CourseID.
     **/
-    public function getCourse($courseid){
+    public function getCourse($courseid)
+    {
 
         $course  = Course::where('CourseID', '=', $courseid)->active()->first();
 
@@ -70,9 +71,17 @@ class CourseController extends ApiController{
         /**
      Get active courses based on a given subject.
     **/
-    public function getCoursesBySubject($subject){
+    public function getCoursesBySubject($subject)
+    {
 
-        $courses = Course::whereRaw("LTRIM(RTRIM(LEFT(CourseID, 5))) = ?", array($subject))->orderBy('CourseID', 'asc')->active()->get();
+        $courses = Course::where('CourseSubject', '=', $subject)
+            ->where(function ($query) {
+                $query->where('CourseTitle2', '<>', 'Transfer In Course')
+                ->where('CourseTitle', '<>', 'Transferred-In Course');
+            })
+            ->orderBy('CourseId', 'asc')
+            ->active()
+            ->get();
 
         $data = $courses;
         if ( !is_null($courses) ) {

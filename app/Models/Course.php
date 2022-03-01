@@ -7,7 +7,7 @@ class Course extends Model
 {
      protected $table = 'vw_Course';
      protected $connection = 'ods';
-     protected $primaryKey = 'CourseKey';
+     protected $primaryKey = 'PSCourseID';
      public $timestamps = false;
 
      /**
@@ -23,17 +23,18 @@ class Course extends Model
      /**
      * Define course descriptions child relationship
      */
-     public function coursedescriptions()
-     {
-         return $this->hasMany('App\Models\CourseDescription', 'CourseID', 'CourseID');
-     }
+    public function coursedescriptions()
+    {
+        return $this->hasMany('App\Models\CourseDescription', 'CourseID', 'CourseID');
+    }
 
      /**
      * Course descriptions accessor
      **/
-     public function getCourseDescriptionsAttribute() {
-         return $this->coursedescriptions();
-     }
+    public function getCourseDescriptionsAttribute()
+    {
+        return $this->coursedescriptions();
+    }
 
      /**
      * Footnote is a child model of Course
