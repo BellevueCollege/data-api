@@ -65,6 +65,9 @@
         "optimize-autoloader": true,
         "platform": {
             "php": "7.3.14"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
     "minimum-stability": "dev",
