@@ -23,6 +23,7 @@ class Transaction
                                             $billingState,
                                             $billingZip,
                                             $sid,
+                                            $emplid,
                                             $email)
     {
         $tsql = 'EXEC [usp_InsertTransactionDetails]'
@@ -39,9 +40,10 @@ class Transaction
                     . '@PayAmt = :PaymentAmount,'
                     . '@FormID = :FormID,'
                     . '@SID = :SID,'
+                    . '@EMPLID = :EMPLID,'
                     . '@Email = :Email;';
 
-        $input_data = array( 
+        $input_data = array(
             'TransactionID'     => $id,
             'TransactionStatus' => $status,
             'SettlementTime'    => $settlementTime,
@@ -55,6 +57,7 @@ class Transaction
             'State'             => $billingState,
             'Zip'               => $billingZip,
             'SID'               => $sid,
+            'EMPLID'            => $emplid,
             'Email'             => $email,
         );
 

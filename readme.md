@@ -56,6 +56,10 @@ Form Data endpoints are write-only, and accept POSTS with specific parameters an
 
 - `api/v1/internal/student/{username}` - Return basic student information given a username _(protected)_
 
+### Transaction data 👩‍🎓👨‍🎓 (🔒Internal Only)
+
+- `api/v1/internal/transaction` - Record POSTed transaction data _(protected)_
+
 ## Admin Interface 👩‍💻 (🔒Internal Only)
 
 There is a simple admin interface to allow creation and removal of API credentials. 
