@@ -73,5 +73,8 @@ class Transaction
             return response()->json([
                 'message' => 'Database Error: ' . $error->getMessage()], 503);
         }
+        return response()->json([
+            'message' => 'Transaction successfully written to database.'], 200);
+
     }
 }
