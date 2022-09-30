@@ -39,25 +39,6 @@ class Course extends Model
     }
 
     /**
-     * Footnote is a child model of Course
-     * Because of the data organization, we can't use standard relationship definitions (see coursedescriptions)
-     * so I made this accessor version instead. It will return the expected collection of Footnote objects.
-     **/
-    public function getFootnotes()
-    {
-        $ids = array();
-        if (!is_null($this->FootnoteID1)) {
-            $ids[] = $this->FootnoteID1;
-        }
-        if (!is_null($this->FootnoteID2)) {
-            $ids[] = $this->FootnoteID2;
-        }
-        $footnotes = Footnote::whereIn('FootnoteID', $ids)->get();
-
-        return $footnotes;
-    }
-
-    /**
      * Accessor for title attribute
      * - Includes fall-through logic for using correct title
      **/
@@ -71,38 +52,6 @@ class Course extends Model
         }
 
         return $title;
-    }
-
-    /**
-     * Accessor for footnotes
-     **/
-    public function getFootnotesAttribute()
-    {
-        return $this->getFootnotes();
-    }
-
-    /**
-     * Get notes for course back in aggregated fashion
-     **/
-    public function getNoteAttribute()
-    {
-        $notes = "";
-
-        $the_footnotes = $this->footnotes;
-
-        //if footnotes, loop through them and aggregate to single string
-        if (!empty($the_footnotes) && $the_footnotes->count() > 0) {
-            foreach ($the_footnotes as $note) {
-                $notes = $notes . " " . $note->FootnoteText;
-            }
-            $notes = trim($notes);
-        }
-
-        if (empty($notes)) {
-            return null;
-        } else {
-            return $notes;
-        }
     }
 
     /**
