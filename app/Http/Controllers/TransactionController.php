@@ -20,7 +20,7 @@ class TransactionController extends Controller
     /**
      * Hello World for get requests
      */
-    public function getTransactions( Request $request )
+    public function getTransactions(Request $request)
     {
         return [
             '🛑🙅 - Posts only, please! 👋'
@@ -30,7 +30,7 @@ class TransactionController extends Controller
     /**
      * Write transaction to database
      */
-    public function postTransaction( Request $request )
+    public function postTransaction(Request $request)
     {
 
         /**
@@ -50,6 +50,7 @@ class TransactionController extends Controller
             'billing_state'     => 'string|max:50|nullable',
             'billing_zip'       => 'string|max:50|nullable',
             'sid'               => 'digits:9|nullable',
+            'emplid'            => 'digits:9|nullable',
             'email'             => 'string|max:50|nullable',
         ]);
 
@@ -67,6 +68,7 @@ class TransactionController extends Controller
             $request->input('billing_state', null),
             $request->input('billing_zip', null),
             $request->input('sid', null),
+            $request->input('emplid', null),
             $request->input('email', null)
         );
     }
