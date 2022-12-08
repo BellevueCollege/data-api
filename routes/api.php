@@ -54,6 +54,9 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
         // Record Transaction
         Route::post('transaction','TransactionController@postTransaction');
 
+        // Test Recording Transaction (no database interaction)
+        Route::post('transaction/test','TransactionController@postTestTransaction');
+
     });
 
     Route::prefix('forms/evaluations')->group(function () {
