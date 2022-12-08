@@ -72,5 +72,34 @@ class TransactionController extends Controller
             $request->input('email', null)
         );
     }
+
+    public function postTestTransaction(Request $request)
+    {
+        /**
+         * Validate Request
+         */
+        $this->validate($request, [
+            'id'                => 'required|numeric|max:9999999999999',
+            'status'            => 'string|max:50|nullable',
+            'settlement_date'   => 'date|nullable',
+            'amount'            => 'numeric|nullable',
+            'form_id'           => 'required|numeric|max:9999',
+            'first_name'        => 'string|max:50|nullable',
+            'last_name'         => 'string|max:50|nullable',
+            'billing_address_1' => 'string|max:50|nullable',
+            'billing_address_2' => 'string|max:50|nullable',
+            'billing_city'      => 'string|max:50|nullable',
+            'billing_state'     => 'string|max:50|nullable',
+            'billing_zip'       => 'string|max:50|nullable',
+            'sid'               => 'digits:9|nullable',
+            'emplid'            => 'digits:9|nullable',
+            'email'             => 'string|max:50|nullable',
+        ]);
+
+        return array(
+            'NOTHING ACTUALLY WRITTEN TO DATABASE!',
+            'data'              => $request->all(),
+        );
+    }
     //
 }
