@@ -14,6 +14,10 @@ class EmployeeDirectoryTransformer extends TransformerAbstract {
     public function transform(EmployeeDirectory $emp)
     {
         $title = $emp->WorkingTitle !== NULL ? $emp->WorkingTitle : $emp->OfficialTitle;
+
+        // Remove Whitespace and control characters
+        $title = preg_replace('/[\x00-\x1F\x7F\xA0]/u', ' ', $title);
+
         return [
             'firstName'     => $emp->FirstName,
             'lastName'      => $emp->LastName,
