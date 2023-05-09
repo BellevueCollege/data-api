@@ -39,6 +39,8 @@ return [
             'database' => env('DEFAULT_DB_DATABASE', ''),
             'username' => env('DEFAULT_DB_USERNAME', ''),
             'password' => env('DEFAULT_DB_PASSWORD', ''),
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ],
 
         'da' => [
@@ -49,6 +51,8 @@ return [
             'username'  => env('DA_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
             'password'  => env('DA_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
             'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ],
         'ods' => [
             'driver'    => env('ODS_DB_DRIVER', env('DEFAULT_DB_DRIVER', 'sqlsrv')),
@@ -58,6 +62,8 @@ return [
             'username'  => env('ODS_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
             'password'  => env('ODS_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
             'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ],
         'pciforms' => [
             'driver'    => env('PCIFORMS_DB_DRIVER', env('DEFAULT_DB_DRIVER', 'sqlsrv')),
@@ -67,6 +73,8 @@ return [
             'username'  => env('PCIFORMS_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
             'password'  => env('PCIFORMS_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
             'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ],
         'evalforms' => [
             'driver'    => env('EVALFORMS_DB_DRIVER', env('DEFAULT_DB_DRIVER', 'sqlsrv')),
@@ -76,6 +84,8 @@ return [
             'username'  => env('EVALFORMS_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
             'password'  => env('EVALFORMS_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
             'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ],
         'empdirectory' => [
             'driver'    => env('EMPDIR_DB_DRIVER', env('DEFAULT_DB_DRIVER', 'sqlsrv')),
@@ -85,6 +95,8 @@ return [
             'username'  => env('EMPDIR_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
             'password'  => env('EMPDIR_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
             'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ]
 
     ],
