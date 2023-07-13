@@ -69,6 +69,23 @@ API Documentation is being written through [L5-Swagger](https://github.com/Darka
 php artisan l5-swagger:generate 
 ```
 
+## Development Environment
+
+Data API uses [Laravel Sail](https://laravel.com/docs/10.x/sail) for a local development environment. 
+
+With [Docker](https://www.docker.com/) installed, run `./vendor/bin/sail up` to build and start the VM.
+
+Once Sail informs you of the IP address it is using, add the following entries to your hosts file:
+```
+# Laravel Sail
+0.0.0.0 data-api.test
+0.0.0.0 no.data-api.test
+```
+
+### Upgrade Considerations
+
+When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
+Lines 28 and 46 of `/docker/8.1/Dockerfile` were added in order to add SQL Server support.
 ## Build Status 🚀
 
 | Trunk                                                                                                                                                                     | Dev                                                                                                                                                                    |
