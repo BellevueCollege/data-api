@@ -3,12 +3,11 @@ version: '3'
 services:
     data-api.test:
         build:
-            context: ./docker/7.4
+            context: ./docker/8.1
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-                NODE_VERSION: '21'
-        image: sail-7.4/app
+        image: sail-8.1/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -23,9 +22,27 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+    # no.data-api.test:
+    #     build:
+    #         context: ./docker/8.1
+    #         dockerfile: Dockerfile
+    #         args:
+    #             WWWGROUP: '${WWWGROUP}'
+    #     image: sail-8.1/app
+    #     extra_hosts:
+    #         - 'host.docker.internal:host-gateway'
+    #     ports:
+    #         - '${APP_PORT:-82}:82'
+    #         - '${VITE_PORT:-5174}:${VITE_PORT:-5174}'
+    #     environment:
+    #         WWWUSER: '${WWWUSER}'
+    #         LARAVEL_SAIL: 1
+    #         XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #         XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #     volumes:
+    #         - '.:/var/www/html'
+    #     networks:
+    #         - sail
 networks:
     sail:
         driver: bridge
-volumes:
-    sail-mysql:
-        driver: local
