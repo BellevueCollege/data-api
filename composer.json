@@ -8,21 +8,21 @@
         "php": "^8.1.21",
         "adldap2/adldap2-laravel": "^6.1",
         "darkaonline/l5-swagger": "^8.1",
-        "laravel/framework": "^9.0",
+        "laravel/framework": "^10.0",
         "laravel/helpers": "^1.1",
         "laravel/legacy-factories": "^1.1",
         "laravel/tinker": "^2.0",
-        "laravel/ui": "^3.0",
-        "league/fractal": "^0.19",
-        "tymon/jwt-auth": "^1.0"
+        "laravel/ui": "^4.2.2",
+        "league/fractal": "^0.20.1",
+        "tymon/jwt-auth": "^2.0.0"
     },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "filp/whoops": "^2.0",
         "laravel/sail": "^1.19",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.0"
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "autoload": {
@@ -70,6 +70,5 @@
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
-    "minimum-stability": "dev",
     "prefer-stable": true
 }

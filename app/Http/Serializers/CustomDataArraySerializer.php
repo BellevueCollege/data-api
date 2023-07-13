@@ -9,7 +9,7 @@ class CustomDataArraySerializer extends \League\Fractal\Serializer\ArraySerializ
     * Custom serializer for API data.
     * Allows passing of resource label which is used to wrap data.
     **/
-    
+
     /**
      * Serialize a collection.
      *
@@ -18,14 +18,14 @@ class CustomDataArraySerializer extends \League\Fractal\Serializer\ArraySerializ
      *
      * @return array
      */
-    public function collection($resourceKey, array $data)
+    public function collection(?string $resourceKey, array $data):array
     {
         if ($resourceKey === false) {
             return $data;
         }
         return array($resourceKey ?: 'data' => $data);
     }
-    
+
     /**
      * Serialize an item.
      *
@@ -34,7 +34,7 @@ class CustomDataArraySerializer extends \League\Fractal\Serializer\ArraySerializ
      *
      * @return array
      */
-    public function item($resourceKey, array $data)
+    public function item(?string $resourceKey, array $data):array
     {
         if ($resourceKey === false) {
             return $data;
@@ -47,9 +47,8 @@ class CustomDataArraySerializer extends \League\Fractal\Serializer\ArraySerializ
      *
      * @return array
      */
-    public function null()
+    public function null():?array
     {
         return null;
     }
 }
-?>
