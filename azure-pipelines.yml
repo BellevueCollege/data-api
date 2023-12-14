@@ -1,6 +1,14 @@
 trigger:
-- dev
-- trunk
+  branches:
+   include:
+     - trunk
+
+pr:
+ branches:
+   include:
+     - trunk
+     - hotfix-*
+     - release-*
 
 pool:
   vmImage: ubuntu-latest
