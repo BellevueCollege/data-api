@@ -36,7 +36,7 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
     Route::post('internal/auth/login', [
         'as' => 'login', 'uses' => 'AuthController@login'
     ]);
-a9074bdd-ac24-4447-8f13-0849092ac723
+
 });
 
 /**
