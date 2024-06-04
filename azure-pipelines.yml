@@ -1,6 +1,14 @@
 trigger:
-- dev
-- trunk
+  branches:
+   include:
+     - trunk
+
+pr:
+ branches:
+   include:
+     - trunk
+     - hotfix-*
+     - release-*
 
 pool:
   vmImage: ubuntu-latest
@@ -20,8 +28,8 @@ steps:
 
 - script: composer install --optimize-autoloader --no-dev
   displayName: 'composer install'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: data-api'
+- task: PublishPipelineArtifact@1
   inputs:
-    PathtoPublish: ./
-    ArtifactName: 'data-api'
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'data-api'
+    publishLocation: 'pipeline'
