@@ -36,7 +36,7 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
     Route::post('internal/auth/login', [
         'as' => 'login', 'uses' => 'AuthController@login'
     ]);
-
+a9074bdd-ac24-4447-8f13-0849092ac723
 });
 
 /**
@@ -77,6 +77,10 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) 
     Route::prefix('directory')->group(function () {
         Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
         Route::get('employees', 'EmployeeController@getDirectoryEmployees');
+
+        /* Additions by John begin */
+        Route::get('employees/{substring}', 'EmployeeController@getDirectoryEmployeeDisplayNameSubstringSearch');
+        /* Additions by John end */
     });
 });
 

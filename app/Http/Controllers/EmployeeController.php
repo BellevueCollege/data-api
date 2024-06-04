@@ -197,4 +197,62 @@ class EmployeeController extends ApiController
         $data = $fractal->createData($collection)->toArray();
         return $this->respond($data);
     }
+
+    /* Additions by John begin */
+    /**
+     * Get a list of all directory employee usernames using substring search on DisplayName
+     * Status: active
+     *
+     * @OA\Get(
+     *      path="/api/v1/directory/employeeDisplayNameSubstringSearch",
+     *      operationId="getDirectoryEmployeeDisplayNameSubstringSearch",
+     *      tags={"Employees", "Directory"},
+     *      summary="Get directory employee usernames by DisplayName substring search",
+     *      description="Returns a list of usernames of employees in the directory by DisplayName substring search",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="employees",
+     *                  description="List of employees",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="username",
+     *                          type="string",
+     *                          description="Employee username",
+     *                      ),
+     *                  ),
+     *              ),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     security={
+     *         {"jwtAuth": {"read:true"}}
+     *     }
+     * )
+     */
+    public function getDirectoryEmployeeDisplayNameSubstringSearch(Request $request, $username)
+    {
+        $emps = EmployeeDirectory::whereNotNull('ADAccountName')->where('DisplayName','like','%'.$username.'%')->get();
+        $collection = new Collection($emps, new EmployeesTransformer, 'employees');
+        $fractal = new Manager;
+        $fractal->setSerializer(new CustomDataArraySerializer);
+        $data = $fractal->createData($collection)->toArray();
+        return $this->respond($data);
+    }
+    /* Additions by John end */
 }
