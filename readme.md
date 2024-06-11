@@ -39,6 +39,7 @@ Form Data endpoints are write-only, and accept POSTS with specific parameters an
 
 - `api/v1/auth/login` - The endpoint to authenticate and retrieve a valid token so protected data endpoints can be used. _(protected)_
 - `api/v1/directory/employees` - Return list of all employee usernames _(protected)_
+- `api/v1/directory/employees/{part of name}` - Return a list of employee usernames that match the provided substring of name _(protected)_
 - `api/v1/directory/employee/{username}` - Return employee directory information given a username _(protected)_
 
 ### People data 👩‍🎓👨‍🎓 (🔒Internal Only)
