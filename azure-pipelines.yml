@@ -1,12 +1,12 @@
 trigger:
   branches:
    include:
-     - trunk
+     - master
 
 pr:
  branches:
    include:
-     - trunk
+     - master
      - hotfix-*
      - release-*
 
