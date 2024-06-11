@@ -77,6 +77,10 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) 
     Route::prefix('directory')->group(function () {
         Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
         Route::get('employees', 'EmployeeController@getDirectoryEmployees');
+
+        /* Additions by John begin */
+        Route::get('employees/{substring}', 'EmployeeController@getDirectoryEmployeeDisplayNameSubstringSearch');
+        /* Additions by John end */
     });
 });
 
