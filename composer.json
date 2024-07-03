@@ -20,6 +20,7 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
         "filp/whoops": "^2.0",
+        "laravel/sail": "^1.19",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^5.1",
         "phpunit/phpunit": "^9.0"
