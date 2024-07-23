@@ -107,6 +107,8 @@ Route::prefix('v1')->group(function () {
     Route::get('classes/{yqrid}/{subjectid}', 'CourseYearQuarterController@getCourseYearQuartersBySubject');
     Route::get('classes/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');
 
+    Route::get('schedules/{psclassid}', 'ClassScheduleController@getClassSchedules');
+    
     //API endpoints specific to ModoLabs requirements
     /*Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
     Route::get('catalog/terms/{yqrid}', 'YearQuarterController@getYearQuarter');
