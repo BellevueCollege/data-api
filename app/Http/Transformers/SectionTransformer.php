@@ -15,15 +15,17 @@ class SectionTransformer extends TransformerAbstract
     public function transform(Section $sec)
     {
         /**
-         * Get asssociated day
+         * Get asssociated days
          */
-        $days = $sec->day()->first();
-        if (isset($day->Title)) {
-            $days = $day->Title;
-        } else {
-            $days = "";
+        $days = trim($sec->DayID);
+        if ($days == "ARR")
+            $days = "To be arranged";
+        elseif ($days == "DALY")
+            $days = "Daily";
+        elseif ($days != "") {
+            $days = str_replace("U","Su",$days);
+            $days = str_replace("R","Th",$days);
         }
-        //dd($days);
 
         return [
             'id'            => $sec->ClassID,
@@ -36,6 +38,7 @@ class SectionTransformer extends TransformerAbstract
             'room'          => $sec->location,
             'days'          => $days,
             'schedule'      => trim($sec->schedule),
+            'roomDescription' => $sec->RoomDescr,
         ];
     }
 }
