@@ -1,5 +1,6 @@
 <?php namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\HasMany;
 
 class Section extends Model
 {
@@ -19,6 +20,14 @@ class Section extends Model
          return $this->hasOne('App\Models\Day', 'DayID', 'DayID');
      }
 
+    /**
+     * Defines child relationship for the section's schedules.
+    **/
+    public function classSchedules() : HasMany
+    {
+        return $this->hasMany(classSchedule::class, 'PSClassID', 'PSClassID');
+    }
+
      /**
      * This accessor wraps some logic around the room/location for a class.
      **/
@@ -35,28 +44,32 @@ class Section extends Model
      * This accessor wraps logic around the section schedule
      **/
      public function getScheduleAttribute() {
-         $st = new \DateTime($this->StartTime);
-         $et = new \DateTime($this->EndTime);
-
-         $st_str = $st->format("g:ia");
-         $et_str = $et->format("g:ia");
-
-         $schedule = $this->day->Title ?? '' . " " . $st_str . "-" . $et_str;
-         if ( $this->isOnlineSection() ) {
+        $schedule = "";
+        if ( !is_null($this->StartTime) && !is_null($this->EndTime) ) {
+            $st = new \DateTime($this->StartTime);
+            $et = new \DateTime($this->EndTime);
+            $st_str = $st->format("g:ia");
+            $et_str = $et->format("g:ia");
+            //$schedule = ($this->day->Title . " " ?? '' . " ") . $st_str . "-" . $et_str;
+            $schedule = $st_str . "-" . $et_str;
+        }
+        if ( $this->isOnlineSection() ) {
              //online section so don't include day/time info
              $schedule = "Online";
-         }
-         return $schedule;
-
+        }
+        return $schedule;
      }
 
      /**
      * Format a date to the format we want to use for section dates
      **/
      public function getFormattedDate($date) {
+        $date_str = "";
+        if ( !is_null($date) ) {
          $dateobj = new \DateTime($date);
-
-         return $dateobj->format("m-d-Y");
+         $date_str = $dateobj->format("m-d-Y");
+        }
+        return $date_str;
      }
 
      /**
