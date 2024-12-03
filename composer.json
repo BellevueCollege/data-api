@@ -5,10 +5,10 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.2",
-        "adldap2/adldap2-laravel": "^6.1",
+        "php": "^8.3.6",
         "darkaonline/l5-swagger": "^8.1",
-        "laravel/framework": "^10.0",
+        "directorytree/ldaprecord-laravel": "*",
+        "laravel/framework": "^11.0",
         "laravel/helpers": "^1.1",
         "laravel/legacy-factories": "^1.1",
         "laravel/tinker": "^2.0",
@@ -21,7 +21,7 @@
         "filp/whoops": "^2.0",
         "laravel/sail": "^1.39",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^7.0",
+        "nunomaduro/collision": "^8.1",
         "phpunit/phpunit": "^10.0"
     },
     "autoload": {
@@ -64,7 +64,7 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "platform": {
-            "php": "8.2"
+            "php": "8.3.6"
         },
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
