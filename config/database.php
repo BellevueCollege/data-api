@@ -97,6 +97,17 @@ return [
             'prefix'    => '',
             'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
             'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
+        ],
+        'copilot' => [
+            'driver'    => env('COPILOT_DB_DRIVER', env('DEFAULT_DB_DRIVER', 'sqlsrv')),
+            'host'      => env('COPILOT_DB_HOST', env('DEFAULT_DB_HOST', '')),
+            'port'      => env('COPILOT_DB_PORT', env('DEFAULT_DB_PORT', null)),
+            'database'  => env('COPILOT_DB_DATABASE', ''),
+            'username'  => env('COPILOT_DB_USERNAME', env('DEFAULT_DB_USERNAME', '')),
+            'password'  => env('COPILOT_DB_PASSWORD', env('DEFAULT_DB_PASSWORD', '')),
+            'prefix'    => '',
+            'charset'   => env('DEFAULT_DB_CHARSET', 'utf8'),
+            'collation' => env('DEFAULT_DB_COLLATION', 'SQL_Latin1_General_CP1_CI_AS'),
         ]
 
     ],
