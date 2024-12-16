@@ -69,6 +69,24 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
     });
 });
 
+
+/**
+ * Copilot Endpoints
+ *
+ * Protected by Basic Auth
+**/
+Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
+    Route::prefix('copilot')->group(function () {
+
+        // Record User Question
+        Route::post('userquestion','UserQuestionController@postUserQuestion');
+
+        // Test Recording User Question (no database interaction)
+        Route::post('userquestion/test','UserQuestionController@postTestUserQuestion');
+
+    });
+});
+
 /**
  * Protected Endpoints Available on Public Domain
  */
