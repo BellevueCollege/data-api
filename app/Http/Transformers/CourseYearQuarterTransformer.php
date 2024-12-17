@@ -4,7 +4,8 @@ use App\Models\CourseYearQuarter;
 use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
 
-class CourseYearQuarterTransformer extends TransformerAbstract {
+class CourseYearQuarterTransformer extends TransformerAbstract
+{
 
     /**
     * Fractal transformer for a CourseYearQuarter. Defines how
@@ -16,7 +17,7 @@ class CourseYearQuarterTransformer extends TransformerAbstract {
      *
      * @var array
      */
-    protected $defaultIncludes = [
+    protected array $defaultIncludes = [
         'sections'
     ];
 
