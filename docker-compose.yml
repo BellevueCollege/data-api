@@ -1,14 +1,12 @@
 # For more information: https://laravel.com/docs/sail
-version: '3'
 services:
     data-api.test:
         build:
-            context: ./docker/7.4
+            context: ./docker/8.3
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-                NODE_VERSION: '21'
-        image: sail-7.4/app
+        image: sail-8.3/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -26,6 +24,3 @@ services:
 networks:
     sail:
         driver: bridge
-volumes:
-    sail-mysql:
-        driver: local

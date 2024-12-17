@@ -83,7 +83,7 @@ return [
         ],
         'adldap' => [
             'driver' => 'ldap',
-            //'model' => App\Models\User::class,
+            'model' => LdapRecord\Models\ActiveDirectory\User::class,
         ],
         // 'users' => [
         //     'driver' => 'database',
