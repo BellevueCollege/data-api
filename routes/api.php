@@ -70,6 +70,7 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 });
 
 
+/* Additions by John begin */
 /**
  * Copilot Endpoints
  *
@@ -86,6 +87,7 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 
     });
 });
+/* Additions by John end */
 
 /**
  * Protected Endpoints Available on Public Domain
@@ -126,6 +128,11 @@ Route::prefix('v1')->group(function () {
     Route::get('classes/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');
 
     Route::get('schedules/{psclassid}', 'ClassScheduleController@getClassSchedules');
+
+    /* Additions by John begin */
+    // This is for Copilot Studio: Get an array of links and descriptions based on a provided SourceArea value
+    Route::get('linksfound/{sourcearea}', 'LinkFoundController@getLinksBySourceArea');
+    /* Additions by John end */
     
     //API endpoints specific to ModoLabs requirements
     /*Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
