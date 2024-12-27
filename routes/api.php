@@ -126,6 +126,17 @@ Route::prefix('v1')->group(function () {
     Route::get('classes/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');
 
     Route::get('schedules/{psclassid}', 'ClassScheduleController@getClassSchedules');
+<<<<<<< Updated upstream
+=======
+
+    /* Additions by John begin */
+    // This is for Copilot Studio: Get an array of links and descriptions based on a provided SourceArea value
+    Route::get('linksfound/{sourcearea}', 'LinkFoundController@getLinksBySourceArea');
+
+    // This is for Copilot Studio: Get a count of the links based on a provided SourceArea value
+    Route::get('linkscount/{sourcearea}', 'LinkFoundController@getLinkCountBySourceArea');
+    /* Additions by John end */
+>>>>>>> Stashed changes
     
     //API endpoints specific to ModoLabs requirements
     /*Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
