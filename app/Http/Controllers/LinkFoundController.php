@@ -69,4 +69,4 @@ class LinkFoundController extends ApiController
 
         return $this->respond($count);
     }
-} 
+}

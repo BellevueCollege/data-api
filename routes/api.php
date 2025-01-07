@@ -70,6 +70,7 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 });
 
 
+/* Additions by John begin */
 /**
  * Copilot Endpoints
  *
@@ -86,6 +87,7 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 
     });
 });
+/* Additions by John end */
 
 /**
  * Protected Endpoints Available on Public Domain
