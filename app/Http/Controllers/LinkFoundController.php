@@ -56,4 +56,17 @@ class LinkFoundController extends ApiController
 
          return $this->respond($data);
     }
+
+    /**
+    * Return the count of links based on a provided SourceArea value
+    **/
+    public function getLinkCountBySourceArea($sourceArea)
+    {
+        $count = DB::connection('copilot')
+            ->table('vw_LinkFound')
+            ->where('SourceArea', '=', str_replace("+", " ",$sourceArea))
+            ->count();
+
+        return $this->respond($count);
+    }
 }

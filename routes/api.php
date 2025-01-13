@@ -132,6 +132,9 @@ Route::prefix('v1')->group(function () {
     /* Additions by John begin */
     // This is for Copilot Studio: Get an array of links and descriptions based on a provided SourceArea value
     Route::get('linksfound/{sourcearea}', 'LinkFoundController@getLinksBySourceArea');
+
+    // This is for Copilot Studio: Get a count of the links based on a provided SourceArea value
+    Route::get('linkscount/{sourcearea}', 'LinkFoundController@getLinkCountBySourceArea');
     /* Additions by John end */
     
     //API endpoints specific to ModoLabs requirements
