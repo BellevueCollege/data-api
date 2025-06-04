@@ -95,7 +95,8 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
 
     Route::prefix('directory')->group(function () {
-        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
+        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername')
+            ->middleware('throttle:180,1');
         Route::get('employees', 'EmployeeController@getDirectoryEmployees');
 
         /* Additions by John begin */
