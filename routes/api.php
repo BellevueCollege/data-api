@@ -23,7 +23,11 @@ use Illuminate\Http\Request;
  *
  * Protected by JSON Web Token Auth
  **/
-Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
+Route::group([
+    'domain' => config('dataapi.api_internal_domain'), 
+    'middleware' => ['auth:api', 'throttle:60,1'], 
+    'prefix' => 'v1'
+], function ($router) {
 
     Route::get('internal/employee/{username}', 'EmployeeController@getEmployeeByUsername');
     Route::get('internal/student/{username}','StudentController@getStudentByUsername');
@@ -31,7 +35,11 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'middleware' =>
 });
 
 /** Unprotected endpoints accessible only internally **/
-Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1'], function ($router) {
+Route::group([
+    'domain' => config('dataapi.api_internal_domain'), 
+    'prefix' => 'v1',
+    'middleware' => ['throttle:60,1']
+], function ($router) {
 
     Route::post('internal/auth/login', [
         'as' => 'login', 'uses' => 'AuthController@login'
@@ -44,7 +52,10 @@ Route::group(['domain' => config('dataapi.api_internal_domain'), 'prefix' => 'v1
  *
  * Protected by Basic Auth
 **/
-Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
+Route::prefix('v1')->middleware([
+    'auth.basic:api-basic,clientid',
+    'throttle:60,1'
+])->group(function () {
     Route::prefix('forms/pci')->group(function () {
 
         // Error Message
@@ -76,7 +87,10 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
  *
  * Protected by Basic Auth
 **/
-Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function () {
+Route::prefix('v1')->middleware([
+    'auth.basic:api-basic,clientid',
+    'throttle:60,1'
+])->group(function () {
     Route::prefix('copilot')->group(function () {
 
         // Record User Question
@@ -92,21 +106,22 @@ Route::prefix('v1')->middleware('auth.basic:api-basic,clientid')->group(function
 /**
  * Protected Endpoints Available on Public Domain
  */
-Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function ($router) {
+Route::group(['middleware' => ['auth:api', 'throttle:180,1'], 'prefix' => 'v1'], function ($router) {
 
     Route::prefix('directory')->group(function () {
-        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername')
-            ->middleware('throttle:180,1');
-        Route::get('employees', 'EmployeeController@getDirectoryEmployees');
+        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
+        Route::get('employees', 'EmployeeController@getDirectoryEmployees')->middleware('throttle:60,1');
 
         /* Additions by John begin */
-        Route::get('employees/{substring}', 'EmployeeController@getDirectoryEmployeeDisplayNameSubstringSearch');
+        Route::get('employees/{substring}', 'EmployeeController@getDirectoryEmployeeDisplayNameSubstringSearch')->middleware('throttle:60,1');
         /* Additions by John end */
     });
 });
 
 /*** Unprotected api endpoints ***/
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware([
+    'throttle:60,1'
+])->group(function () {
 
     Route::post('auth/login', [
         'as' => 'login', 'uses' => 'AuthController@login'
