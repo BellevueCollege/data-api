@@ -76,6 +76,9 @@ Data API uses [Laravel Sail](https://laravel.com/docs/10.x/sail) for a local dev
 
 With [Docker](https://www.docker.com/) installed, run `./vendor/bin/sail up` to build and start the VM.
 
+Alternativly, you can use Podman instead of docker with some additional configuration; good info on this
+in [this medium article](https://medium.com/mamitech/the-shortest-path-to-replace-docker-with-podman-for-laravel-sail-b02d184a1b72)
+
 Once Sail informs you of the IP address it is using, add the following entries to your hosts file:
 ```
 # Laravel Sail
