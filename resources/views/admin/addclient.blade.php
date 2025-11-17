@@ -28,21 +28,20 @@
 
         <form action="{{url('admin/client/add')}}" method="post">
             @csrf
-            <div class="form-group">
-                <label for="clientname">Client name</label>
+            <div class="mb-3">
+                <label for="clientname" class="form-label">Client name</label>
                 <input type="" class="form-control" name="clientname" id="clientname">
             </div>
-            <div class="form-group">
-                <label for="clienturl">Client URL</label>
+            <div class="mb-3">
+                <label for="clienturl" class="form-label">Client URL</label>
                 <input type="url" class="form-control" name="clienturl" id="clienturl">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <fieldset>
                     <legend>Permissions</legend>
                     <!-- Add permission checkboxes here -->
                     @if (isset($permissions) && count($permissions) > 0)
                         @foreach($permissions as $permission)
-                        {{ dd($permission) }}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->name }}" id="permission-{{ $permission->name }}">
                                 <label class="form-check-label" for="permission-{{ $permission->name }}">
@@ -52,6 +51,7 @@
                         @endforeach
                     @endif
                 </fieldset>
+            </div>
             <button type="submit" class="btn btn-primary">Add client</button>
         </form>
     @endif
