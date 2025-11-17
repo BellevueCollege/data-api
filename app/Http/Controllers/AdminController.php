@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Client;
+use App\Models\Permission;
+
+
 
 class AdminController extends Controller
 {
@@ -18,6 +21,7 @@ class AdminController extends Controller
     public function index()
     {
         $client_data = Client::all();
+        //dd($client_data);
         return view('admin.index', ['data' => $client_data ]);
     }
 
@@ -67,7 +71,10 @@ class AdminController extends Controller
     }
 
     public function addClientShow() {
-        return view('admin.addclient'); 
+        // Get available permissions
+        $permissions = Permission::all();
+        //dd($permissions);
+        return view('admin.addclient', compact('permissions')); 
     }
 
     public function addClientPost(Request $request) {
@@ -77,7 +84,7 @@ class AdminController extends Controller
             'clienturl'   => 'required'
         ]);
 
-        $form_input = $request->only('clientname', 'clienturl');
+        $form_input = $request->only('clientname', 'clienturl', 'permissions');
 
         $new_clientkey = Client::generateClientKey();
 
@@ -89,14 +96,23 @@ class AdminController extends Controller
 
         try { 
             $newclient->save();
+
+            // Sync permissions after the client is saved
+            if (isset($form_input['permissions'])) {
+                $newclient->syncPermissionsByName($form_input['permissions']);
+            } else {
+                $newclient->permissions()->detach();
+            }
         }
         catch ( \Exception $e ) {
             return redirect()->back()->withError("There was an error while adding the client.");
         }
 
+        //dd($newclient);
         return view('admin.addclient')->with('success', true)
             ->with('clientname', $newclient->clientname)
             ->with('clientid', $newclient->clientid)
-            ->with('clientkey', $new_clientkey);
+            ->with('clientkey', $new_clientkey)
+            ->with('set_permissions', $form_input['permissions'] ?? []);
     }
 }

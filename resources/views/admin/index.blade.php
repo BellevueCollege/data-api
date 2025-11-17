@@ -20,7 +20,8 @@
             <tr>
                 <th id="th_clientname">Client name</th>
                 <th>Client id</th>
-                <th></th>
+                <th>Permissions</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,15 @@
             <tr>
                 <td><a href="{{$client->clienturl}}">{{ $client->clientname }}</a></td>
                 <td>{{ $client->clientid }}</td>
+                <td>
+                    @if (isset($client->permissions) && count($client->permissions) > 0)
+                        @foreach($client->permissions as $permission)
+                            <span class="badge badge-dark">{{ $permission->name }}</span>&#32;
+                        @endforeach
+                    @else
+                        <span class="text-muted">No permissions</span>
+                    @endif
+                </td>
                 <td>
                     <a class="btn btn-secondary btn-sm" href="{{ url('admin/client/' . $client->id . '/delete' ) }}" role="button">Delete</a>
                 </td>
