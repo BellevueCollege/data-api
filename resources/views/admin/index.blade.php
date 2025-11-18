@@ -41,7 +41,7 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group" aria-label="Edit client {{ $client->clientname }}">
-                            <a class="btn btn-outline-primary btn-sm" href="{{ url('admin/client/' . $client->id . '/edit' ) }}" role="button">Edit</a>
+                            <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.client.update', $client->id) }}" role="button">Edit</a>
                             <a class="btn btn-danger btn-sm" href="{{ url('admin/client/' . $client->id . '/delete' ) }}" role="button">Delete</a>
                         </div>
                     </td>

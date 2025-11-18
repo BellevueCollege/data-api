@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h2>Add Client</h2>
+    <h1>Add Client</h1>
     @if ( !empty($success) && $success )
         <div class="alert alert-success">
             New client {{$clientname}} added successfully. The client will use the following ID and key to authenticate against the API. Note 

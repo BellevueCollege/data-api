@@ -73,7 +73,6 @@ class AdminController extends Controller
     public function addClientShow() {
         // Get available permissions
         $permissions = Permission::all();
-        //dd($permissions);
         return view('admin.addclient', compact('permissions')); 
     }
 
@@ -108,11 +107,66 @@ class AdminController extends Controller
             return redirect()->back()->withError("There was an error while adding the client.");
         }
 
-        //dd($newclient);
         return view('admin.addclient')->with('success', true)
             ->with('clientname', $newclient->clientname)
             ->with('clientid', $newclient->clientid)
             ->with('clientkey', $new_clientkey)
             ->with('set_permissions', $form_input['permissions'] ?? []);
+    }
+
+    /**
+     * Edit an existing client
+     * 
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function updateClient(Request $request, $id)
+    {
+        // Get available permissions
+        $permissions = Permission::all();
+        
+        // Get the client to edit
+        $client = Client::findOrFail($id);
+        
+        return view('admin.updateclient', compact('client', 'permissions'));
+    }
+
+    public function updateClientPut(Request $request, $id)
+    {
+        $this->validate($request, [
+            'clientname' => 'required',
+            'clienturl' => 'required|url'
+        ]);
+
+        $form_input = $request->only('clientname', 'clienturl', 'permissions');
+        
+        try {
+            // Find the existing client
+            $client = Client::findOrFail($id);
+            
+            // Update client details
+            $client->clientname = $form_input['clientname'];
+            $client->clienturl = $form_input['clienturl'];
+            $client->save();
+
+            // Sync permissions
+            if (isset($form_input['permissions'])) {
+                $client->syncPermissionsByName($form_input['permissions']);
+            } else {
+                $client->permissions()->detach();
+            }
+
+            return redirect()
+                ->route('admin.client.update', ['id' => $id])
+                ->with('success', 'Client updated successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Error updating client: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withError('There was an error while updating the client.');
+        }
     }
 }
