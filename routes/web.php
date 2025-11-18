@@ -22,7 +22,7 @@ Route::domain(config('dataapi.api_internal_domain'))->group( function( $router )
             Route::get('admin', 'AdminController@index')->name('index');
             Route::get('admin/client/add', 'AdminController@addClientShow')->name('client.add');
             Route::post('admin/client/add', 'AdminController@addClientPost')->name('client.add');
-            Route::get('admin/client/{id}/delete', 'AdminController@deleteClient')->name('client.delete');
+            Route::delete('admin/client/{id}/delete', 'AdminController@deleteClient')->name('client.delete');
             Route::get('admin/client/{id}/update', 'AdminController@updateClient')->name('client.update');
             Route::put('admin/client/{id}/update', 'AdminController@updateClientPut')->name('client.update');
             Route::get('admin/logout', 'AdminController@logout')->name('logout');

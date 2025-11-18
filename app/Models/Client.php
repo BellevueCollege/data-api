@@ -56,4 +56,12 @@ class Client extends Authenticatable implements JWTSubject {
         $this->permissions = $permissionNames;
         $this->save();
     }
+
+    /**
+     * Check if client has a specific permission
+     */
+    public function hasPermission($permissionName)
+    {
+        return in_array($permissionName, $this->permissions ?? []);
+    }
 }

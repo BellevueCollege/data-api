@@ -29,8 +29,8 @@ Route::group([
     'prefix' => 'v1'
 ], function ($router) {
 
-    Route::get('internal/employee/{username}', 'EmployeeController@getEmployeeByUsername');
-    Route::get('internal/student/{username}','StudentController@getStudentByUsername');
+    Route::get('internal/employee/{username}', 'EmployeeController@getEmployeeByUsername')->middleware('can:read_employee_data');
+    Route::get('internal/student/{username}','StudentController@getStudentByUsername')->middleware('can:read_student_data');
 
 });
 
@@ -54,7 +54,8 @@ Route::group([
 **/
 Route::prefix('v1')->middleware([
     'auth.basic:api-basic,clientid',
-    'throttle:60,1'
+    'throttle:60,1',
+    'can:write_transactions'
 ])->group(function () {
     Route::prefix('forms/pci')->group(function () {
 
@@ -80,8 +81,6 @@ Route::prefix('v1')->middleware([
     });
 });
 
-
-/* Additions by John begin */
 /**
  * Copilot Endpoints
  *
@@ -89,7 +88,8 @@ Route::prefix('v1')->middleware([
 **/
 Route::prefix('v1')->middleware([
     'auth.basic:api-basic,clientid',
-    'throttle:60,1'
+    'throttle:60,1',
+    'can:write_user_questions'
 ])->group(function () {
     Route::prefix('copilot')->group(function () {
 
@@ -101,20 +101,20 @@ Route::prefix('v1')->middleware([
 
     });
 });
-/* Additions by John end */
 
 /**
  * Protected Endpoints Available on Public Domain
  */
-Route::group(['middleware' => ['auth:api', 'throttle:180,1'], 'prefix' => 'v1'], function ($router) {
+Route::group(['middleware' => [
+    'auth:api',
+    'throttle:180,1',
+    'can:read_directory_data',
+], 'prefix' => 'v1'], function ($router) {
 
     Route::prefix('directory')->group(function () {
-        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername');
+        Route::get('employee/{username}', 'EmployeeController@getDirectoryEmployeeByUsername')->middleware('can:read_directory_data');
         Route::get('employees', 'EmployeeController@getDirectoryEmployees')->middleware('throttle:60,1');
-
-        /* Additions by John begin */
         Route::get('employees/{substring}', 'EmployeeController@getDirectoryEmployeeDisplayNameSubstringSearch')->middleware('throttle:60,1');
-        /* Additions by John end */
     });
 });
 
