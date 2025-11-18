@@ -61,7 +61,7 @@ class AdminController extends Controller
         //delete client
         try { 
             Client::destroy($id);
-            Log::info(sprintf("Client %d deleted by %s.", $id, Auth::user()->getUserPrincipalName()));
+            Log::info(sprintf("Client %d deleted", $id));
         } catch ( \Exception $e ) {
             Log::error($e->getMessage());
             return redirect()->back()->withError("There was an error while deleting the client.");
