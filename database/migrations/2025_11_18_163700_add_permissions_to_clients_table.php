@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('da')->create('permissions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->timestamps();
+        Schema::connection('da')->table('Clients', function (Blueprint $table) {
+            $table->json('permissions')->nullable();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection('da')->dropIfExists('permissions');
+        Schema::connection('da')->table('Clients', function (Blueprint $table) {
+            $table->dropColumn('permissions');
+        });
     }
 };

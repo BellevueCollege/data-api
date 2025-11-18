@@ -32,8 +32,8 @@
                     <td>{{ $client->clientid }}</td>
                     <td>
                         @if (isset($client->permissions) && count($client->permissions) > 0)
-                            @foreach($client->permissions as $permission)
-                                <span class="badge text-bg-secondary">{{ $permission->name }}</span>&#32;
+                            @foreach($client->permissions as $permission )
+                                <span class="badge text-bg-secondary">{{ $permission }}</span>&#32;
                             @endforeach
                         @else
                             <span class="text-muted">No permissions</span>

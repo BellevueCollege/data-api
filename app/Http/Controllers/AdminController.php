@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Client;
-use App\Models\Permission;
 
 
 
@@ -72,7 +71,7 @@ class AdminController extends Controller
 
     public function addClientShow() {
         // Get available permissions
-        $permissions = Permission::all();
+        $permissions = config('permissions');
         return view('admin.addclient', compact('permissions')); 
     }
 
@@ -124,7 +123,7 @@ class AdminController extends Controller
     public function updateClient(Request $request, $id)
     {
         // Get available permissions
-        $permissions = Permission::all();
+        $permissions = config('permissions');
         
         // Get the client to edit
         $client = Client::findOrFail($id);

@@ -35,15 +35,15 @@
         <fieldset>
             <legend>Permissions</legend>
             @if (isset($permissions) && count($permissions) > 0)
-                @foreach($permissions as $permission)
+                @foreach($permissions as $permissionName => $permissionDescription)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" 
                                 name="permissions[]" 
-                                value="{{ $permission->name }}" 
-                                id="permission-{{ $permission->name }}"
-                                @if(in_array($permission->name, $client->permissions->pluck('name')->toArray())) checked @endif>
-                        <label class="form-check-label" for="permission-{{ $permission->name }}">
-                            <strong>{{ $permission->name }}</strong>: {{ $permission->description }}
+                                value="{{ $permissionName }}" 
+                                id="permission-{{ $permissionName }}"
+                                @if(in_array($permissionName, $client->permissions ?? [] )) checked @endif>
+                        <label class="form-check-label" for="permission-{{ $permissionName }}">
+                            <strong>{{ $permissionName }}</strong>: {{ $permissionDescription }}
                         </label>
                     </div>
                 @endforeach

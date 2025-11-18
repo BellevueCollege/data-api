@@ -41,11 +41,11 @@
                     <legend>Permissions</legend>
                     <!-- Add permission checkboxes here -->
                     @if (isset($permissions) && count($permissions) > 0)
-                        @foreach($permissions as $permission)
+                        @foreach($permissions as $permissionName => $permissionDescription)
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->name }}" id="permission-{{ $permission->name }}">
-                                <label class="form-check-label" for="permission-{{ $permission->name }}">
-                                    <strong>{{ $permission->name }}</strong>: {{ $permission->description }}
+                                <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permissionName }}" id="permission-{{ $permissionName }}">
+                                <label class="form-check-label" for="permission-{{ $permissionName }}">
+                                    <strong>{{ $permissionName }}</strong>: {{ $permissionDescription }}
                                 </label>
                             </div>
                         @endforeach

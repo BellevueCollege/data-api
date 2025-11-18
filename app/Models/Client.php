@@ -5,7 +5,6 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
-use App\Models\Permission;
 
 class Client extends Authenticatable implements JWTSubject {
     use Notifiable;
@@ -13,6 +12,9 @@ class Client extends Authenticatable implements JWTSubject {
     protected $connection = 'da';
     protected $fillable = ['id', 'clientname', 'clientid', 'clienturl'];
     protected $hidden   = ['created_at', 'updated_at', 'password'];
+    protected $casts = [
+        'permissions' => 'array',
+    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -43,12 +45,6 @@ class Client extends Authenticatable implements JWTSubject {
         return (string) Str::uuid();
     }
 
-    // Configure relationship with permissions
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'client_permission');
-    }
-
     /**
      * Sync client permissions by permission names
      *
@@ -57,7 +53,7 @@ class Client extends Authenticatable implements JWTSubject {
      */
     public function syncPermissionsByName(array $permissionNames)
     {
-        $permissions = Permission::whereIn('name', $permissionNames)->pluck('id');
-        return $this->permissions()->sync($permissions);
+        $this->permissions = $permissionNames;
+        $this->save();
     }
 }
