@@ -99,7 +99,7 @@ class AdminController extends Controller
             if (isset($form_input['permissions'])) {
                 $newclient->syncPermissionsByName($form_input['permissions']);
             } else {
-                $newclient->permissions()->detach();
+                $newclient->syncPermissionsByName([]);
             }
         }
         catch ( \Exception $e ) {
@@ -153,7 +153,7 @@ class AdminController extends Controller
             if (isset($form_input['permissions'])) {
                 $client->syncPermissionsByName($form_input['permissions']);
             } else {
-                $client->permissions()->detach();
+                $client->syncPermissionsByName([]);
             }
 
             return redirect()
