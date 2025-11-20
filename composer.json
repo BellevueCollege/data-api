@@ -6,7 +6,6 @@
     "type": "project",
     "require": {
         "php": "^8.3.6",
-        "darkaonline/l5-swagger": "^8.1",
         "directorytree/ldaprecord-laravel": "*",
         "laravel/framework": "^11.0",
         "laravel/helpers": "^1.1",

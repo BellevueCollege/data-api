@@ -4,13 +4,6 @@ The Data API is a RESTful, primarily read-only web service for accessing Bellevu
 
 ## API Endpoints 🌐
 
-### OpenAPI 3.0 Documentation
-
-As endpoints are added or updated, OpenAPI documentation is being added.
-
-- [JSON OpenAPI Documentation Endpoint](https://www2.bellevuecollege.edu/data/api/v1/docs/)
-- [Swagger Docs for API (in progress)](https://www2.bellevuecollege.edu/data/documentation/)
-
 ### Class/course data 🎓
 
 - `api/v1/course/{CourseID}` - Return course info for given course given the CourseID
@@ -64,11 +57,6 @@ It is only available on the internal subdomain.
 
 For explanation on terminology/objects used in the DataAPI, [refer to the terminology documentation](terminology.md).
 
-API Documentation is being written through [L5-Swagger](https://github.com/DarkaOnLine/L5-Swagger). Run the following to compile:
-
-```bash
-php artisan l5-swagger:generate 
-```
 
 ## Development Environment
 
