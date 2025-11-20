@@ -17,12 +17,14 @@ class EmployeeResource extends JsonResource
         return [
             'SID'           => $this->SID,
             'EMPLID'        => $this->EMPLID,
+            'AzureID'       => $this->AzureID,
             'firstName'     => $this->FirstName,
             'lastName'      => $this->LastName,
             'aliasName'     => $this->AliasName,
             'email'         => $this->WorkEmail,
             'phone'         => $this->WorkPhoneNumber,
-            'username'      => $this->ADUserName
+            'username'      => $this->ADUserName,
+            'UPN'           => $this->UserPrincipalName,
         ];
     }
 }
