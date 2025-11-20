@@ -11,7 +11,7 @@ class EmployeeDirectory extends Model //implements AuthenticatableContract, Auth
     //use Authenticatable, Authorizable;
      protected $connection = 'empdirectory';
      protected $table = 'Employees';
-     protected $primaryKey = 'SID';
+     protected $primaryKey = 'EMPLID';
      public $incrementing = false;
      public $timestamps = false;
 
@@ -21,7 +21,7 @@ class EmployeeDirectory extends Model //implements AuthenticatableContract, Auth
      * @var array
      */
     protected $hidden = [
-        'SID',
+        'EMPLID',
         'SearchField',
         'SearchFieldDisplay',
         'EmploymentDate',
