@@ -42,7 +42,7 @@ Route::group([
 ], function ($router) {
 
     Route::post('internal/auth/login', [
-        'as' => 'login', 'uses' => 'AuthController@login'
+        'as' => 'login', 'uses' => 'AuthController@internalLogin', 'name' => 'internal.auth.login'
     ]);
 
 });
@@ -124,7 +124,7 @@ Route::prefix('v1')->middleware([
 ])->group(function () {
 
     Route::post('auth/login', [
-        'as' => 'login', 'uses' => 'AuthController@login'
+        'as' => 'login', 'uses' => 'AuthController@publicLogin', 'name' => 'auth.login'
     ]);
 
     Route::get('subject/{slug}','SubjectController@getSubject');

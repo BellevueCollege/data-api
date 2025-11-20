@@ -10,6 +10,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\AuthTokenResource;
 
 /**
  * Authentication Controller
@@ -23,19 +24,64 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['internalLogin', 'publicLogin']]);
     }
 
     /**
-     * Login to get a Token
+     * Login on Internal API Server
      * 
-     * @return \Illuminate\Http\JsonResponse
+     * Pass in the clientid and clientkey as parameters, and a token will be returned.
+     * 
+     * **Note**: This endpoint is only available on the internal API server.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
      */
-    public function login()
+    public function internalLogin(Request $request)
     {
+        $validated = $request->validate([
+            /** @query */
+            'clientid' => ['required', 'string'],
+            /** @query */
+            'clientkey' => ['required', 'string'],
+        ]);
+        return $this->performLogin($request);
+    }
 
+    /**
+     * Login on Public API Server
+     * 
+     * Pass in the clientid and clientkey as parameters, and a token will be returned.
+     * 
+     * **Note**: This endpoint is only available on the public API server.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
+     */
+    public function publicLogin(Request $request)
+    {
+        $validated = $request->validate([
+            /** @query */
+            'clientid' => ['required', 'string'],
+            /** @query */
+            'clientkey' => ['required', 'string'],
+        ]);
+        return $this->performLogin($request);
+    }
+
+    /**
+     * Shared Login Method
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
+     */
+    public function performLogin(Request $request)
+    {
         try {
-            $req_creds = request()->only('clientid', 'clientkey');
+            $req_creds = $request->only('clientid', 'clientkey');
             $creds = [ 'clientid' => $req_creds['clientid'], 'password' => $req_creds['clientkey'] ];
 
             if (! $token = auth()->guard('api')->attempt($creds)) {
@@ -89,13 +135,12 @@ class AuthController extends Controller
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return AuthTokenResource
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
+        return new AuthTokenResource([
             'access_token' => $token,
-            'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
