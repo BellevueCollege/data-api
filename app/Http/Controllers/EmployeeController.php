@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Http\Resources\EmployeeResource;
 use App\Models\EmployeeDirectory;
 use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
@@ -20,31 +21,24 @@ use DB;
 class EmployeeController extends ApiController
 {
     /**
-    * Function to get an employee by username
+    * Get Employee by Username
     * 
     * @param \Illuminate\Http\Request $request
     * @param string $username Employee username
     * 
-    * @return \Illuminate\Http\JsonResponse
+    * @return EmployeeResource | stdClass
     **/
     public function getEmployeeByUsername(Request $request, $username)
     {
-        $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->first();
-
-        $data = $emp;
-        //handle gracefully if null
-        if (! is_null($emp)) {
-            $item = new Item($emp, new EmployeeTransformer);
-            $fractal = new Manager;
-            $data = $fractal->createData($item)->toArray();
+        try{
+            $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->firstOrFail();
+            return new EmployeeResource($emp);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
         }
-
-        return $this->respond($data);
+        
     }
 
-
-    /**
-    * Function to get an employee by username from the directory
     * 
     * @param \Illuminate\Http\Request $request
     * @param string $username Employee username
