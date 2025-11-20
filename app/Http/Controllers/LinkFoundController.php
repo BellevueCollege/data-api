@@ -17,9 +17,11 @@ class LinkFoundController extends ApiController
 
     const WRAPPER = "Links";
 
-  /**
-  * Return all links
-  **/
+    /**
+    * Return all links
+    *
+    * @return \Illuminate\Http\JsonResponse
+    **/
     public function index(Manager $fractal, Request $request)
     {
         $links  = LinkFound::all();
@@ -33,6 +35,10 @@ class LinkFoundController extends ApiController
 
     /**
     * Return links with descriptions based on a provided SourceArea value
+    *
+    * @param string $sourceArea SourceArea value
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getLinksBySourceArea($sourceArea)
     {
@@ -42,7 +48,7 @@ class LinkFoundController extends ApiController
             ->select('LinkText', 'LinkDescr')
             ->get();
 
-         $data = $links;
+        $data = $links;
         if (!is_null($links) && !$links->isEmpty()) {
             //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
             $links_hydrated = LinkFound::hydrate($links->toArray());
@@ -54,11 +60,15 @@ class LinkFoundController extends ApiController
             $data = $fractal->createData($collection)->toArray();
         }
 
-         return $this->respond($data);
+        return $this->respond($data);
     }
 
     /**
     * Return the count of links based on a provided SourceArea value
+    *
+    * @param string $sourceArea SourceArea value
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getLinkCountBySourceArea($sourceArea)
     {

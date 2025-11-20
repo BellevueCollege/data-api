@@ -14,7 +14,10 @@ class StudentController extends ApiController {
 
     /**
      * Get a student by username
-    * Status: active
+     * 
+     * @param string $username Student username
+     * 
+     * @return \Illuminate\Http\JsonResponse
     **/
     public function getStudentByUsername($username)
     {

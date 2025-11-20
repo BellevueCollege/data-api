@@ -37,6 +37,11 @@ class YearQuarterController extends ApiController {
     * Get YearQuarter based on a given YearQuarterID or STRM
     *
     * use ?format=strm or ?format=yrq
+    *
+    * @param int $yqrid YearQuarterID or STRM
+    * @param \Illuminate\Http\Request $request
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getYearQuarter($yqrid, Request $request){
         if ( $request->input('format') === 'strm') {
@@ -60,6 +65,8 @@ class YearQuarterController extends ApiController {
 
     /**
     * Get current YearQuarter
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getCurrentYearQuarter() {
         $yqr = YearQuarter::current()->first();
@@ -79,6 +86,8 @@ class YearQuarterController extends ApiController {
 
     /**
     * Returns "active" YearQuarters
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getViewableYearQuarters() {
 
@@ -126,10 +135,10 @@ class YearQuarterController extends ApiController {
          //dd($queries);
          //var_dump($yqrs);
 
-         //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
-         $data = $yqrs;
+        //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
+        $data = $yqrs;
 
-         if ( !empty($yqrs) && !$yqrs->isEmpty() ) {
+        if ( !empty($yqrs) && !$yqrs->isEmpty() ) {
             $yqr_hydrated = YearQuarter::hydrate($yqrs->toArray());
             $collection = new Collection($yqr_hydrated, new YearQuarterTransformer, self::WRAPPER);
 
@@ -137,10 +146,9 @@ class YearQuarterController extends ApiController {
             $fractal = new Manager;
             $fractal->setSerializer(new CustomDataArraySerializer);
             $data = $fractal->createData($collection)->toArray();
-         }
+        }
 
-         return $this->respond($data);
+        return $this->respond($data);
     }
 
 }
-?>

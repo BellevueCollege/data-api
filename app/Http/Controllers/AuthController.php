@@ -12,19 +12,7 @@ use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @OA\SecurityScheme(
- *     type="http",
- *     securityScheme="jwtAuth",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     in="header",
- * )
- * @OA\SecurityScheme(
- *     type="http",
- *     securityScheme="basicAuth",
- *     scheme="basic",
- *     in="header",
- * )
+ * Authentication Controller
  */
 class AuthController extends Controller
 {
@@ -39,64 +27,14 @@ class AuthController extends Controller
     }
 
     /**
-     * Get a JWT via given credentials.
-     *
+     * Login to get a Token
+     * 
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @OA\Post(
-     *     path="/api/v1/auth/login",
-     *     operationId="login",
-     *     summary="Get JWT auth token",
-     *     description="Get JSON Web Token for Authentication",
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 @OA\Property(
-     *                      property="clientid",
-     *                      type="string",
-     *                 ),
-     *                 @OA\Property(
-     *                      property="clientkey",
-     *                      type="string",
-     *                 )
-     *             )
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful Operation",
-     *          @OA\JsonContent(
-     *              @OA\Property(
-     *                  property="access_token",
-     *                  description="JWT Access Token",
-     *                  type="string",
-     *              ),
-     *              @OA\Property(
-     *                  property="token_type",
-     *                  description="Token Type- always 'bearer'",
-     *                  type="string",
-     *              ),
-     *              @OA\Property(
-     *                  property="expires_in",
-     *                  description="Token expiration time in seconds",
-     *                  type="integer",
-     *              ),
-     *          ),
-     *     )
-     * )
      */
     public function login()
     {
-        /*$credentials = request(['clientid', 'clientkey']);
-
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }*/
 
         try {
-            //Config::set('auth.providers.users.model', \App\Models\Client::class);
             $req_creds = request()->only('clientid', 'clientkey');
             $creds = [ 'clientid' => $req_creds['clientid'], 'password' => $req_creds['clientkey'] ];
 
@@ -162,39 +100,3 @@ class AuthController extends Controller
         ]);
     }
 }
-    /**
-     * @var \Tymon\JWTAuth\JWTAuth
-     */
-    /*
-    protected $auth;
-
-    public function __construct(JWTAuth $auth)
-    {
-        $this->auth = $auth;
-    }
-
-    public function loginPost(Request $request)
-    {
-        $this->validate($request, [
-            'clientid'    => 'required',
-            'clientkey' => 'required',
-        ]);
-
-        try {
-            $req_creds = $request->only('clientid', 'clientkey');
-            $creds = [ 'clientid' => $req_creds['clientid'], 'password' => $req_creds['clientkey'] ];
-
-            if (! $token = $this->auth->attempt($creds)) {
-                return response()->json(['user_not_found'], 404);
-            }
-        } catch (TokenExpiredException $e) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (JWTException $e) {
-            return response()->json(['token_absent' => $e->getMessage()], $e->getStatusCode());
-        }
-
-        return response()->json(compact('token'));
-    }
-}*/

@@ -19,6 +19,13 @@ class CourseYearQuarterController extends ApiController {
 
     /**
     * Return a CourseYearQuarter based on a YearQuarterID, subject, and course number.
+    * 
+    * @param int $yqrid YearQuarterID
+    * @param int $subjectid SubjectID
+    * @param int $coursenum CourseNumber
+    * @param \Illuminate\Http\Request $request
+    * 
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getCourseYearQuarter($yqrid, $subjectid, $coursenum, Request $request)
     {
@@ -60,6 +67,12 @@ class CourseYearQuarterController extends ApiController {
 
     /**
     * Return CourseYearQuarters based on a given YearQuarterID and subject.
+    * 
+    * @param int $yqrid YearQuarterID
+    * @param int $subjectid SubjectID
+    * @param \Illuminate\Http\Request $request
+    * 
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getCourseYearQuartersBySubject($yqrid, $subjectid, Request $request)
     {
@@ -91,9 +104,6 @@ class CourseYearQuarterController extends ApiController {
             //dd($queries);
         }
 
-
-
-
         $data = $cyqs;
 
         if ( !is_null($cyqs) && !$cyqs->isEmpty() ) {
@@ -110,4 +120,3 @@ class CourseYearQuarterController extends ApiController {
         return $this->respond($data);
     }
 }
-?>

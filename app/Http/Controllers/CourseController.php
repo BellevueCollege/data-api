@@ -17,10 +17,12 @@ class CourseController extends ApiController{
     const WRAPPER = "courses";
 
     /**
-     Get all courses. This should probably never be used.
-     Status: inactive
-     No active route exists.
-    **/
+     * Get all courses.
+     * 
+     * Inactive: No active route exists, should not be used
+     *
+     * @return \Illuminate\Http\JsonResponse
+     **/
     public function index(){
 
         $courses  = Course::all();
@@ -29,7 +31,11 @@ class CourseController extends ApiController{
     }
 
     /**
-     Get a course based on a given CourseID.
+     * Get a course based on a given CourseID.
+     * 
+     * @param int $courseid
+     * 
+     * @return \Illuminate\Http\JsonResponse
     **/
     public function getCourse($courseid)
     {
@@ -48,7 +54,12 @@ class CourseController extends ApiController{
     }
 
     /**
-     Get a course based on a given subject and course number.
+     * Get a course based on a given subject and course number.
+     * 
+     * @param string $subject
+     * @param string $coursenum
+     * 
+     * @return \Illuminate\Http\JsonResponse
     **/
     public function getCourseBySubjectAndNumber($subject, $coursenum){
 
@@ -68,8 +79,12 @@ class CourseController extends ApiController{
         return $this->respond($data);
     }
 
-        /**
-     Get active courses based on a given subject.
+    /**
+     * Get active courses based on a given subject.
+     * 
+     * @param string $subject
+     * 
+     * @return \Illuminate\Http\JsonResponse
     **/
     public function getCoursesBySubject($subject)
     {
@@ -95,7 +110,11 @@ class CourseController extends ApiController{
     }
 
     /**
-     Get multiple courses based on course numbers passed via courses[] query parameter
+     * Get multiple courses based on course numbers passed via courses[] query parameter
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
     **/
     public function getMultipleCourses(Request $request){
 
@@ -104,25 +123,20 @@ class CourseController extends ApiController{
             //be nice and don't fail non-array input for the case there's a single value
             $course_input[] = $course_input;
         }
-        //dd($course_input);
         if ( !empty($course_input) && count($course_input) > 0 ) {
             //valid courses parameter so get courses
-
             //strip whitespace so we can do db comparison
             $courses_stripped = $course_input;
             array_walk($courses_stripped, array($this, 'stripWhitespace'));
             $placeholder = implode(', ', array_fill(0, count($courses_stripped), '?'));
 
-            //DB::connection('ods')->enableQueryLog();
             $courses = Course::whereRaw("REPLACE(CourseID, ' ', '') IN ($placeholder)", $courses_stripped)->active()->get();
-            //$queries = DB::connection('ods')->getQueryLog();
-            //dd($queries);
 
             $data = $courses;
             if ( !is_null($courses) ) {
                 $collection = new Collection($courses, new CourseTransformer, self::WRAPPER);
 
-                //define serializer
+                // define serializer
                 $fractal = new Manager;
                 $fractal->setSerializer(new CustomDataArraySerializer);
                 $data = $fractal->createData($collection)->toArray();
@@ -130,17 +144,22 @@ class CourseController extends ApiController{
 
             return $this->respond($data);
         } else {
-          throw new MissingParameterException("Invalid courses[] parameter provided.");
+            throw new MissingParameterException("Invalid courses[] parameter provided.");
         }
 
     }
 
     /**
     * Function to strip whitespace via regex
+    * 
+    * @param string $value
+    * @param string $key
+    * 
+    * @return void
     **/
     private function stripWhitespace(&$value, $key){
         $value = preg_replace('/\s+/', '', $value);
     }
 
 }
-?>
+

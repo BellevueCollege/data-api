@@ -18,9 +18,11 @@ class SubjectController extends ApiController
 
     const WRAPPER = "subjects";
 
-  /**
-  * Return all subjects
-  **/
+    /**
+    * Return all subjects
+    *
+    * @return \Illuminate\Http\JsonResponse
+    **/
     public function index(Manager $fractal, Request $request)
     {
         if ($request->input('filter') === 'active-credit') {
@@ -47,6 +49,10 @@ class SubjectController extends ApiController
 
     /**
     * Return a subject based on a provided slug
+    *
+    * @param string $slug Subject slug
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getSubject($slug)
     {
@@ -69,6 +75,10 @@ class SubjectController extends ApiController
 
     /**
     * Return subjects based on a provided YearQuarterID
+    *
+    * @param int $yqr YearQuarterID
+    *
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getSubjectsByYearQuarter($yqr)
     {
@@ -85,7 +95,7 @@ class SubjectController extends ApiController
          //$queries = DB::connection('cs')->getQueryLog();
          //dd($queries);
 
-         $data = $subjects;
+        $data = $subjects;
         if (!is_null($subjects) && !$subjects->isEmpty()) {
             //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
             $subjects_hydrated = Subject::hydrate($subjects->toArray());
@@ -97,6 +107,6 @@ class SubjectController extends ApiController
             $data = $fractal->createData($collection)->toArray();
         }
 
-         return $this->respond($data);
+        return $this->respond($data);
     }
 }
