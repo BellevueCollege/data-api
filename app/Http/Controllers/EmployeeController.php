@@ -4,18 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Http\Resources\EmployeeResource;
+
 use App\Models\EmployeeDirectory;
+use App\Http\Resources\EmployeeDirectoryDetailResource;
+use App\Http\Resources\EmployeeDirectorySummaryCollection;
+
 use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
-//use App\Exceptions\MissingParameterException;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Item;
-use League\Fractal\Resource\Collection;
-use App\Http\Transformers\EmployeeTransformer;
-use App\Http\Transformers\EmployeesTransformer;
-use App\Http\Transformers\EmployeeDirectoryTransformer;
-use App\Http\Serializers\CustomDataArraySerializer;
-//use App\Http\Serializers\CustomDataArraySerializer;
+
 use DB;
 
 class EmployeeController extends ApiController
@@ -39,61 +35,66 @@ class EmployeeController extends ApiController
         
     }
 
+
+    /**
+    * Get Employee from Directory by Username
+    * 
+    * Pass in the employee's username (e.g. "john.doe") as a parameter, and the employee's data will be returned.
+    * **Note**: This endpoint is authenticated, but available on the public API server.
     * 
     * @param \Illuminate\Http\Request $request
     * @param string $username Employee username
     * 
-    * @return \Illuminate\Http\JsonResponse
+    * @return EmployeeDirectoryDetailResource | stdClass
     **/
     public function getDirectoryEmployeeByUsername(Request $request, $username)
     {
-
-        $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->first();
-
-
-        $data = $emp;
-        //handle gracefully if null
-        if (! is_null($emp)) {
-            $item = new Item($emp, new EmployeeDirectoryTransformer);
-            $fractal = new Manager;
-            $data = $fractal->createData($item)->toArray();
+        try {
+            $emp = EmployeeDirectory::where('ADAccountName', '=', $username)->firstOrFail();
+            return new EmployeeDirectoryDetailResource($emp);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
         }
-
-        return $this->respond($data);
     }
 
     /**
-    * Function to get a list of all directory employee usernames
+    * Get all Employee usernames from the Directory
+    * 
+    * **Note**: This endpoint is authenticated, but available on the public API server.
     * 
     * @param \Illuminate\Http\Request $request
     * 
-    * @return \Illuminate\Http\JsonResponse
+    * @return EmployeeDirectorySummaryCollection | stdClass
     **/
     public function getDirectoryEmployees()
     {
-        $emps = EmployeeDirectory::whereNotNull('ADAccountName')->get();
-        $collection = new Collection($emps, new EmployeesTransformer, 'employees');
-        $fractal = new Manager;
-        $fractal->setSerializer(new CustomDataArraySerializer);
-        $data = $fractal->createData($collection)->toArray();
-        return $this->respond($data);
+        try {
+            $emps = EmployeeDirectory::whereNotNull('ADAccountName')->get();
+            return new EmployeeDirectorySummaryCollection($emps);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
+        }
     }
 
     /**
-    * Function to get a list of all directory employee usernames using substring search on DisplayName
+    * Search for Directory Employees by DisplayName using substring search
+    * 
+    * Pass in the employee's partial display name (e.g. "john") as a parameter, and matching employee data will be returned.
+    * 
+    * **Note**: This endpoint is authenticated, but available on the public API server.
     * 
     * @param \Illuminate\Http\Request $request
     * @param string $username Employee username
     * 
-    * @return \Illuminate\Http\JsonResponse
+    * @return EmployeeDirectorySummaryCollection | stdClass
     **/
     public function getDirectoryEmployeeDisplayNameSubstringSearch(Request $request, $username)
     {
-        $emps = EmployeeDirectory::whereNotNull('ADAccountName')->where('DisplayName','like','%'.$username.'%')->get();
-        $collection = new Collection($emps, new EmployeesTransformer, 'employees');
-        $fractal = new Manager;
-        $fractal->setSerializer(new CustomDataArraySerializer);
-        $data = $fractal->createData($collection)->toArray();
-        return $this->respond($data);
+        try {
+            $emps = EmployeeDirectory::whereNotNull('ADAccountName')->where('DisplayName','like','%'.$username.'%')->get();
+            return new EmployeeDirectorySummaryCollection($emps);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
+        }
     }
 }
