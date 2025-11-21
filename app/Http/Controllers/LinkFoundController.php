@@ -3,34 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\LinkFound;
-use App\Http\Transformers\LinkFoundTransformer;
-use App\Http\Controllers\Controller;
-use App\Http\Serializers\CustomDataArraySerializer;
+use App\Http\Resources\LinkFoundCollection;
 use Illuminate\Http\Request;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use DB;
+use Illuminate\Http\JsonResponse;
 
 class LinkFoundController extends ApiController
 {
-
-    const WRAPPER = "Links";
-
     /**
     * Return all links
     *
-    * @return \Illuminate\Http\JsonResponse
+    * @return LinkFoundCollection
     **/
-    public function index(Manager $fractal, Request $request)
+    public function index(Request $request)
     {
         $links  = LinkFound::all();
-        $collection = new Collection($links, new LinkFoundTransformer);
-
-        $fractal = new Manager;
-        $data = $fractal->createData($collection)->toArray();
-
-        return $this->respond($data);
+        return new LinkFoundCollection($links); 
     }
 
     /**
@@ -38,29 +25,17 @@ class LinkFoundController extends ApiController
     *
     * @param string $sourceArea SourceArea value
     *
-    * @return \Illuminate\Http\JsonResponse
+    * @return LinkFoundCollection | JsonResponse
     **/
     public function getLinksBySourceArea($sourceArea)
     {
-        $links = DB::connection('copilot')
-            ->table('vw_LinkFound')
-            ->where('SourceArea', '=', str_replace("+", " ",$sourceArea))
-            ->select('LinkText', 'LinkDescr')
-            ->get();
-
-        $data = $links;
-        if (!is_null($links) && !$links->isEmpty()) {
-            //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
-            $links_hydrated = LinkFound::hydrate($links->toArray());
-            $collection = new Collection($links_hydrated, new LinkFoundTransformer, self::WRAPPER);
-
-            //set data serializer
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($collection)->toArray();
+        try {
+            $links = LinkFound::where('SourceArea', '=', str_replace("+", " ",$sourceArea))
+                ->get();
+            return new LinkFoundCollection($links);
+        } catch (\Exception $e) {
+            return response()->json(['Links' => []]);
         }
-
-        return $this->respond($data);
     }
 
     /**
@@ -68,13 +43,11 @@ class LinkFoundController extends ApiController
     *
     * @param string $sourceArea SourceArea value
     *
-    * @return \Illuminate\Http\JsonResponse
+    * @return int
     **/
     public function getLinkCountBySourceArea($sourceArea)
     {
-        $count = DB::connection('copilot')
-            ->table('vw_LinkFound')
-            ->where('SourceArea', '=', str_replace("+", " ",$sourceArea))
+        $count = LinkFound::where('SourceArea', '=', str_replace("+", " ",$sourceArea))
             ->count();
 
         return $this->respond($count);
