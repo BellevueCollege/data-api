@@ -88,4 +88,11 @@ class Course extends Model
                 ->orWhereNull('EffectiveYearQuarterEnd');
         });
     }
+
+    /** Scope to filter out transfer-in courses */
+    public function scopeNotTransferIn($query)
+    {
+        return $query->where('CourseTitle2', '<>', 'Transfer In Course')
+                ->where('CourseTitle', '<>', 'Transferred-In Course');
+    }
 }
