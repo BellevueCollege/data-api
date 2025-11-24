@@ -7,7 +7,8 @@ use App\Http\Resources\YearQuarterResource;
 use App\Http\Resources\YearQuarterCollection;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Carbon\Carbon;
+use stdClass;
 
 class YearQuarterController extends ApiController {
 
@@ -92,47 +93,30 @@ class YearQuarterController extends ApiController {
     public function getViewableYearQuarters() {
 
         try {
-            //get max quarters to be shown
+            // get max quarters to be shown
             $max_yqr = config('dataapi.yearquarter_maxactive');
-            $lookahead = config('dataapi.yearquarter_lookahead');
-            $timezone = new \DateTimeZone(config("dataapi.timezone"));
 
-            //Create now date/time object
-            $now = new \DateTime();
-            $now->setTimezone($timezone);
-            $now_string = $now->format("Y-m-d H:i:s");
+            // get max days to look ahead
+            $lookaheadDays = config('dataapi.yearquarter_lookahead');
 
-            //Create lookahead date
-            $la_date = $now->add(new \DateInterval('P'.$lookahead.'D'));
-            $la_string = $la_date->format("Y-m-d H:i:s");
+            //Create now date/time object and lookahead date
+            $now = Carbon::now();
+            $lookahead = Carbon::now()->addDays($lookaheadDays);
 
-            //Use Eloquent query builder to query results
-            //DB::connection('ods')->enableQueryLog();
-            $yqrs = DB::connection('ods')
-                ->table('vw_YearQuarter')
-                ->join('vw_WebRegistrationSetting', 'vw_WebRegistrationSetting.YearQuarterID', '=', 'vw_YearQuarter.YearQuarterID')
-                ->where(function ($query) {
-                    $lookahead = config('dataapi.yearquarter_lookahead');
-                    $timezone = new \DateTimeZone(config("dataapi.timezone"));
-
-                    //Create now date/time object
-                    $now = new \DateTime();
-                    $now->setTimezone($timezone);
-                    $now_string = $now->format("Y-m-d H:i:s");
-
-                    //Create lookahead date
-                    $la_date = $now->add(new \DateInterval('P'.$lookahead.'D'));
-                    $la_string = $la_date->format("Y-m-d H:i:s");
-
-                    $query->whereNotNull('vw_WebRegistrationSetting.FirstRegistrationDate')
-                    ->where('vw_WebRegistrationSetting.FirstRegistrationDate', '<=', $la_string )
-                    ->orWhere('vw_YearQuarter.LastClassDay', '<=', $now_string );
+            // get active year quarters based on registration settings
+            // ideally this should move to the model in the future
+            $yrqs = YearQuarter::whereHas('webRegistrationSetting')
+                ->where(function($query) use ($lookahead, $now) {
+                    $query->whereHas('webRegistrationSetting', function ($q) use ($lookahead) {
+                        $q->whereNotNull('FirstRegistrationDate')
+                        ->where('FirstRegistrationDate', '<=', $lookahead);
+                    })
+                    ->orWhere('LastClassDay', '<=', $now);
                 })
-                ->select('vw_YearQuarter.YearQuarterID', 'vw_YearQuarter.STRM', 'vw_YearQuarter.Title', 'vw_YearQuarter.FirstClassDay', 'vw_YearQuarter.LastClassDay', 'vw_YearQuarter.AcademicYear')
-                ->orderBy('vw_YearQuarter.FirstClassDay', 'desc')
+                ->orderBy('FirstClassDay', 'desc')
                 ->take($max_yqr)
                 ->get();
-            return new YearQuarterCollection($yqrs);
+            return new YearQuarterCollection($yrqs);
         } catch (\Exception $e) {
             return response()->json(new stdClass());
         }
