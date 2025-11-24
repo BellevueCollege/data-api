@@ -17,7 +17,7 @@ class YearQuarterResource extends JsonResource
         return [
             'quarter' => $this->YearQuarterID,
             'strm' => $this->STRM,
-            'title' => $this->Title
+            'title' => $this->Title,
         ];
     }
 }

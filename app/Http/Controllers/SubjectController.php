@@ -66,29 +66,4 @@ class SubjectController extends ApiController
             return response()->json(new stdClass());
         }
     }
-
-    /**
-    * List Subjects in a YRQ
-    *
-    * @param string $yqr YearQuarterID
-    *
-    * @return SubjectCollection | stdClass
-    **/
-    public function getSubjectsByYearQuarter($yqr)
-    {
-        try {
-            $subjects = DB::connection('ods')
-                ->table('vw_PSSubject')
-                ->join('vw_Class', 'vw_PSSubject.SUBJECT', '=', 'vw_Class.Department')
-                ->where('vw_Class.YearQuarterID', '=', $yqr)
-                ->select('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR as DESCR')
-                ->groupBy('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR')
-                ->orderBy('vw_PSSubject.SUBJECT', 'asc')
-                ->get();
-
-            return new SubjectCollection($subjects);
-        } catch (\Exception $e) {
-            return response()->json(new stdClass());
-        }
-    }
 }
