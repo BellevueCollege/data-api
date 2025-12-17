@@ -7,13 +7,14 @@
     "require": {
         "php": "^8.3.6",
         "darkaonline/l5-swagger": "^8.1",
-        "directorytree/ldaprecord-laravel": "*",
         "laravel/framework": "^11.0",
         "laravel/helpers": "^1.1",
         "laravel/legacy-factories": "^1.1",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^4.2.2",
         "league/fractal": "^0.20.1",
+        "socialiteproviders/microsoft-azure": "^5.2",
         "tymon/jwt-auth": "^2.0.0"
     },
     "require-dev": {

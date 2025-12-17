@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Event;
 use App\Models\Client;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
                 return $client->hasPermission($permissionName);
             });
         }
+
+        /**
+         * Set up Azure AD Socialite
+         */
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
+        });
     }
 
     /**

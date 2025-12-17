@@ -81,10 +81,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Client::class,
         ],
-        'adldap' => [
-            'driver' => 'ldap',
-            'model' => LdapRecord\Models\ActiveDirectory\User::class,
-        ],
+        // 'adldap' => [
+        //     'driver' => 'ldap',
+        //     'model' => LdapRecord\Models\ActiveDirectory\User::class,
+        // ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
