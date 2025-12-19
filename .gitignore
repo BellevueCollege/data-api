@@ -13,3 +13,4 @@ yarn-error.log
 .env
 .DS_Store
 /storage/api-docs
+/docker/nginx/ssl

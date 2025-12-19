@@ -86,6 +86,15 @@ Once Sail informs you of the IP address it is using, add the following entries t
 0.0.0.0 no.data-api.test
 ```
 
+To support SSL, you'll also need to generate a certificate and key.
+```bash
+openssl req -newkey rsa:2048 -nodes \
+  -keyout docker/nginx/ssl/data-api.key \
+  -x509 -days 365 \
+  -out docker/nginx/ssl/data-api.crt \
+  -subj "/CN=*.data-api.test"
+```
+
 ### Upgrade Considerations
 
 When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
