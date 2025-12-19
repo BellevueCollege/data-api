@@ -2,6 +2,10 @@
 
 The Data API is a RESTful, primarily read-only web service for accessing Bellevue College data in JSON format.
 
+## Documentation Endpoint 📚
+
+- `docs/api` - The documentation endpoint for the Data API (thanks to [Scramble](https://scramble.dedoc.co/))
+
 ## API Endpoints 🌐
 
 ### Class/course data 🎓
