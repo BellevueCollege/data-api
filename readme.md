@@ -105,6 +105,16 @@ Lines 28 and 46 of `/docker/8.1/Dockerfile` were added in order to add SQL Serve
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-master)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=20) | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-dev)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=19) |
 
+## Configuration 🛠️
+
+### Azure Entra ID
+Make sure to set the following environment variables:
+
+- `AZURE_CLIENT_ID` - The client ID of the Azure Entra ID application
+- `AZURE_CLIENT_SECRET` - The client secret of the Azure Entra ID application
+- `AZURE_TENANT_ID` - The tenant ID of the Azure Entra ID application
+- `AZURE_REDIRECT_URI` - The redirect URI of the Azure Entra ID application (e.g. `https://no.data-api.test/admin/login/callback`)
+
 ## The BadgeZone 💫
 
 [![emoji-log](https://cdn.rawgit.com/ahmadawais/stuff/ca97874/emoji-log/flat-round.svg)](https://github.com/ahmadawais/Emoji-Log/)
