@@ -34,8 +34,8 @@ Route::domain(config('dataapi.api_internal_domain'))->group( function( $router )
                 'email' => $azureUser->email,
             ]);
 
-            Auth::login($user);
-            return redirect('index');
+            Auth::guard('admin')->login($user);
+            return redirect()->route('admin.index');
         });
 
         Route::middleware(['auth:admin'])->group(function () {
