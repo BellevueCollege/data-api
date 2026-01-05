@@ -1,4 +1,7 @@
 <?php
+use Laravel\Socialite\Socialite;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +17,26 @@
 Route::domain(config('dataapi.api_internal_domain'))->group( function( $router ) {
     Route::name('admin.')->group(function () {
 
-        Route::get('admin/login', 'AdminController@loginShow')->name('login');
-        Route::post('admin/login', 'AdminController@loginPost');
+        // redirect to azure login route
+        //Route::get('admin/login', 'AdminController@loginShow')->name('login');
+        //Route::post('admin/login', 'AdminController@loginPost');
+        Route::get('admin/login', function () {
+            return Socialite::driver('azure')->redirect();
+        });
+        
+        Route::get('admin/login/callback', function () {
+            $azureUser = Socialite::driver('azure')->user();
+
+            $user = User::updateOrCreate([
+                'azure_id' => $azureUser->id,
+            ], [
+                'name' => $azureUser->name,
+                'email' => $azureUser->email,
+            ]);
+
+            Auth::guard('admin')->login($user);
+            return redirect()->route('admin.index');
+        });
 
         Route::middleware(['auth:admin'])->group(function () {
 

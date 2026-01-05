@@ -91,6 +91,7 @@ class AdminController extends Controller
         $newclient->clienturl = $form_input['clienturl'];
         $newclient->clientid = Client::generateClientID();
         $newclient->password = Hash::make($new_clientkey);
+        $newclient->created_by = Auth::id();
 
         try { 
             $newclient->save();
