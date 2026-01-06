@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseYearQuarter;
-use App\Http\Transformers\CourseYearQuarterTransformer;
+use App\Http\Resources\CourseYearQuarterResource;
+use App\Http\Resources\CourseYearQuarterCollection;
 use App\Http\Controllers\Controller;
-use App\Http\Serializers\CourseDataArraySerializer;
-use App\Http\Serializers\CustomDataArraySerializer;
 use Illuminate\Http\Request;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use DB;
+
 
 class CourseYearQuarterController extends ApiController {
 
@@ -19,95 +15,56 @@ class CourseYearQuarterController extends ApiController {
 
     /**
     * Return a CourseYearQuarter based on a YearQuarterID, subject, and course number.
+    * 
+    * @param string $yqrid YearQuarterID
+    * @param string $subjectid SubjectID
+    * @param string $coursenum CourseNumber
+    * @param \Illuminate\Http\Request $request
+    * 
+    * @return CourseYearQuarterResource | \Illuminate\Http\JsonResponse
     **/
     public function getCourseYearQuarter($yqrid, $subjectid, $coursenum, Request $request)
     {
-        if ($request->input('format') === 'strm'){
-            //DB::connection('ods')->enableQueryLog();
-            $cyq = CourseYearQuarter::where('STRM', '=', $yqrid)
+        $validated = $request->validate([
+            'format' => 'sometimes|string|in:yrq,strm',
+        ]);
+        try {
+            $selector = $request->input('format') === 'strm' ? 'STRM' : 'YearQuarterID';
+            $cyq = CourseYearQuarter::where($selector, '=', $yqrid)
                 ->where('Department', '=', $subjectid)
                 ->where('CourseNumber', '=', $coursenum)
-                ->first();
-            //$queries = DB::connection('ods')->getQueryLog();
-            //dd($queries);
-            //var_dump($cyq);
-        } else {
-            //DB::connection('ods')->enableQueryLog();
-            $cyq = CourseYearQuarter::where('YearQuarterID', '=', $yqrid)
-                ->where('Department', '=', $subjectid)
-                ->where('CourseNumber', '=', $coursenum)
-                ->first();
-            //$queries = DB::connection('ods')->getQueryLog();
-            //dd($queries);
-            //var_dump($cyq);
+                ->firstOrFail();
+            
+            return new CourseYearQuarterResource($cyq);
+        } catch (\Exception $e) {
+            return response()->json(['classes' => []], 404);
         }
-
-
-        $data = $cyq;
-
-        //handle gracefully if null
-        if ( !is_null($cyq) ) {
-            $item = new Item($cyq, new CourseYearQuarterTransformer, self::WRAPPER);
-
-            //define serializer
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($item)->toArray();
-        }
-
-        return $this->respond($data);
     }
 
     /**
     * Return CourseYearQuarters based on a given YearQuarterID and subject.
+    * 
+    * @param string $yqrid YearQuarterID
+    * @param string $subjectid SubjectID
+    * @param \Illuminate\Http\Request $request
+    * 
+    * @return CourseYearQuarterCollection | \Illuminate\Http\JsonResponse
     **/
     public function getCourseYearQuartersBySubject($yqrid, $subjectid, Request $request)
     {
-        if ( $request->input('format') === 'strm') {
-            //DB::connection('cs')->enableQueryLog();
-            $cyqs = DB::connection('ods')
-                ->table('vw_Class')
-                ->where('STRM', '=', $yqrid)
+        $validated = $request->validate([
+            'format' => 'sometimes|string|in:yrq,strm',
+        ]);
+        $selector = $request->input('format') === 'strm' ? 'STRM' : 'YearQuarterID';
+        try {
+            $cyqs = CourseYearQuarter::where($selector, '=', $yqrid)
                 ->where('Department', '=', $subjectid)
-                ->select('CourseID', 'Department', 'CourseNumber', 'YearQuarterID', 'STRM')
-                ->groupBy('CourseID', 'Department', 'CourseNumber', 'YearQuarterID', 'STRM')
+                ->distinctCourses()
                 ->orderBy('CourseNumber', 'asc')
                 ->get();
-
-            //$queries = DB::connection('cs')->getQueryLog();
-            //dd($queries);
-        } else {
-            //DB::connection('cs')->enableQueryLog();
-            $cyqs = DB::connection('ods')
-                ->table('vw_Class')
-                ->where('YearQuarterID', '=', $yqrid)
-                ->where('Department', '=', $subjectid)
-                ->select('CourseID', 'Department', 'CourseNumber', 'YearQuarterID', 'STRM')
-                ->groupBy('CourseID', 'Department', 'CourseNumber', 'YearQuarterID', 'STRM')
-                ->orderBy('CourseNumber', 'asc')
-                ->get();
-
-            //$queries = DB::connection('cs')->getQueryLog();
-            //dd($queries);
+            return new CourseYearQuarterCollection($cyqs);
+        } catch (\Exception $e) {
+            return response()->json(['classes' => []], 404);
         }
-
-
-
-
-        $data = $cyqs;
-
-        if ( !is_null($cyqs) && !$cyqs->isEmpty() ) {
-            //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
-            $cyqs_hydrated = CourseYearQuarter::hydrate($cyqs->toArray());
-            $collection = new Collection($cyqs_hydrated, new CourseYearQuarterTransformer, self::WRAPPER);
-
-            //define serializer
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($collection)->toArray();
-        }
-
-        return $this->respond($data);
     }
 }
-?>

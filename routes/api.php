@@ -42,7 +42,7 @@ Route::group([
 ], function ($router) {
 
     Route::post('internal/auth/login', [
-        'as' => 'login', 'uses' => 'AuthController@login'
+        'as' => 'login', 'uses' => 'AuthController@internalLogin', 'name' => 'internal.auth.login'
     ]);
 
 });
@@ -124,7 +124,7 @@ Route::prefix('v1')->middleware([
 ])->group(function () {
 
     Route::post('auth/login', [
-        'as' => 'login', 'uses' => 'AuthController@login'
+        'as' => 'login', 'uses' => 'AuthController@publicLogin', 'name' => 'auth.login'
     ]);
 
     Route::get('subject/{slug}','SubjectController@getSubject');
@@ -145,18 +145,10 @@ Route::prefix('v1')->middleware([
 
     Route::get('schedules/{psclassid}', 'ClassScheduleController@getClassSchedules');
 
-    /* Additions by John begin */
     // This is for Copilot Studio: Get an array of links and descriptions based on a provided SourceArea value
     Route::get('linksfound/{sourcearea}', 'LinkFoundController@getLinksBySourceArea');
 
     // This is for Copilot Studio: Get a count of the links based on a provided SourceArea value
     Route::get('linkscount/{sourcearea}', 'LinkFoundController@getLinkCountBySourceArea');
-    /* Additions by John end */
     
-    //API endpoints specific to ModoLabs requirements
-    /*Route::get('catalog/terms', 'YearQuarterController@getViewableYearQuarters');
-    Route::get('catalog/terms/{yqrid}', 'YearQuarterController@getYearQuarter');
-    Route::get('catalog/catalogAreas/{yqrid}', 'SubjectController@getSubjectsByYearQuarter');
-    Route::get('catalog/{yqrid}/{subjectid}', 'CourseYearQuarterController@getCourseYearQuartersBySubject');
-    Route::get('catalog/{yqrid}/{subjectid}/{coursenum}', 'CourseYearQuarterController@getCourseYearQuarter');*/
 });
