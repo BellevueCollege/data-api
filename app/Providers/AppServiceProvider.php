@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Event;
 use App\Models\Client;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,8 +15,27 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
+        // Fix URL generation for subdomain + subfolder deployments
+        $subdir = trim(parse_url(config('app.url'), PHP_URL_PATH) ?? '', '/');
+
+        if ($subdir !== '') {
+            // Use current request host, or APP_URL for CLI
+            URL::useOrigin(
+                app()->runningInConsole() 
+                    ? preg_replace('#(/.*)?$#', '', config('app.url'))
+                    : request()->getSchemeAndHttpHost()
+            );
+
+            // Prefix all generated paths with subdirectory
+            URL::formatPathUsing(fn($path) => 
+                str_starts_with($path = '/' . ltrim($path, '/'), "/$subdir/") || $path === "/$subdir"
+                    ? $path 
+                    : ($path === '/' ? "/$subdir" : "/$subdir$path")
+            );
+        }
+
         /**
          * Define Gates for each Permission
          */
