@@ -27,7 +27,12 @@ class EmployeeController extends ApiController
     public function getEmployeeByUsername(Request $request, $username)
     {
         try{
-            $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->firstOrFail();
+            // If username contains @, search UserPrincipal
+            if (strpos($username, '@') !== false) {
+                $emp = Employee::where('UserPrincipalName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->firstOrFail();
+            } else {
+                $emp = Employee::where('ADUserName', '=', $username)->where('EmployeeStatusCode', '=', 'A')->firstOrFail();
+            }
             return new EmployeeResource($emp);
         } catch (\Exception $e) {
             return response()->json(new stdClass());

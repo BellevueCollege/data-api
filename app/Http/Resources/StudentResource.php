@@ -17,12 +17,14 @@ class StudentResource extends JsonResource
         return [
             'SID'           => $this->SID,
             'EMPLID'        => $this->EMPLID,
+            'AzureID'       => $this->AzureID,
             'firstName'     => $this->FirstName,
             'lastName'      => $this->LastName,
             'email'         => $this->Email,
             'phoneDaytime'  => $this->DaytimePhone,
             'phoneEvening'  => $this->EveningPhone,
             'username'      => $this->NTUserName,
+            'UPN'           => $this->UserPrincipalName,
             'ferpaBlock'    => $this->PrivateRecord,
         ];
     }
