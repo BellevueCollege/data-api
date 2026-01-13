@@ -22,7 +22,12 @@ class StudentController extends ApiController {
     public function getStudentByUsername($username)
     {
         try {
-            $stu = Student::where('NTUserName', '=', $username)->firstOrFail();
+            // If username contains @, search UserPrincipal
+            if (strpos($username, '@') !== false) {
+                $stu = Student::where('UserPrincipalName', '=', $username)->firstOrFail();
+            } else {
+                $stu = Student::where('NTUserName', '=', $username)->firstOrFail();
+            }
             return new StudentResource($stu);
         } catch (\Exception $e) {
             return response()->json(new stdClass());
