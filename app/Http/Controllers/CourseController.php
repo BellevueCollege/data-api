@@ -31,11 +31,11 @@ class CourseController extends ApiController{
      * 
      * Course ID is a combination of the Course Subject and Catalog Number, space separated
      * 
-     * @param int $courseid
+     * @param string $courseid
      * 
      * @return CourseResource | \Illuminate\Http\JsonResponse
     **/
-    public function getCourse($courseid, Request $request)
+    public function getCourse(string $courseid, Request $request)
     {
         try {
             $course  = Course::where('CourseID', '=', $courseid)->active()->firstOrFail();
