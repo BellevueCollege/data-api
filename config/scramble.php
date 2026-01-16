@@ -1,4 +1,12 @@
 <?php
+$appUrl  = rtrim((string) config('app.url'), '/');
+$parts   = parse_url($appUrl) ?: [];
+$scheme  = $parts['scheme'] ?? 'https';
+
+$subdir = trim($parts['path'] ?? '', '/');          // "aproot/data"
+$subdirPrefix = $subdir === '' ? '' : '/' . $subdir;
+
+$internalDomain = (string) config('dataapi.api_internal_domain');
 return [
     /*
      * Your API path. By default, all routes starting with this path will be added to the docs.
@@ -87,8 +95,8 @@ return [
      * ```
      */
     'servers' => [
-        'Main API - Use this by default' => config('app.url') . '/api',
-        'Internal API - /internal/ prefix' => 'http://'. config('dataapi.api_internal_domain') . '/api',
+        'Main API - Use this by default' => $appUrl . '/api',
+        'Internal API - /internal/ prefix' => $scheme.'://'.$internalDomain.$subdirPrefix.'/api',
     ],
 
     /**
