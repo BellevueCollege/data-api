@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Event;
 use App\Models\Client;
 use Illuminate\Support\Facades\URL;
+use Dedoc\Scramble\Scramble;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +35,29 @@ class AppServiceProvider extends ServiceProvider
                     ? $path 
                     : ($path === '/' ? "/$subdir" : "/$subdir$path")
             );
+        }
+        // Fix Scramble's auto-generated internal domain servers
+        if (class_exists(Scramble::class)) {
+            $subdir = trim(parse_url(config('app.url'), PHP_URL_PATH) ?? '', '/');
+            $internalDomain = config('dataapi.api_internal_domain');
+            
+            if ($subdir && $internalDomain) {
+                Scramble::afterOpenApiGenerated(function ($openApi) use ($subdir, $internalDomain) {
+                    $badUrl  = "https://{$internalDomain}/api";
+                    $goodUrl = "https://{$internalDomain}/{$subdir}/api";
+                    
+                    foreach ($openApi->paths as $pathItem) {
+                        if (isset($pathItem->servers)) {
+                            foreach ($pathItem->servers as $server) {
+                                if ($server->url === $badUrl) {
+                                    $server->url = $goodUrl;
+                                }
+                            }
+                        }
+                    }
+                    return $openApi;
+                });
+            }
         }
 
         /**
