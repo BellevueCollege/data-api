@@ -54,12 +54,11 @@ Route::group([
 **/
 Route::prefix('v1')->middleware([
     'auth.basic:api-basic,clientid',
+    'guard.api-basic',
     'throttle:60,1',
+    'can:write_transactions'
 ])->group(function () {
-
-    // Tell Laravel to use the api-basic guard for gates
-    Auth::shouldUse('api-basic');
-    Route::prefix('forms/pci')->middleware('can:write_transactions')->group(function () {
+    Route::prefix('forms/pci')->group(function () {
 
         // Error Message
         Route::get('transactions','TransactionController@getTransactions');
@@ -73,7 +72,7 @@ Route::prefix('v1')->middleware([
 
     });
 
-    Route::prefix('forms/evaluations')->middleware('can:write_transactions')->group(function () {
+    Route::prefix('forms/evaluations')->group(function () {
 
         // Route::get('transactions','TransactionController@getTransactions');
 
@@ -90,12 +89,11 @@ Route::prefix('v1')->middleware([
 **/
 Route::prefix('v1')->middleware([
     'auth.basic:api-basic,clientid',
+    'guard.api-basic',
     'throttle:60,1',
+    'can:write_user_questions'
 ])->group(function () {
-
-    // Tell Laravel to use the api-basic guard for gates
-    Auth::shouldUse('api-basic');
-    Route::prefix('copilot')->middleware('can:write_user_questions')->group(function () {
+    Route::prefix('copilot')->group(function () {
 
         // Record User Question
         Route::post('userquestion','UserQuestionController@postUserQuestion');
