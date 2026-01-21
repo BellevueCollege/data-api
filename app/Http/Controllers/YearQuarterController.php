@@ -3,144 +3,123 @@
 namespace App\Http\Controllers;
 
 use App\Models\YearQuarter;
-use App\Http\Transformers\YearQuarterTransformer;
+use App\Http\Resources\YearQuarterResource;
+use App\Http\Resources\YearQuarterCollection;
 use App\Http\Controllers\Controller;
-use App\Http\Serializers\CustomDataArraySerializer;
 use Illuminate\Http\Request;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use DB;
+use Carbon\Carbon;
+use stdClass;
 
 class YearQuarterController extends ApiController {
 
-    const WRAPPER = "quarters";
-
     /**
-     * Return all YearQuarters
+    * List all Terms (YearQuarters)
     * Status: inactive
     * No active route. No set serialization.
+    *
+    * @return YearQuarterCollection | stdClass
     **/
-    public function index(){
-
-        $yqrs  = YearQuarter::all();
-        $collection = new Collection($yqrs, new YearQuarterTransformer);
-
-        $fractal = new Manager;
-        $data = $fractal->createData($collection)->toArray();
-
-        return $this->respond($data);
-
+    public function index()
+    {
+        try {
+            $yqrs  = YearQuarter::all();
+            return new YearQuarterCollection($yqrs);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
+        }
     }
 
     /**
-    * Get YearQuarter based on a given YearQuarterID or STRM
+    * Get Term (YearQuarter) by YearQuarterID or STRM
     *
-    * use ?format=strm or ?format=yrq
+    * use ?format=strm or ?format=yrq to specify which format to return
+    *
+    * @param string $yqrid YearQuarterID or STRM
+    * @param \Illuminate\Http\Request $request
+    *
+    * @response array{quarter: array{quarter: string, strm: string, title: string}}
+    *
+    * @return \Illuminate\Http\JsonResponse | stdClass
     **/
     public function getYearQuarter($yqrid, Request $request){
-        if ( $request->input('format') === 'strm') {
-            $yqr = YearQuarter::where('STRM', '=', $yqrid)->first();
-        } else {
-            $yqr = YearQuarter::where('YearQuarterID', '=', $yqrid)->first();
+        try {
+            if ( $request->input('format') === 'strm') {
+                $yqr = YearQuarter::where('STRM', '=', $yqrid)->firstOrFail();
+            } else {
+                $yqr = YearQuarter::where('YearQuarterID', '=', $yqrid)->firstOrFail();
+            }
+            // We're wrapping in a quarter array to match the response format
+            // Normal wrapping methods don't work because of double 'quarter'
+            // in both the wrapper and the resource.
+            // This also requires the response to be manually listed in the
+            // docblock to ensure documentation is correct.
+            return response()->json([
+                'quarter' => new YearQuarterResource($yqr)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
         }
-
-        $data = $yqr;
-        //only serialize if not empty
-        if ( !is_null($yqr) ) {
-            $item = new Item($yqr, new YearQuarterTransformer, "quarter");
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($item)->toArray();
-        }
-
-        return $this->respond($data);
     }
 
 
     /**
-    * Get current YearQuarter
+    * Get Current Term (YearQuarter)
+    *
+    * @response array{quarter: array{quarter: string, strm: string, title: string}}
+    
+    * @return \Illuminate\Http\JsonResponse
     **/
     public function getCurrentYearQuarter() {
-        $yqr = YearQuarter::current()->first();
-
-        $data = $yqr;
-        //only serialize if not empty
-        if (!is_null($yqr)) {
-            $item = new Item($yqr, new YearQuarterTransformer, "quarter");
-
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($item)->toArray();
+        try {
+            $yqr = YearQuarter::current()->firstOrFail();
+            // We're wrapping in a quarter array to match the response format
+            // Normal wrapping methods don't work because of double 'quarter'
+            // in both the wrapper and the resource.
+            // This also requires the response to be manually listed in the
+            // docblock to ensure documentation is correct.
+            return response()->json([
+                'quarter' => new YearQuarterResource($yqr)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
         }
-
-        return $this->respond($data);
     }
 
     /**
-    * Returns "active" YearQuarters
+    * List Active Terms (YearQuarters)
+    *
+    * @return YearQuarterCollection | stdClass
     **/
     public function getViewableYearQuarters() {
 
-        //get max quarters to be shown
-        $max_yqr = config('dataapi.yearquarter_maxactive');
-        $lookahead = config('dataapi.yearquarter_lookahead');
-        $timezone = new \DateTimeZone(config("dataapi.timezone"));
+        try {
+            // get max quarters to be shown
+            $max_yqr = config('dataapi.yearquarter_maxactive');
 
-        //Create now date/time object
-        $now = new \DateTime();
-        $now->setTimezone($timezone);
-        $now_string = $now->format("Y-m-d H:i:s");
+            // get max days to look ahead
+            $lookaheadDays = config('dataapi.yearquarter_lookahead');
 
-        //Create lookahead date
-        $la_date = $now->add(new \DateInterval('P'.$lookahead.'D'));
-        $la_string = $la_date->format("Y-m-d H:i:s");
+            //Create now date/time object and lookahead date
+            $now = Carbon::now();
+            $lookahead = Carbon::now()->addDays($lookaheadDays);
 
-        //Use Eloquent query builder to query results
-        //DB::connection('ods')->enableQueryLog();
-        $yqrs = DB::connection('ods')
-            ->table('vw_YearQuarter')
-            ->join('vw_WebRegistrationSetting', 'vw_WebRegistrationSetting.YearQuarterID', '=', 'vw_YearQuarter.YearQuarterID')
-            ->where(function ($query) {
-                $lookahead = config('dataapi.yearquarter_lookahead');
-                $timezone = new \DateTimeZone(config("dataapi.timezone"));
-
-                //Create now date/time object
-                $now = new \DateTime();
-                $now->setTimezone($timezone);
-                $now_string = $now->format("Y-m-d H:i:s");
-
-                //Create lookahead date
-                $la_date = $now->add(new \DateInterval('P'.$lookahead.'D'));
-                $la_string = $la_date->format("Y-m-d H:i:s");
-
-                $query->whereNotNull('vw_WebRegistrationSetting.FirstRegistrationDate')
-                ->where('vw_WebRegistrationSetting.FirstRegistrationDate', '<=', $la_string )
-                ->orWhere('vw_YearQuarter.LastClassDay', '<=', $now_string );
-            })
-            ->select('vw_YearQuarter.YearQuarterID', 'vw_YearQuarter.STRM', 'vw_YearQuarter.Title', 'vw_YearQuarter.FirstClassDay', 'vw_YearQuarter.LastClassDay', 'vw_YearQuarter.AcademicYear')
-            ->orderBy('vw_YearQuarter.FirstClassDay', 'desc')
-            ->take($max_yqr)
-            ->get();
-         //$queries = DB::connection('ods')->getQueryLog();
-         //dd($queries);
-         //var_dump($yqrs);
-
-         //When using the Eloquent query builder, we must "hydrate" the results back to collection of objects
-         $data = $yqrs;
-
-         if ( !empty($yqrs) && !$yqrs->isEmpty() ) {
-            $yqr_hydrated = YearQuarter::hydrate($yqrs->toArray());
-            $collection = new Collection($yqr_hydrated, new YearQuarterTransformer, self::WRAPPER);
-
-            //Set data serializer
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-            $data = $fractal->createData($collection)->toArray();
-         }
-
-         return $this->respond($data);
+            // get active year quarters based on registration settings
+            // ideally this should move to the model in the future
+            $yrqs = YearQuarter::whereHas('webRegistrationSetting')
+                ->where(function($query) use ($lookahead, $now) {
+                    $query->whereHas('webRegistrationSetting', function ($q) use ($lookahead) {
+                        $q->whereNotNull('FirstRegistrationDate')
+                        ->where('FirstRegistrationDate', '<=', $lookahead);
+                    })
+                    ->orWhere('LastClassDay', '<=', $now);
+                })
+                ->orderBy('FirstClassDay', 'desc')
+                ->take($max_yqr)
+                ->get();
+            return new YearQuarterCollection($yrqs);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
+        }
     }
 
 }
-?>

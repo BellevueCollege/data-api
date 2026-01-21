@@ -2,14 +2,11 @@
 
 The Data API is a RESTful, primarily read-only web service for accessing Bellevue College data in JSON format.
 
+## Documentation Endpoint 📚
+
+- `docs/api` - The documentation endpoint for the Data API (thanks to [Scramble](https://scramble.dedoc.co/))
+
 ## API Endpoints 🌐
-
-### OpenAPI 3.0 Documentation
-
-As endpoints are added or updated, OpenAPI documentation is being added.
-
-- [JSON OpenAPI Documentation Endpoint](https://www2.bellevuecollege.edu/data/api/v1/docs/)
-- [Swagger Docs for API (in progress)](https://www2.bellevuecollege.edu/data/documentation/)
 
 ### Class/course data 🎓
 
@@ -64,11 +61,6 @@ It is only available on the internal subdomain.
 
 For explanation on terminology/objects used in the DataAPI, [refer to the terminology documentation](terminology.md).
 
-API Documentation is being written through [L5-Swagger](https://github.com/DarkaOnLine/L5-Swagger). Run the following to compile:
-
-```bash
-php artisan l5-swagger:generate 
-```
 
 ## Development Environment
 
@@ -86,6 +78,15 @@ Once Sail informs you of the IP address it is using, add the following entries t
 0.0.0.0 no.data-api.test
 ```
 
+To support SSL, you'll also need to generate a certificate and key.
+```bash
+openssl req -newkey rsa:2048 -nodes \
+  -keyout docker/nginx/ssl/data-api.key \
+  -x509 -days 365 \
+  -out docker/nginx/ssl/data-api.crt \
+  -subj "/CN=*.data-api.test"
+```
+
 ### Upgrade Considerations
 
 When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
@@ -95,6 +96,16 @@ Lines 28 and 46 of `/docker/8.1/Dockerfile` were added in order to add SQL Serve
 | Trunk                                                                                                                                                                     | Dev                                                                                                                                                                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-master)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=20) | [![Build status](https://dev.azure.com/bcintegration/data-api/_apis/build/status/data-api-dev)](https://dev.azure.com/bcintegration/data-api/_build/latest?definitionId=19) |
+
+## Configuration 🛠️
+
+### Azure Entra ID
+Make sure to set the following environment variables:
+
+- `AZURE_CLIENT_ID` - The client ID of the Azure Entra ID application
+- `AZURE_CLIENT_SECRET` - The client secret of the Azure Entra ID application
+- `AZURE_TENANT_ID` - The tenant ID of the Azure Entra ID application
+- `AZURE_REDIRECT_URI` - The redirect URI of the Azure Entra ID application (e.g. `https://no.data-api.test/admin/login/callback`)
 
 ## The BadgeZone 💫
 

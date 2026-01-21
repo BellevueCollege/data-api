@@ -10,21 +10,10 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\AuthTokenResource;
 
 /**
- * @OA\SecurityScheme(
- *     type="http",
- *     securityScheme="jwtAuth",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     in="header",
- * )
- * @OA\SecurityScheme(
- *     type="http",
- *     securityScheme="basicAuth",
- *     scheme="basic",
- *     in="header",
- * )
+ * Authentication Controller
  */
 class AuthController extends Controller
 {
@@ -35,69 +24,64 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['internalLogin', 'publicLogin']]);
     }
 
     /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     *
-     * @OA\Post(
-     *     path="/api/v1/auth/login",
-     *     operationId="login",
-     *     summary="Get JWT auth token",
-     *     description="Get JSON Web Token for Authentication",
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/x-www-form-urlencoded",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 @OA\Property(
-     *                      property="clientid",
-     *                      type="string",
-     *                 ),
-     *                 @OA\Property(
-     *                      property="clientkey",
-     *                      type="string",
-     *                 )
-     *             )
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful Operation",
-     *          @OA\JsonContent(
-     *              @OA\Property(
-     *                  property="access_token",
-     *                  description="JWT Access Token",
-     *                  type="string",
-     *              ),
-     *              @OA\Property(
-     *                  property="token_type",
-     *                  description="Token Type- always 'bearer'",
-     *                  type="string",
-     *              ),
-     *              @OA\Property(
-     *                  property="expires_in",
-     *                  description="Token expiration time in seconds",
-     *                  type="integer",
-     *              ),
-     *          ),
-     *     )
-     * )
+     * Login on Internal API Server
+     * 
+     * Pass in the clientid and clientkey as parameters, and a token will be returned.
+     * 
+     * **Note**: This endpoint is only available on the internal API server.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
      */
-    public function login()
+    public function internalLogin(Request $request)
     {
-        /*$credentials = request(['clientid', 'clientkey']);
+        $validated = $request->validate([
+            /** @query */
+            'clientid' => ['required', 'string'],
+            /** @query */
+            'clientkey' => ['required', 'string'],
+        ]);
+        return $this->performLogin($request);
+    }
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }*/
+    /**
+     * Login on Public API Server
+     * 
+     * Pass in the clientid and clientkey as parameters, and a token will be returned.
+     * 
+     * **Note**: This endpoint is only available on the public API server.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
+     */
+    public function publicLogin(Request $request)
+    {
+        $validated = $request->validate([
+            /** @query */
+            'clientid' => ['required', 'string'],
+            /** @query */
+            'clientkey' => ['required', 'string'],
+        ]);
+        return $this->performLogin($request);
+    }
 
+    /**
+     * Shared Login Method
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return AuthTokenResource
+     */
+    public function performLogin(Request $request)
+    {
         try {
-            //Config::set('auth.providers.users.model', \App\Models\Client::class);
-            $req_creds = request()->only('clientid', 'clientkey');
+            $req_creds = $request->only('clientid', 'clientkey');
             $creds = [ 'clientid' => $req_creds['clientid'], 'password' => $req_creds['clientkey'] ];
 
             if (! $token = auth()->guard('api')->attempt($creds)) {
@@ -151,50 +135,13 @@ class AuthController extends Controller
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return AuthTokenResource
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
+        return new AuthTokenResource([
             'access_token' => $token,
-            'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 }
-    /**
-     * @var \Tymon\JWTAuth\JWTAuth
-     */
-    /*
-    protected $auth;
-
-    public function __construct(JWTAuth $auth)
-    {
-        $this->auth = $auth;
-    }
-
-    public function loginPost(Request $request)
-    {
-        $this->validate($request, [
-            'clientid'    => 'required',
-            'clientkey' => 'required',
-        ]);
-
-        try {
-            $req_creds = $request->only('clientid', 'clientkey');
-            $creds = [ 'clientid' => $req_creds['clientid'], 'password' => $req_creds['clientkey'] ];
-
-            if (! $token = $this->auth->attempt($creds)) {
-                return response()->json(['user_not_found'], 404);
-            }
-        } catch (TokenExpiredException $e) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (JWTException $e) {
-            return response()->json(['token_absent' => $e->getMessage()], $e->getStatusCode());
-        }
-
-        return response()->json(compact('token'));
-    }
-}*/
