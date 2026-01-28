@@ -1,39 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Student;
 use App\Http\Controllers\ApiController;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Item;
-use League\Fractal\Resource\Collection;
-use App\Http\Transformers\StudentTransformer;
-use App\Http\Serializers\CustomDataArraySerializer;
+use App\Http\Resources\StudentResource;
+use stdClass;
 
 class StudentController extends ApiController {
 
     /**
      * Get a student by username
-    * Status: active
+     * 
+     * Pass in the student's username (e.g. "john.doe") as a parameter, and the student's data will be returned.
+     
+     * **Note**: This endpoint is authenticated, and only available on the internal API server.
+     * 
+     * @param string $username Student username
+     * 
+     * @return StudentResource | stdClass
     **/
     public function getStudentByUsername($username)
     {
-
-        $stu = Student::where('NTUserName', '=', $username)->first();
-
-        $data = $stu;
-
-        //handle gracefully if null
-        if ( !is_null($stu) ) {
-            $item = new Item($stu, new StudentTransformer);
-
-            $fractal = new Manager;
-            $fractal->setSerializer(new CustomDataArraySerializer);
-
-            $data = $fractal->createData($item)->toArray();
+        try {
+            // If username contains @, search UserPrincipal
+            if (strpos($username, '@') !== false) {
+                $stu = Student::where('UserPrincipalName', '=', $username)->firstOrFail();
+            } else {
+                $stu = Student::where('NTUserName', '=', $username)->firstOrFail();
+            }
+            return new StudentResource($stu);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
         }
-
-        return $this->respond($data);
     }
 
 }

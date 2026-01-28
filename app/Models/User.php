@@ -1,8 +1,6 @@
 <?php
 namespace App\Models;
 
-//use Illuminate\Auth\Authenticatable;
-//use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
@@ -10,8 +8,11 @@ use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable {
 
     protected $guard = 'admin';
-    //protected $fillable = ['id', 'name', 'clientid', 'clienturl'];
-    //protected $hidden   = ['created_at', 'updated_at', 'password'];
+    protected $fillable = [
+        'azure_id',
+        'name',
+        'email',
+    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

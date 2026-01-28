@@ -2,8 +2,8 @@
 
 namespace App\Scopes;
 
-use Adldap\Query\Builder;
-use Adldap\Laravel\Scopes\ScopeInterface;
+// use Adldap\Query\Builder;
+// use Adldap\Laravel\Scopes\ScopeInterface;
 
 class AdminGroupScope implements ScopeInterface
 {
@@ -16,9 +16,9 @@ class AdminGroupScope implements ScopeInterface
      */
     public function apply(Builder $query)
     {
-        // The distinguished name of our LDAP group.
-        $distname = config('dataapi.admin_group');
+        // // The distinguished name of our LDAP group.
+        // $distname = config('dataapi.admin_group');
 
-        $query->whereMemberOf($distname);
+        // $query->whereMemberOf($distname);
     }
 }

@@ -12,6 +12,9 @@ class Client extends Authenticatable implements JWTSubject {
     protected $connection = 'da';
     protected $fillable = ['id', 'clientname', 'clientid', 'clienturl'];
     protected $hidden   = ['created_at', 'updated_at', 'password'];
+    protected $casts = [
+        'permissions' => 'array',
+    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -40,5 +43,25 @@ class Client extends Authenticatable implements JWTSubject {
     public static function generateClientKey()
     {
         return (string) Str::uuid();
+    }
+
+    /**
+     * Sync client permissions by permission names
+     *
+     * @param array $permissionNames Array of permission names to sync
+     * @return array
+     */
+    public function syncPermissionsByName(array $permissionNames)
+    {
+        $this->permissions = $permissionNames;
+        $this->save();
+    }
+
+    /**
+     * Check if client has a specific permission
+     */
+    public function hasPermission($permissionName)
+    {
+        return in_array($permissionName, $this->permissions ?? []);
     }
 }

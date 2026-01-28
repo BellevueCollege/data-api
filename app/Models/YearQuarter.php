@@ -1,5 +1,6 @@
-<?php namespace App\Models;
+<?php namespace App\Models; 
 
+use App\Models\WebRegistrationSetting;
 use Illuminate\Database\Eloquent\Model;
 
 class YearQuarter extends Model
@@ -9,14 +10,23 @@ class YearQuarter extends Model
     **/
     protected $casts = [
         'STRM' => 'string',
+        'FirstClassDay' => 'datetime',
+        'LastClassDay' => 'datetime',
     ];
 
-     protected $table = 'vw_YearQuarter';
-     protected $connection = 'ods';
-     protected $primaryKey = null; //Lumen will convert the YearQuarterID value to an integer if we make it aware of it
-     //protected $primaryKey = 'YearQuarterID';
+    protected $table = 'vw_YearQuarter';
+    protected $connection = 'ods';
+    protected $primaryKey = null;
 
-     public function scopeCurrent($query) {
+    /**
+     * Has one WebRegistrationSetting
+     */
+    public function webRegistrationSetting()
+    {
+        return $this->hasOne(WebRegistrationSetting::class, 'STRM', 'STRM');
+    }
+
+    public function scopeCurrent($query) {
         //Create now date/time object
         $timezone = new \DateTimeZone(config("app.timezone"));
         $now = new \DateTime();
@@ -29,4 +39,3 @@ class YearQuarter extends Model
             ->take(1);
     }
 }
-?>
