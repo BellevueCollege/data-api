@@ -66,4 +66,29 @@ class SubjectController extends ApiController
             return response()->json(new stdClass());
         }
     }
+
+    /**
+     * Return Subject by YRQ or STRM
+     * 
+     * @param string $term Year Quarter or STRM
+     * 
+     * @response SubjectCollection
+     * 
+     * @return \Illuminate\Http\JsonResponse
+    **/
+    public function getSubjectsByYearQuarter($term, Request $request) {
+        $validated = $request->validate([
+            'format' => 'sometimes|string|in:yrq,strm',
+        ]);
+        try {
+            $format = $request->input('format') === 'strm' ? 'strm' : 'yrq';
+            $subjects = Subject::activeInTerm($term, $format)->get();
+            return response()->json([
+                'subjects' => new SubjectCollection($subjects)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(new stdClass());
+        }
+        
+    }
 }
