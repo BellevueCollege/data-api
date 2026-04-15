@@ -23,7 +23,7 @@ class CourseResource extends JsonResource
             $cd_active = $all_desc->activedescription()->first();
 
             if (!empty($cd_active)) {
-                $cd_desc = utf8_encode($cd_active->Description);
+                $cd_desc = preg_replace('/\s+/', ' ', trim($cd_active->Description));
             }
         }
 
