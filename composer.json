@@ -6,7 +6,7 @@
     "type": "project",
     "require": {
         "php": "^8.3.6",
-        "awobaz/compoships": "^2.5",
+        "awobaz/compoships": "^3.0",
         "dedoc/scramble": "^0.13.4",
         "laravel/framework": "^12.0",
         "laravel/helpers": "^1.1",
@@ -32,7 +32,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
-    },  
+    },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
