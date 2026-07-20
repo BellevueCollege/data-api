@@ -65,24 +65,23 @@ class Subject extends Model
                 ->where('subject_effective.EFFDT', '<=', $asOfDate);
         });
     }
-     /**
-      * Scope to Active Subjects in a Given Term
-      * 
-      * @param Builder $query
-      * @param string $term
-      * @param string $format |yrq|strm|
-      * @return Builder
-      */
-    public function scopeActiveInTerm( Builder $query, string $term, string $format = 'yrq' ) {
-        if ($format === 'strm') {
-            $termColumn = 'STRM';
-        } else {
-            $termColumn = 'YearQuarterID';
-        }
-        return $query->join('vw_Class', 'vw_PSSubject.SUBJECT', '=', 'vw_Class.Department')
-            ->where('vw_Class.' . $termColumn, $term)
-            ->select('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR as DESCR')
-            ->groupBy('vw_PSSubject.SUBJECT', 'vw_PSSubject.DESCR')
-            ->orderBy('vw_PSSubject.SUBJECT');
+
+    /**
+     * Scope to subjects that have at least one class offering in a given term.
+     *
+     * @param Builder $query
+     * @param string $term
+     * @param string $format |yrq|strm|
+     * @return Builder
+     */
+    public function scopeActiveInTerm(Builder $query, string $term, string $format = 'yrq'): Builder
+    {
+        $termColumn = $format === 'strm' ? 'STRM' : 'YearQuarterID';
+
+        return $query
+            ->whereHas('courseYearQuarters', function ($query) use ($term, $termColumn) {
+                $query->where($termColumn, $term);
+            })
+            ->orderBy('SUBJECT');
     }
 }
