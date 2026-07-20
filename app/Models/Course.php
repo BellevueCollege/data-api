@@ -73,9 +73,13 @@ class Course extends Model
     {
         $yqr = YearQuarter::current()->first();
 
+        // If no current year quarter is found, return an empty result set
+        if ($yqr === null) {
+            // Return an empty result set
+            return $query->whereRaw('1 = 0');
+        }
+
         return $this->scopeActiveAsOfYearQuarter($query, $yqr->YearQuarterID);
-        /*return $query->where('EffectiveYearQuarterBegin', '<=', $yqr->YearQuarterID)
-            ->where('EffectiveYearQuarterEnd', '>=', $yqr->YearQuarterID);*/
     }
 
     /**
