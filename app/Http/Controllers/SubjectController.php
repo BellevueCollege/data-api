@@ -17,16 +17,24 @@ class SubjectController extends ApiController
     * List all Subjects
     *
     * @param Request $request
-    
+
     * @return SubjectCollection | stdClass
     **/
     public function index(Request $request)
     {
         try {
             if ($request->input('filter') === 'active-credit') {
-                $subjects = Subject::
-                    where('DESCR', 'not like', 'CE%')
+                // Filter out Continuing Education subjects and inactive subjects. Data is very messy.
+                // Also exclude subjects with no available courses (same rules as getCoursesBySubject).
+                $subjects = Subject::query()
+                    ->where('DESCRFORMAL', 'not like', '%Continuing Education%')
+                    ->where('DESCRSHORT', 'not like', '%CE %')
+                    ->where('DESCR', 'not like', 'CE[^a-zA-Z0-9]%')
                     ->where('DESCR', 'not like', '% (Inactive)')
+                    ->where('EFF_STATUS', '=', 'A')
+                    ->whereHas('courses', function ($query) {
+                        $query->notTransferIn()->active();
+                    })
                     ->orderBy('SUBJECT', 'ASC')
                     ->get();
             } else {
@@ -69,11 +77,11 @@ class SubjectController extends ApiController
 
     /**
      * Return Subject by YRQ or STRM
-     * 
+     *
      * @param string $term Year Quarter or STRM
-     * 
+     *
      * @response SubjectCollection
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
     **/
     public function getSubjectsByYearQuarter($term, Request $request) {
@@ -89,6 +97,5 @@ class SubjectController extends ApiController
         } catch (\Exception $e) {
             return response()->json(new stdClass());
         }
-        
     }
 }
