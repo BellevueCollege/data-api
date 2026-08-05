@@ -13,6 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
+/**
+ * Uptime probe — excluded from throttle:180,1
+ **/
+Route::get('v1/health', 'HealthController@getHealth')
+    ->withoutMiddleware(['throttle:180,1'])
+    ->middleware('throttle:600,1');
+
 /*** Protected api endpoints ***/
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -24,8 +31,8 @@ use Illuminate\Http\Request;
  * Protected by JSON Web Token Auth
  **/
 Route::group([
-    'domain' => config('dataapi.api_internal_domain'), 
-    'middleware' => ['auth:api', 'throttle:60,1'], 
+    'domain' => config('dataapi.api_internal_domain'),
+    'middleware' => ['auth:api', 'throttle:60,1'],
     'prefix' => 'v1'
 ], function ($router) {
 
@@ -36,7 +43,7 @@ Route::group([
 
 /** Unprotected endpoints accessible only internally **/
 Route::group([
-    'domain' => config('dataapi.api_internal_domain'), 
+    'domain' => config('dataapi.api_internal_domain'),
     'prefix' => 'v1',
     'middleware' => ['throttle:60,1']
 ], function ($router) {
@@ -152,5 +159,5 @@ Route::prefix('v1')->middleware([
 
     // This is for Copilot Studio: Get a count of the links based on a provided SourceArea value
     Route::get('linkscount/{sourcearea}', 'LinkFoundController@getLinkCountBySourceArea');
-    
+
 });
