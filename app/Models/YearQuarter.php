@@ -1,4 +1,4 @@
-<?php namespace App\Models; 
+<?php namespace App\Models;
 
 use App\Models\WebRegistrationSetting;
 use Illuminate\Database\Eloquent\Model;
@@ -28,10 +28,9 @@ class YearQuarter extends Model
 
     public function scopeCurrent($query) {
         //Create now date/time object
-        $timezone = new \DateTimeZone(config("app.timezone"));
-        $now = new \DateTime();
-        $now->setTimezone($timezone);
-        $now_string = $now->format("Y-m-d 00:00:00.000");
+        $timezone = new \DateTimeZone(config('app.timezone'));
+        $now = now()->setTimezone($timezone);
+        $now_string = $now->format('Y-m-d 00:00:00.000');
 
         return $query->where('LastClassDay', '>=', $now_string)
             ->where('STRM', '<>', config('app.yearquarter_max'))
