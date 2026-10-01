@@ -21,10 +21,29 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:2fl+KtvkphFZ9A2m9m5xL3+8zgQpD6vH8jK4nM1pQ0s="/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <env name="MAIL_DRIVER" value="array"/>
+        <env name="JWT_SECRET" value="testing-jwt-secret-do-not-use-in-production"/>
+        <env name="DB_CONNECTION" value="da"/>
+        <env name="DEFAULT_DB_DRIVER" value="sqlite"/>
+        <env name="DEFAULT_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="DA_DB_DRIVER" value="sqlite"/>
+        <env name="DA_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="ODS_DB_DRIVER" value="sqlite"/>
+        <env name="ODS_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="PCIFORMS_DB_DRIVER" value="sqlite"/>
+        <env name="PCIFORMS_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="EVALFORMS_DB_DRIVER" value="sqlite"/>
+        <env name="EVALFORMS_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="EMPDIR_DB_DRIVER" value="sqlite"/>
+        <env name="EMPDIR_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="COPILOT_DB_DRIVER" value="sqlite"/>
+        <env name="COPILOT_DB_DATABASE" value="database/testing.sqlite"/>
+        <env name="API_INTERNAL_DOMAIN" value="internal.localhost.test"/>
+        <env name="YEARQUARTER_MAX" value="9999"/>
     </php>
 </phpunit>
