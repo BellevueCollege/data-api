@@ -87,6 +87,59 @@ openssl req -newkey rsa:2048 -nodes \
   -subj "/CN=*.data-api.test"
 ```
 
+### Testing
+
+PHPUnit tests are grouped under `tests/Feature` (HTTP/API behavior) and `tests/Unit` (models and JSON resources). Shared helpers live in `tests/Support`; base classes live next to them in `tests/`.
+
+#### Test types and where they live
+
+| Kind of test | Location | What it checks | Typical base class |
+| --- | --- | --- | --- |
+| API / HTTP | `tests/Feature/*Test.php` | A real request to `/api/...`: status codes, authentication, permissions, and response JSON | `Tests\ApiFeatureTestCase` |
+| Model logic | `tests/Unit/Models/*Test.php` | Scopes, queries, accessors, and other Eloquent behavior | `Tests\TestCase` when no database rows are needed; `Tests\DatabaseTestCase` when the test inserts or reads warehouse-shaped tables |
+| API JSON shape | `tests/Unit/Http/Resources/*Test.php` | The fields and values a `JsonResource` returns (the API contract for one object) | `Tests\Support\ResourceTestCase` for resources built from in-memory models; `Tests\DatabaseTestCase` when the resource needs related rows in SQLite |
+
+`tests/ApiFeatureTestCase.php` extends `DatabaseTestCase`, seeds a fixed clock for quarter-related data, and provides API client authentication helpers used by feature tests.
+
+`tests/Support/SqliteWarehouseSchema.php` defines local SQLite tables that mirror warehouse view names. `tests/Support/WarehouseFixtures.php` inserts common quarter, subject, and course rows for tests that need them.
+
+#### What the suite covers
+
+Feature tests cover public catalog endpoints (courses, subjects, quarters, class schedules), health checks, directory and login flows, internal employee and student APIs, form write endpoints, and permission boundaries between API clients. Unit tests cover model rules such as effective-dating and term filters, plus resource serialization for employees, students, courses, sections, and related payloads.
+
+#### When to update tests
+
+Use the table above to find the right place when behavior changes:
+
+- Routes, controllers, middleware, or auth on an endpoint — add or update a matching file under `tests/Feature/`.
+- Query or scope logic on a model — update or add a test under `tests/Unit/Models/`.
+- Fields or structure in API JSON (including resources) — update or add a test under `tests/Unit/Http/Resources/`, and adjust the related feature test if the HTTP response at the wire changed too.
+- Warehouse columns that tests insert or read — update `tests/Support/SqliteWarehouseSchema.php`, shared fixtures in `tests/Support/WarehouseFixtures.php`, and any test data in the affected Feature or Unit files.
+
+You usually do not need test changes for documentation-only edits, comments, or styling that does not change runtime behavior.
+
+#### Running tests
+
+Run the full suite:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+Run a single file or method with a path or `--filter`:
+
+```bash
+./vendor/bin/sail artisan test tests/Unit/Models/SubjectTest.php
+```
+
+#### Test database safety
+
+The project uses PHPUnit. `phpunit.xml` forces `APP_ENV=testing` and forces every application database driver and database name onto SQLite (`database/testing.sqlite`), even when your shell already has warehouse connection variables exported.
+
+`tests/TestCase.php` verifies that every configured connection uses the SQLite driver before `RefreshDatabase` or the parallel-testing database switch opens a connection. If any connection is not SQLite, the test run fails immediately and does not query a database.
+
+Tests that need warehouse-shaped data extend `tests/DatabaseTestCase.php`, which runs Laravel migrations and rebuilds SQL Server view names as local SQLite tables via `tests/Support/SqliteWarehouseSchema.php`. Inserts in tests—including `DB::connection('ods')`—write only to `database/testing.sqlite`, not to production or development warehouse databases.
+
 ### Upgrade Considerations
 
 When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
@@ -106,7 +159,3 @@ Make sure to set the following environment variables:
 - `AZURE_CLIENT_SECRET` - The client secret of the Azure Entra ID application
 - `AZURE_TENANT_ID` - The tenant ID of the Azure Entra ID application
 - `AZURE_REDIRECT_URI` - The redirect URI of the Azure Entra ID application (e.g. `https://no.data-api.test/admin/login/callback`)
-
-## The BadgeZone 💫
-
-[![emoji-log](https://cdn.rawgit.com/ahmadawais/stuff/ca97874/emoji-log/flat-round.svg)](https://github.com/ahmadawais/Emoji-Log/)
