@@ -6,11 +6,15 @@
     "guidelines": true,
     "mcp": true,
     "nightwatch": false,
+    "packages": [
+        "dedoc/scramble"
+    ],
     "sail": true,
     "skills": [
         "infer-conventions",
         "laravel-best-practices",
         "testing-best-practices",
-        "socialite-development"
+        "socialite-development",
+        "scramble-development"
     ]
 }
