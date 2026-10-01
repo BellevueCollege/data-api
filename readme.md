@@ -142,7 +142,7 @@ Tests that need warehouse-shaped data extend `tests/DatabaseTestCase.php`, which
 
 #### Continuous integration
 
-Azure Pipelines ([azure-pipelines.yml](azure-pipelines.yml)) triggers on pushes to `master` and on pull requests that target `master`, `hotfix-*`, or `release-*`. Each run uses two jobs on `ubuntu-24.04`:
+Azure Pipelines ([azure-pipelines.yml](azure-pipelines.yml)) triggers on pushes to `master`, on version tags matching `v*`, and on pull requests targeting any branch (draft PRs are excluded). Pushes that change only `azure-pipelines.yml` do not start a CI run. Each run uses two jobs on `ubuntu-24.04`:
 
 - **Test** — Installs Composer dependencies (including dev packages), builds and starts Laravel Sail, and runs `./vendor/bin/sail artisan test`. JUnit results appear on the pipeline **Tests** tab. [phpunit.xml](phpunit.xml) supplies test environment settings; the agent does not use a `.env` file or warehouse credentials.
 - **Build** — Depends on **Test**. Installs production dependencies with `composer install --no-dev` and publishes the `data-api` pipeline artifact for release deployment.

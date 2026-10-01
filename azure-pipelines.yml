@@ -1,14 +1,24 @@
+name: data-api
+
 trigger:
   branches:
-   include:
-     - master
+    include:
+      - master
+  tags:
+    include:
+      - 'v*'
+  paths:
+    exclude:
+      - azure-pipelines.yml
 
 pr:
- branches:
-   include:
-     - master
-     - hotfix-*
-     - release-*
+  drafts: false
+  branches:
+    include:
+      - '*'
+  paths:
+    include:
+      - '**'
 
 variables:
   phpVersion: 8.3
@@ -53,7 +63,7 @@ jobs:
       docker info
       export APP_SERVICE="$(appService)"
       export WWWUSER="$(wwwUser)"
-      export WWWGROUP="$(id -g)"
+      export WWWGROUP=`id -g`
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       ./vendor/bin/sail build
       ./vendor/bin/sail up -d
@@ -64,7 +74,7 @@ jobs:
       set -euo pipefail
       export APP_SERVICE="$(appService)"
       export WWWUSER="$(wwwUser)"
-      export WWWGROUP="$(id -g)"
+      export WWWGROUP=`id -g`
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       mkdir -p test-results
       ./vendor/bin/sail artisan test --compact --log-junit test-results/junit.xml
@@ -82,7 +92,7 @@ jobs:
   - script: |
       export APP_SERVICE="$(appService)"
       export WWWUSER="$(wwwUser)"
-      export WWWGROUP="$(id -g)"
+      export WWWGROUP=`id -g`
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       ./vendor/bin/sail down --remove-orphans
     displayName: Sail down
