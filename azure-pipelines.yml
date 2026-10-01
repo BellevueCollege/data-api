@@ -44,6 +44,14 @@ jobs:
         composer | "$(Agent.OS)"
       path: $(HOME)/.composer/cache
 
+  - task: Cache@2
+    displayName: Cache Docker build layers
+    inputs:
+      key: 'docker | "$(Agent.OS)" | docker/8.3/Dockerfile'
+      restoreKeys: |
+        docker | "$(Agent.OS)"
+      path: $(Pipeline.Workspace)/.docker-build-cache
+
   - script: |
       sudo update-alternatives --set php /usr/bin/php$(phpVersion)
       sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
@@ -65,8 +73,27 @@ jobs:
       export WWWUSER="$(wwwUser)"
       export WWWGROUP=`id -g`
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
-      ./vendor/bin/sail build
-      ./vendor/bin/sail up -d
+      export DOCKER_BUILDKIT=1
+      CACHE_DIR="$(Pipeline.Workspace)/.docker-build-cache"
+      mkdir -p "$CACHE_DIR"
+      if ! docker buildx inspect ado-sail-builder >/dev/null 2>&1; then
+        docker buildx create --name ado-sail-builder --use
+      else
+        docker buildx use ado-sail-builder
+      fi
+      CACHE_FROM_ARGS=()
+      if [ -n "$(ls -A "$CACHE_DIR" 2>/dev/null)" ]; then
+        CACHE_FROM_ARGS=(--cache-from "type=local,src=$CACHE_DIR")
+      fi
+      docker buildx build \
+        --load \
+        "${CACHE_FROM_ARGS[@]}" \
+        --cache-to "type=local,dest=$CACHE_DIR,mode=max" \
+        --build-arg "WWWGROUP=$(id -g)" \
+        -t sail-8.3/app \
+        -f docker/8.3/Dockerfile \
+        docker/8.3
+      ./vendor/bin/sail up -d --no-build
       ./vendor/bin/sail artisan --version
     displayName: Sail build and start
 
@@ -77,7 +104,12 @@ jobs:
       export WWWGROUP=`id -g`
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       mkdir -p test-results
-      ./vendor/bin/sail artisan test --compact --log-junit test-results/junit.xml
+      set +e
+      ./vendor/bin/sail artisan test --compact --do-not-cache-result --log-junit /tmp/junit.xml
+      TEST_EXIT=$?
+      set -e
+      ./vendor/bin/sail exec -T "$(appService)" cat /tmp/junit.xml > test-results/junit.xml
+      exit $TEST_EXIT
     displayName: Run PHPUnit via Sail
 
   - task: PublishTestResults@2
