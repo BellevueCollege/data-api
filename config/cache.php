@@ -91,4 +91,16 @@ return [
         str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Classes that may be unserialized from cache storage. When set to false,
+    | no PHP classes will be unserialized from cache (Laravel 13 default).
+    |
+    */
+
+    'serializable_classes' => false,
+
 ];
