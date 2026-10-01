@@ -140,6 +140,12 @@ The project uses PHPUnit. `phpunit.xml` forces `APP_ENV=testing` and forces ever
 
 Tests that need warehouse-shaped data extend `tests/DatabaseTestCase.php`, which runs Laravel migrations and rebuilds SQL Server view names as local SQLite tables via `tests/Support/SqliteWarehouseSchema.php`. Inserts in tests—including `DB::connection('ods')`—write only to `database/testing.sqlite`, not to production or development warehouse databases.
 
+#### Continuous integration
+
+[azure-pipelines.yml](azure-pipelines.yml) extends [bc-laravel-devops-templates](https://github.com/BellevueCollege/bc-laravel-devops-templates): optional **Test** (Sail + `./vendor/bin/sail artisan test`, JUnit on the **Tests** tab), **Build** (release artifact), and **DeployTest** to **ApacheTest-C** on push to `trunk` or PRs targeting `trunk` / `hotfix-*` / `release-*`. All other PRs run Test and Build only. [phpunit.xml](phpunit.xml) supplies test environment settings; the agent does not use warehouse credentials.
+
+Register the pipeline in Azure DevOps as **`data-api`** (must match [azure-pipelines-release.yml](azure-pipelines-release.yml) `resources.pipelines[].source`). [azure-pipelines-release.yml](azure-pipelines-release.yml) deploys production on `v*` tags. Use Library groups **Data API Test** / **Data API Prod** for Replace Tokens. Default branch should be **`trunk`** before production cutover (rename from `master` in GitHub/ADO first).
+
 ### Upgrade Considerations
 
 When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
