@@ -10,6 +10,9 @@ class Client extends Authenticatable implements JWTSubject {
     use Notifiable;
 
     protected $connection = 'da';
+
+    protected $table = 'Clients';
+
     protected $fillable = ['id', 'clientname', 'clientid', 'clienturl'];
     protected $hidden   = ['created_at', 'updated_at', 'password'];
     protected $casts = [
