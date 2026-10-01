@@ -23,6 +23,7 @@ pr:
 variables:
   phpVersion: 8.3
   appService: data-api.test
+  composerCacheDir: $(Pipeline.Workspace)/.composer-cache
 
 jobs:
 - job: Test
@@ -41,7 +42,7 @@ jobs:
       key: 'composer | "$(Agent.OS)" | composer.lock'
       restoreKeys: |
         composer | "$(Agent.OS)"
-      path: $(HOME)/.composer/cache
+      path: $(composerCacheDir)
 
   - task: Cache@2
     displayName: Cache Docker build layers
@@ -60,9 +61,13 @@ jobs:
       php -version
     displayName: Use PHP version $(phpVersion)
 
-  - script: composer install --prefer-dist --no-interaction --no-progress
+  - script: |
+      set -euo pipefail
+      mkdir -p "$(composerCacheDir)"
+      composer install --prefer-dist --no-interaction --no-progress
     displayName: Composer install (with dev dependencies)
     env:
+      COMPOSER_CACHE_DIR: $(composerCacheDir)
       APP_KEY: base64:2fl+KtvkphFZ9A2m9m5xL3+8zgQpD6vH8jK4nM1pQ0s=
 
   - script: |
@@ -99,8 +104,10 @@ jobs:
   - script: |
       set -euo pipefail
       mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache test-results
+      if [ ! -f .env ]; then cp .env.example .env; fi
       touch database/testing.sqlite
-      chmod -R u+rwX,g+rwX database storage bootstrap/cache
+      chmod u+rwX database storage bootstrap/cache
+      chmod u+rw database/testing.sqlite
     displayName: Prepare writable test directories
 
   - script: |
@@ -148,6 +155,14 @@ jobs:
   - checkout: self
     clean: true
 
+  - task: Cache@2
+    displayName: Cache Composer packages
+    inputs:
+      key: 'composer | "$(Agent.OS)" | composer.lock'
+      restoreKeys: |
+        composer | "$(Agent.OS)"
+      path: $(composerCacheDir)
+
   - script: |
       sudo update-alternatives --set php /usr/bin/php$(phpVersion)
       sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
@@ -157,8 +172,13 @@ jobs:
       php -version
     displayName: Use PHP version $(phpVersion)
 
-  - script: composer install --optimize-autoloader --no-dev
+  - script: |
+      set -euo pipefail
+      mkdir -p "$(composerCacheDir)"
+      composer install --optimize-autoloader --no-dev
     displayName: Composer install
+    env:
+      COMPOSER_CACHE_DIR: $(composerCacheDir)
 
   - task: PublishPipelineArtifact@1
     displayName: Publish pipeline artifact
