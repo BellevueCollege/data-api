@@ -10,7 +10,13 @@ class Course extends Model
     protected $table = 'vw_Course';
     protected $connection = 'ods';
     protected $primaryKey = 'PSCourseID';
+    public $incrementing = false;
     public $timestamps = false;
+
+    /**
+     * @var string
+     */
+    protected $keyType = 'string';
 
     /**
      * In Eloquent relationships, you can also define the inverse of the relationship, in this case, the parent(s).
