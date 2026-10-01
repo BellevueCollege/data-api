@@ -10,26 +10,109 @@ pr:
      - hotfix-*
      - release-*
 
-pool:
-  vmImage: ubuntu-24.04
-
 variables:
   phpVersion: 8.3
+  appService: data-api.test
+  wwwUser: 1000
 
-steps:
-- script: |
-    sudo update-alternatives --set php /usr/bin/php$(phpVersion)
-    sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
-    sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
-    sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
-    sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
-    php -version
-  displayName: 'Use PHP version $(phpVersion)'
+jobs:
+- job: Test
+  displayName: Test (Sail)
+  pool:
+    vmImage: ubuntu-24.04
+  variables:
+    composeProjectName: dataapi$(Build.BuildId)
+  steps:
+  - checkout: self
+    clean: true
 
-- script: composer install --optimize-autoloader --no-dev
-  displayName: 'composer install'
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifact: 'data-api'
-    publishLocation: 'pipeline'
+  - task: Cache@2
+    displayName: Cache Composer packages
+    inputs:
+      key: 'composer | "$(Agent.OS)" | composer.lock'
+      restoreKeys: |
+        composer | "$(Agent.OS)"
+      path: $(HOME)/.composer/cache
+
+  - script: |
+      sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+      sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+      sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+      sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+      sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+      php -version
+    displayName: Use PHP version $(phpVersion)
+
+  - script: composer install --prefer-dist --no-interaction --no-progress
+    displayName: Composer install (with dev dependencies)
+    env:
+      APP_KEY: base64:2fl+KtvkphFZ9A2m9m5xL3+8zgQpD6vH8jK4nM1pQ0s=
+
+  - script: |
+      set -euo pipefail
+      docker info
+      export APP_SERVICE="$(appService)"
+      export WWWUSER="$(wwwUser)"
+      export WWWGROUP="$(id -g)"
+      export COMPOSE_PROJECT_NAME="$(composeProjectName)"
+      ./vendor/bin/sail build
+      ./vendor/bin/sail up -d
+      ./vendor/bin/sail artisan --version
+    displayName: Sail build and start
+
+  - script: |
+      set -euo pipefail
+      export APP_SERVICE="$(appService)"
+      export WWWUSER="$(wwwUser)"
+      export WWWGROUP="$(id -g)"
+      export COMPOSE_PROJECT_NAME="$(composeProjectName)"
+      mkdir -p test-results
+      ./vendor/bin/sail artisan test --compact --log-junit test-results/junit.xml
+    displayName: Run PHPUnit via Sail
+
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/junit.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+
+  - script: |
+      export APP_SERVICE="$(appService)"
+      export WWWUSER="$(wwwUser)"
+      export WWWGROUP="$(id -g)"
+      export COMPOSE_PROJECT_NAME="$(composeProjectName)"
+      ./vendor/bin/sail down --remove-orphans
+    displayName: Sail down
+    condition: always()
+
+- job: Build
+  displayName: Build release artifact
+  dependsOn: Test
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-24.04
+  steps:
+  - checkout: self
+    clean: true
+
+  - script: |
+      sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+      sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+      sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+      sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+      sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+      php -version
+    displayName: Use PHP version $(phpVersion)
+
+  - script: composer install --optimize-autoloader --no-dev
+    displayName: Composer install
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish pipeline artifact
+    inputs:
+      targetPath: '$(Pipeline.Workspace)'
+      artifact: 'data-api'
+      publishLocation: 'pipeline'

@@ -140,6 +140,13 @@ The project uses PHPUnit. `phpunit.xml` forces `APP_ENV=testing` and forces ever
 
 Tests that need warehouse-shaped data extend `tests/DatabaseTestCase.php`, which runs Laravel migrations and rebuilds SQL Server view names as local SQLite tables via `tests/Support/SqliteWarehouseSchema.php`. Inserts in tests—including `DB::connection('ods')`—write only to `database/testing.sqlite`, not to production or development warehouse databases.
 
+#### Continuous integration
+
+Azure Pipelines ([azure-pipelines.yml](azure-pipelines.yml)) triggers on pushes to `master` and on pull requests that target `master`, `hotfix-*`, or `release-*`. Each run uses two jobs on `ubuntu-24.04`:
+
+- **Test** — Installs Composer dependencies (including dev packages), builds and starts Laravel Sail, and runs `./vendor/bin/sail artisan test`. JUnit results appear on the pipeline **Tests** tab. [phpunit.xml](phpunit.xml) supplies test environment settings; the agent does not use a `.env` file or warehouse credentials.
+- **Build** — Depends on **Test**. Installs production dependencies with `composer install --no-dev` and publishes the `data-api` pipeline artifact for release deployment.
+
 ### Upgrade Considerations
 
 When upgrading to a new version of PHP, the Dockerfile may need to be updated as well.
