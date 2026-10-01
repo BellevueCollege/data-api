@@ -23,7 +23,6 @@ pr:
 variables:
   phpVersion: 8.3
   appService: data-api.test
-  wwwUser: 1000
 
 jobs:
 - job: Test
@@ -70,8 +69,8 @@ jobs:
       set -euo pipefail
       docker info
       export APP_SERVICE="$(appService)"
-      export WWWUSER="$(wwwUser)"
-      export WWWGROUP=`id -g`
+      export WWWUSER="$(id -u)"
+      export WWWGROUP="$(id -g)"
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       export DOCKER_BUILDKIT=1
       CACHE_DIR="$(Pipeline.Workspace)/.docker-build-cache"
@@ -99,16 +98,25 @@ jobs:
 
   - script: |
       set -euo pipefail
+      mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache test-results
+      touch database/testing.sqlite
+      chmod -R u+rwX,g+rwX database storage bootstrap/cache
+    displayName: Prepare writable test directories
+
+  - script: |
+      set -euo pipefail
       export APP_SERVICE="$(appService)"
-      export WWWUSER="$(wwwUser)"
-      export WWWGROUP=`id -g`
+      export WWWUSER="$(id -u)"
+      export WWWGROUP="$(id -g)"
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       mkdir -p test-results
       set +e
       ./vendor/bin/sail artisan test --compact --do-not-cache-result --log-junit /tmp/junit.xml
       TEST_EXIT=$?
       set -e
-      ./vendor/bin/sail exec -T "$(appService)" cat /tmp/junit.xml > test-results/junit.xml
+      if ./vendor/bin/sail exec -T "$(appService)" test -f /tmp/junit.xml; then
+        ./vendor/bin/sail exec -T "$(appService)" cat /tmp/junit.xml > test-results/junit.xml
+      fi
       exit $TEST_EXIT
     displayName: Run PHPUnit via Sail
 
@@ -123,8 +131,8 @@ jobs:
 
   - script: |
       export APP_SERVICE="$(appService)"
-      export WWWUSER="$(wwwUser)"
-      export WWWGROUP=`id -g`
+      export WWWUSER="$(id -u)"
+      export WWWGROUP="$(id -g)"
       export COMPOSE_PROJECT_NAME="$(composeProjectName)"
       ./vendor/bin/sail down --remove-orphans
     displayName: Sail down

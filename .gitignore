@@ -15,3 +15,5 @@ yarn-error.log
 .DS_Store
 /storage/api-docs
 /docker/nginx/ssl
+/.docker-build-cache
+.phpunit.result.cache
