@@ -3,6 +3,8 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\ParallelTesting;
 
 /**
  * Forces every application database connection onto one SQLite file and refuses to run
@@ -25,10 +27,31 @@ abstract class TestCase extends BaseTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
+        // Reject a non-SQLite driver before setup opens connections via RefreshDatabase
+        // or the parallel-testing database switch.
+        if (! $this->withoutBootingFramework()) {
+            $this->bootApplicationBeforeDatabaseGuard();
+            $this->assertTestDatabaseConnectionsUseSqlite();
+            $this->applySqliteDatabasePaths();
+            $this->purgeDatabaseConnections();
+            ParallelTesting::callSetUpTestCaseCallbacks($this);
+        }
 
-        $this->applySqliteDatabasePaths();
-        $this->assertTestDatabaseConnectionsUseSqlite();
+        parent::setUp();
+    }
+
+    /**
+     * Boot the application before the database guard so the guard can read connection config.
+     *
+     * Parent setup skips creating the application when one already exists.
+     */
+    protected function bootApplicationBeforeDatabaseGuard(): void
+    {
+        if ($this->app) {
+            return;
+        }
+
+        $this->refreshApplication();
     }
 
     protected function applySqliteDatabasePaths(): void
@@ -53,10 +76,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function assertTestDatabaseConnectionsUseSqlite(): void
     {
-        if (! app()->environment('testing')) {
-            return;
-        }
-
         foreach (self::SQLITE_CONNECTIONS as $connectionName) {
             $driver = config("database.connections.{$connectionName}.driver");
 
@@ -65,6 +84,13 @@ abstract class TestCase extends BaseTestCase
                     "Refusing to run tests: connection [{$connectionName}] driver is [{$driver}], expected sqlite."
                 );
             }
+        }
+    }
+
+    protected function purgeDatabaseConnections(): void
+    {
+        foreach (self::SQLITE_CONNECTIONS as $connectionName) {
+            DB::purge($connectionName);
         }
     }
 }
