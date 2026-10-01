@@ -4,7 +4,6 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\ParallelTesting;
 
 /**
  * Forces every application database connection onto one SQLite file and refuses to run
@@ -12,7 +11,9 @@ use Illuminate\Support\Facades\ParallelTesting;
  */
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
+    use CreatesApplication {
+        createApplication as bootstrapApplication;
+    }
 
     /** @var list<string> */
     private const SQLITE_CONNECTIONS = [
@@ -25,33 +26,18 @@ abstract class TestCase extends BaseTestCase
         'copilot',
     ];
 
-    protected function setUp(): void
-    {
-        // Reject a non-SQLite driver before setup opens connections via RefreshDatabase
-        // or the parallel-testing database switch.
-        if (! $this->withoutBootingFramework()) {
-            $this->bootApplicationBeforeDatabaseGuard();
-            $this->assertTestDatabaseConnectionsUseSqlite();
-            $this->applySqliteDatabasePaths();
-            $this->purgeDatabaseConnections();
-            ParallelTesting::callSetUpTestCaseCallbacks($this);
-        }
-
-        parent::setUp();
-    }
-
     /**
-     * Boot the application before the database guard so the guard can read connection config.
-     *
-     * Parent setup skips creating the application when one already exists.
+     * @return \Illuminate\Foundation\Application
      */
-    protected function bootApplicationBeforeDatabaseGuard(): void
+    public function createApplication()
     {
-        if ($this->app) {
-            return;
-        }
+        $app = $this->bootstrapApplication();
 
-        $this->refreshApplication();
+        $this->assertTestDatabaseConnectionsUseSqlite();
+        $this->applySqliteDatabasePaths();
+        $this->purgeDatabaseConnections();
+
+        return $app;
     }
 
     protected function applySqliteDatabasePaths(): void
