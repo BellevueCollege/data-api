@@ -35,10 +35,10 @@ extends:
     runNpm: false
     cacheRoutes: false
 
-    serverAppRoot: '/var/www/nonpub/data-api'
+    serverAppRoot: '/var/www/nonpub/dataapi'
     serverPublicRoot: '/var/www/html/aproot/data'
     serverTempRoot: '/var/www/nonpub/TEMP'
-    serverBackupPath: '/var/www/nonpub/backups/data-api'
+    serverBackupPath: '/var/www/nonpub/backups/dataapi'
 
     testEnvironments:
       - name: ApacheTestC

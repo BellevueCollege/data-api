@@ -25,10 +25,10 @@ extends:
 
     cacheRoutes: false
 
-    serverAppRoot: '/var/www/nonpub/data-api'
+    serverAppRoot: '/var/www/nonpub/dataapi'
     serverPublicRoot: '/var/www/html/data'
     serverTempRoot: '/var/www/nonpub/TEMP'
-    serverBackupPath: '/var/www/nonpub/backups/data-api'
+    serverBackupPath: '/var/www/nonpub/backups/dataapi'
 
     productionEnvironments:
       - name: ApacheProdC
