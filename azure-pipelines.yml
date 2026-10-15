@@ -1,35 +1,47 @@
 trigger:
   branches:
-   include:
-     - master
+    include:
+      - trunk
+  tags:
+    include:
+      - 'v*'
+  paths:
+    exclude:
+      - azure-pipelines.yml
+      - azure-pipelines-release.yml
 
 pr:
- branches:
-   include:
-     - master
-     - hotfix-*
-     - release-*
+  drafts: false
+  branches:
+    include:
+      - '*'
 
-pool:
-  vmImage: ubuntu-24.04
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: BellevueCollege/bc-laravel-devops-templates
+      endpoint: github-service-connection
+      ref: refs/heads/trunk
 
-variables:
-  phpVersion: 8.3
+extends:
+  template: templates/ci/laravel-ci.yml@templates
+  parameters:
+    appName: 'data-api'
 
-steps:
-- script: |
-    sudo update-alternatives --set php /usr/bin/php$(phpVersion)
-    sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
-    sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
-    sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
-    sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
-    php -version
-  displayName: 'Use PHP version $(phpVersion)'
+    runTests: false
 
-- script: composer install --optimize-autoloader --no-dev
-  displayName: 'composer install'
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifact: 'data-api'
-    publishLocation: 'pipeline'
+    phpVersion: '8.3'
+    runNpm: false
+    cacheRoutes: false
+
+    serverAppRoot: '/var/www/nonpub/data-api'
+    serverPublicRoot: '/var/www/html/data-api'
+    serverTempRoot: '/var/www/nonpub/TEMP'
+    serverBackupPath: '/var/www/nonpub/backups/data-api'
+
+    testEnvironments:
+      - name: ApacheTestC
+        displayName: 'Apache: Test'
+        environment: ApacheTest-C
+        variableGroup: 'Data API Test'
