@@ -36,7 +36,7 @@ extends:
     cacheRoutes: false
 
     serverAppRoot: '/var/www/nonpub/data-api'
-    serverPublicRoot: '/var/www/html/data-api'
+    serverPublicRoot: '/var/www/html/aproot/data'
     serverTempRoot: '/var/www/nonpub/TEMP'
     serverBackupPath: '/var/www/nonpub/backups/data-api'
 
