@@ -34,6 +34,7 @@ extends:
     phpVersion: '8.3'
     runNpm: false
     cacheRoutes: false
+    cacheBootstrapOnDeploy: false
 
     serverAppRoot: '/var/www/nonpub/dataapi'
     serverPublicRoot: '/var/www/html/aproot/data'
