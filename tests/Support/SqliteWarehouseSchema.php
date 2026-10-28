@@ -7,37 +7,71 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Recreates production SQL Server view names as SQLite tables so Eloquent can query them without a warehouse.
+ *
+ * Each column carries an expected MSSQL type (including length). schema:compare validates those
+ * against SQL Server; rebuild() derives SQLite Blueprint lengths from the same annotations.
  */
 class SqliteWarehouseSchema
 {
     public static function rebuild(): void
     {
         self::dropAllTables();
-        self::createOdsTables();
-        self::createDirectoryTables();
-        self::createCopilotTables();
+
+        foreach (self::columnsByConnection() as $connection => $tables) {
+            foreach ($tables as $table => $columns) {
+                Schema::connection($connection)->create($table, function (Blueprint $blueprint) use ($columns) {
+                    foreach ($columns as $column) {
+                        $column->applyTo($blueprint);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Warehouse objects recreated in SQLite for tests, keyed by connection name.
+     *
+     * @return array<string, list<string>>
+     */
+    public static function warehouseObjectsByConnection(): array
+    {
+        $objects = [];
+
+        foreach (self::columnsByConnection() as $connection => $tables) {
+            $objects[$connection] = array_keys($tables);
+        }
+
+        return $objects;
+    }
+
+    /**
+     * Expected warehouse columns for schema:compare (excludes sqlite-only surrogates).
+     *
+     * @return array<string, array<string, list<WarehouseColumn>>>
+     */
+    public static function expectedWarehouseColumns(): array
+    {
+        $expected = [];
+
+        foreach (self::columnsByConnection() as $connection => $tables) {
+            foreach ($tables as $table => $columns) {
+                $warehouseColumns = array_values(array_filter(
+                    $columns,
+                    fn (WarehouseColumn $column): bool => ! $column->sqliteOnly
+                ));
+
+                if ($warehouseColumns !== []) {
+                    $expected[$connection][$table] = $warehouseColumns;
+                }
+            }
+        }
+
+        return $expected;
     }
 
     public static function dropAllTables(): void
     {
-        $tables = [
-            'ods' => [
-                'vw_Course',
-                'vw_CourseDescription',
-                'vw_YearQuarter',
-                'vw_PS_CS_SubjectTable',
-                'vw_Class',
-                'vw_ClassSchedule',
-                'vw_Day',
-                'vw_WebRegistrationSetting',
-                'vw_Student_Unfiltered',
-                'vw_Employee',
-            ],
-            'empdirectory' => ['Employees'],
-            'copilot' => ['vw_LinkFound'],
-        ];
-
-        foreach ($tables as $connection => $connectionTables) {
+        foreach (self::warehouseObjectsByConnection() as $connection => $connectionTables) {
             Schema::connection($connection)->disableForeignKeyConstraints();
 
             foreach ($connectionTables as $table) {
@@ -48,147 +82,141 @@ class SqliteWarehouseSchema
         }
     }
 
-    private static function createOdsTables(): void
+    /**
+     * @return array<string, array<string, list<WarehouseColumn>>>
+     */
+    public static function columnsByConnection(): array
     {
-        Schema::connection('ods')->create('vw_YearQuarter', function (Blueprint $table) {
-            $table->string('YearQuarterID')->nullable();
-            $table->string('STRM')->nullable();
-            $table->string('Title')->nullable();
-            $table->dateTime('FirstClassDay')->nullable();
-            $table->dateTime('LastClassDay')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_WebRegistrationSetting', function (Blueprint $table) {
-            $table->string('STRM')->primary();
-            $table->dateTime('FirstRegistrationDate')->nullable();
-            $table->dateTime('LastRegistrationDate')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_PS_CS_SubjectTable', function (Blueprint $table) {
-            $table->string('SUBJECT');
-            $table->string('DESCR')->nullable();
-            $table->string('DESCRFORMAL')->nullable();
-            $table->string('DESCRSHORT')->nullable();
-            $table->date('EFFDT')->nullable();
-            $table->string('EFF_STATUS')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_Course', function (Blueprint $table) {
-            $table->string('PSCourseID')->primary();
-            $table->string('CourseID')->nullable();
-            $table->string('CourseSubject')->nullable();
-            $table->string('CatalogNumber')->nullable();
-            $table->string('CourseTitle')->nullable();
-            $table->string('CourseTitle2')->nullable();
-            $table->string('EffectiveYearQuarterEnd')->nullable();
-            $table->decimal('Credits', 8, 2)->nullable();
-            $table->boolean('VariableCredits')->nullable();
-            $table->string('note')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_CourseDescription', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('CourseID')->nullable();
-            $table->text('Description')->nullable();
-            $table->string('EffectiveYearQuarterBegin')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_Class', function (Blueprint $table) {
-            $table->string('PSClassID')->nullable();
-            $table->string('ClassID')->nullable();
-            $table->string('YearQuarterID')->nullable();
-            $table->string('STRM')->nullable();
-            $table->string('Department')->nullable();
-            $table->string('CourseNumber')->nullable();
-            $table->string('CourseID')->nullable();
-            $table->string('CourseTitle')->nullable();
-            $table->string('Section')->nullable();
-            $table->string('ItemNumber')->nullable();
-            $table->string('ClassNumber')->nullable();
-            $table->string('InstructorName')->nullable();
-            $table->dateTime('StartDate')->nullable();
-            $table->dateTime('EndDate')->nullable();
-            $table->string('DayID')->nullable();
-            $table->string('Room')->nullable();
-            $table->string('RoomDescr')->nullable();
-            $table->dateTime('StartTime')->nullable();
-            $table->dateTime('EndTime')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_ClassSchedule', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('PSClassID')->nullable();
-            $table->string('DayID')->nullable();
-            $table->string('Room')->nullable();
-            $table->string('RoomDescr')->nullable();
-            $table->string('InstructorName')->nullable();
-            $table->dateTime('StartDate')->nullable();
-            $table->dateTime('EndDate')->nullable();
-            $table->dateTime('StartTime')->nullable();
-            $table->dateTime('EndTime')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_Day', function (Blueprint $table) {
-            $table->string('DayID')->primary();
-            $table->string('Title')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_Student_Unfiltered', function (Blueprint $table) {
-            $table->string('EMPLID')->primary();
-            $table->string('SID')->nullable();
-            $table->string('AzureID')->nullable();
-            $table->string('FirstName')->nullable();
-            $table->string('LastName')->nullable();
-            $table->string('Email')->nullable();
-            $table->string('DaytimePhone')->nullable();
-            $table->string('EveningPhone')->nullable();
-            $table->string('NTUserName')->nullable();
-            $table->string('UserPrincipalName')->nullable();
-            $table->boolean('PrivateRecord')->nullable();
-        });
-
-        Schema::connection('ods')->create('vw_Employee', function (Blueprint $table) {
-            $table->string('EMPLID')->primary();
-            $table->string('SID')->nullable();
-            $table->string('AzureID')->nullable();
-            $table->string('FirstName')->nullable();
-            $table->string('LastName')->nullable();
-            $table->string('AliasName')->nullable();
-            $table->string('WorkEmail')->nullable();
-            $table->string('WorkPhoneNumber')->nullable();
-            $table->string('ADUserName')->nullable();
-            $table->string('UserPrincipalName')->nullable();
-            $table->string('EmployeeStatusCode')->nullable();
-        });
-    }
-
-    private static function createDirectoryTables(): void
-    {
-        Schema::connection('empdirectory')->create('Employees', function (Blueprint $table) {
-            $table->string('EMPLID')->primary();
-            $table->string('ADAccountName')->nullable();
-            $table->string('FirstName')->nullable();
-            $table->string('LastName')->nullable();
-            $table->string('AKA')->nullable();
-            $table->string('DisplayName')->nullable();
-            $table->string('WorkingTitle')->nullable();
-            $table->string('OfficialTitle')->nullable();
-            $table->string('DepartmentName')->nullable();
-            $table->string('BCCEmail')->nullable();
-            $table->string('WorkPhone')->nullable();
-            $table->string('DisplayPhone')->nullable();
-            $table->string('WorkOffice')->nullable();
-            $table->string('MailStop')->nullable();
-        });
-    }
-
-    private static function createCopilotTables(): void
-    {
-        Schema::connection('copilot')->create('vw_LinkFound', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('SourceArea')->nullable();
-            $table->string('LinkText')->nullable();
-            $table->string('LinkDescr')->nullable();
-        });
+        return [
+            'ods' => [
+                'vw_YearQuarter' => [
+                    new WarehouseColumn('YearQuarterID', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('STRM', sqlServer: 'varchar(4)'),
+                    new WarehouseColumn('Title', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('FirstClassDay', sqlServer: 'date'),
+                    new WarehouseColumn('LastClassDay', sqlServer: 'date'),
+                ],
+                'vw_WebRegistrationSetting' => [
+                    new WarehouseColumn('STRM', sqlServer: 'varchar(4)', nullable: false, primary: true),
+                    new WarehouseColumn('FirstRegistrationDate', sqlServer: 'date'),
+                    new WarehouseColumn('LastRegistrationDate', sqlServer: 'date'),
+                ],
+                'vw_PS_CS_SubjectTable' => [
+                    new WarehouseColumn('SUBJECT', sqlServer: 'varchar(8)', nullable: false),
+                    new WarehouseColumn('DESCR', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('DESCRFORMAL', sqlServer: 'varchar(50)'),
+                    new WarehouseColumn('DESCRSHORT', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('EFFDT', sqlServer: 'date'),
+                    new WarehouseColumn('EFF_STATUS', sqlServer: 'varchar(1)'),
+                ],
+                'vw_Course' => [
+                    new WarehouseColumn('PSCourseID', sqlServer: 'varchar(6)', nullable: false, primary: true),
+                    new WarehouseColumn('CourseID', sqlServer: 'varchar(11)'),
+                    new WarehouseColumn('CourseSubject', sqlServer: 'varchar(8)'),
+                    new WarehouseColumn('CatalogNumber', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('CourseTitle', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('CourseTitle2', sqlServer: 'varchar(100)'),
+                    new WarehouseColumn('EffectiveYearQuarterEnd', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('Credits', sqlServer: 'numeric(5,2)'),
+                    new WarehouseColumn('VariableCredits', sqlServer: 'int'),
+                    new WarehouseColumn('note', sqlServer: 'varchar(255)'),
+                ],
+                'vw_CourseDescription' => [
+                    new WarehouseColumn('id', sqliteOnly: true),
+                    new WarehouseColumn('CourseID', sqlServer: 'varchar(8)'),
+                    new WarehouseColumn('Description', sqlServer: 'varchar(4000)'),
+                    new WarehouseColumn('EffectiveYearQuarterBegin', sqlServer: 'varchar(30)'),
+                ],
+                'vw_Class' => [
+                    new WarehouseColumn('PSClassID', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('ClassID', sqlServer: 'varchar(50)'),
+                    new WarehouseColumn('YearQuarterID', sqlServer: 'char(4)'),
+                    new WarehouseColumn('STRM', sqlServer: 'char(4)'),
+                    new WarehouseColumn('Department', sqlServer: 'varchar(8)'),
+                    new WarehouseColumn('CourseNumber', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('CourseID', sqlServer: 'varchar(11)'),
+                    new WarehouseColumn('CourseTitle', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('Section', sqlServer: 'varchar(4)'),
+                    new WarehouseColumn('ItemNumber', sqlServer: 'varchar(5)'),
+                    new WarehouseColumn('ClassNumber', sqlServer: 'varchar(5)'),
+                    new WarehouseColumn('InstructorName', sqlServer: 'varchar(12)'),
+                    new WarehouseColumn('StartDate', sqlServer: 'datetime'),
+                    new WarehouseColumn('EndDate', sqlServer: 'datetime'),
+                    new WarehouseColumn('DayID', sqlServer: 'varchar(4)'),
+                    new WarehouseColumn('Room', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('RoomDescr', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('StartTime', sqlServer: 'datetime'),
+                    new WarehouseColumn('EndTime', sqlServer: 'datetime'),
+                ],
+                'vw_ClassSchedule' => [
+                    new WarehouseColumn('id', sqliteOnly: true),
+                    new WarehouseColumn('PSClassID', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('DayID', sqlServer: 'varchar(4)'),
+                    new WarehouseColumn('Room', sqlServer: 'varchar(10)'),
+                    new WarehouseColumn('RoomDescr', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('InstructorName', sqlServer: 'varchar(50)'),
+                    new WarehouseColumn('StartDate', sqlServer: 'datetime'),
+                    new WarehouseColumn('EndDate', sqlServer: 'datetime'),
+                    new WarehouseColumn('StartTime', sqlServer: 'datetime'),
+                    new WarehouseColumn('EndTime', sqlServer: 'datetime'),
+                ],
+                'vw_Day' => [
+                    new WarehouseColumn('DayID', sqlServer: 'varchar(4)', nullable: false, primary: true),
+                    new WarehouseColumn('Title', sqlServer: 'varchar(10)'),
+                ],
+                'vw_Student_Unfiltered' => [
+                    new WarehouseColumn('EMPLID', sqlServer: 'varchar(11)', nullable: false, primary: true),
+                    new WarehouseColumn('SID', sqlServer: 'char(9)'),
+                    new WarehouseColumn('AzureID', sqlServer: 'varchar(36)'),
+                    new WarehouseColumn('FirstName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('LastName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('Email', sqlServer: 'varchar(70)'),
+                    new WarehouseColumn('DaytimePhone', sqlServer: 'varchar(24)'),
+                    new WarehouseColumn('EveningPhone', sqlServer: 'varchar(24)'),
+                    new WarehouseColumn('NTUserName', sqlServer: 'varchar(50)'),
+                    new WarehouseColumn('UserPrincipalName', sqlServer: 'varchar(767)'),
+                    new WarehouseColumn('PrivateRecord', sqlServer: 'bit'),
+                ],
+                'vw_Employee' => [
+                    new WarehouseColumn('EMPLID', sqlServer: 'varchar(11)', nullable: false, primary: true),
+                    new WarehouseColumn('SID', sqlServer: 'char(9)'),
+                    new WarehouseColumn('AzureID', sqlServer: 'varchar(36)'),
+                    new WarehouseColumn('FirstName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('LastName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('AliasName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('WorkEmail', sqlServer: 'varchar(200)'),
+                    new WarehouseColumn('WorkPhoneNumber', sqlServer: 'varchar(24)'),
+                    new WarehouseColumn('ADUserName', sqlServer: 'varchar(100)'),
+                    new WarehouseColumn('UserPrincipalName', sqlServer: 'varchar(767)'),
+                    new WarehouseColumn('EmployeeStatusCode', sqlServer: 'char(1)'),
+                ],
+            ],
+            'empdirectory' => [
+                'Employees' => [
+                    new WarehouseColumn('EMPLID', sqlServer: 'varchar(11)', nullable: false, primary: true),
+                    new WarehouseColumn('ADAccountName', sqlServer: 'varchar(100)'),
+                    new WarehouseColumn('FirstName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('LastName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('AKA', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('DisplayName', sqlServer: 'varchar(61)'),
+                    new WarehouseColumn('WorkingTitle', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('OfficialTitle', sqlServer: 'varchar(8000)'),
+                    new WarehouseColumn('DepartmentName', sqlServer: 'varchar(30)'),
+                    new WarehouseColumn('BCCEmail', sqlServer: 'varchar(200)'),
+                    new WarehouseColumn('WorkPhone', sqlServer: 'varchar(24)'),
+                    new WarehouseColumn('DisplayPhone', sqlServer: 'varchar(24)'),
+                    new WarehouseColumn('WorkOffice', sqlServer: 'varchar(50)'),
+                    new WarehouseColumn('MailStop', sqlServer: 'varchar(50)'),
+                ],
+            ],
+            'copilot' => [
+                'vw_LinkFound' => [
+                    new WarehouseColumn('id', sqliteOnly: true),
+                    new WarehouseColumn('SourceArea', sqlServer: 'varchar(4000)'),
+                    new WarehouseColumn('LinkText', sqlServer: 'varchar(4000)'),
+                    new WarehouseColumn('LinkDescr', sqlServer: 'varchar(4000)'),
+                ],
+            ],
+        ];
     }
 }

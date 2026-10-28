@@ -101,7 +101,7 @@ PHPUnit tests are grouped under `tests/Feature` (HTTP/API behavior) and `tests/U
 
 `tests/ApiFeatureTestCase.php` extends `DatabaseTestCase`, seeds a fixed clock for quarter-related data, and provides API client authentication helpers used by feature tests.
 
-`tests/Support/SqliteWarehouseSchema.php` defines local SQLite tables that mirror warehouse view names. `tests/Support/WarehouseFixtures.php` inserts common quarter, subject, and course rows for tests that need them.
+`tests/Support/SqliteWarehouseSchema.php` defines warehouse columns as `WarehouseColumn` values with a `sqlServer:` type (including length). That annotation drives both SQLite Blueprint lengths and `schema:compare`. `tests/Support/WarehouseFixtures.php` inserts common quarter, subject, and course rows for tests that need them.
 
 #### What the suite covers
 
@@ -114,7 +114,7 @@ Use the table above to find the right place when behavior changes:
 - Routes, controllers, middleware, or auth on an endpoint — add or update a matching file under `tests/Feature/`.
 - Query or scope logic on a model — update or add a test under `tests/Unit/Models/`.
 - Fields or structure in API JSON (including resources) — update or add a test under `tests/Unit/Http/Resources/`, and adjust the related feature test if the HTTP response at the wire changed too.
-- Warehouse columns that tests insert or read — update `tests/Support/SqliteWarehouseSchema.php`, shared fixtures in `tests/Support/WarehouseFixtures.php`, and any test data in the affected Feature or Unit files.
+- Warehouse columns that tests insert or read — update `WarehouseColumn` entries in `tests/Support/SqliteWarehouseSchema.php` (including `sqlServer:` type/length), shared fixtures in `tests/Support/WarehouseFixtures.php`, and any test data in the affected Feature or Unit files.
 
 You usually do not need test changes for documentation-only edits, comments, or styling that does not change runtime behavior.
 
@@ -139,6 +139,18 @@ The project uses PHPUnit. `phpunit.xml` forces `APP_ENV=testing` and forces ever
 `tests/TestCase.php` verifies that every configured connection uses the SQLite driver before `RefreshDatabase` or the parallel-testing database switch opens a connection. If any connection is not SQLite, the test run fails immediately and does not query a database.
 
 Tests that need warehouse-shaped data extend `tests/DatabaseTestCase.php`, which runs Laravel migrations and rebuilds SQL Server view names as local SQLite tables via `tests/Support/SqliteWarehouseSchema.php`. Inserts in tests—including `DB::connection('ods')`—write only to `database/testing.sqlite`, not to production or development warehouse databases.
+
+#### Warehouse schema check (developer machine)
+
+`php artisan schema:compare` checks that each annotated warehouse column still exists on SQL Server with the expected type and length (for example `nvarchar(50)`). Initial annotations are guesses—run the command against your allowed host and correct any `sqlServer:` values it reports. Updating an annotation also updates the SQLite declared length on the next test rebuild. SQLite does not hard-enforce those lengths at insert time.
+
+`da` tables are checked for column **names** only (from migrations). The command does not dump full warehouse schemas or write files.
+
+```bash
+./vendor/bin/sail artisan schema:compare
+```
+
+Requires `APP_ENV=local` and a non-empty `SCHEMA_COMPARE_ALLOWED_HOSTS` list matching your `.env` warehouse hosts. Not run in Azure Pipelines.
 
 #### Continuous integration
 
