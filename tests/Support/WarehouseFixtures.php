@@ -73,6 +73,7 @@ class WarehouseFixtures
             'EffectiveYearQuarterEnd' => null,
             'Credits' => 5,
             'VariableCredits' => 0,
+            'note' => null,
         ]);
 
         DB::connection('ods')->table('vw_CourseDescription')->insert([
@@ -94,6 +95,7 @@ class WarehouseFixtures
             'EffectiveYearQuarterEnd' => null,
             'Credits' => 1,
             'VariableCredits' => 0,
+            'note' => null,
         ]);
     }
 
@@ -111,6 +113,7 @@ class WarehouseFixtures
             'EffectiveYearQuarterEnd' => null,
             'Credits' => 3,
             'VariableCredits' => 0,
+            'note' => null,
         ]);
 
         DB::connection('ods')->table('vw_Class')->insert([

@@ -119,6 +119,7 @@ class SqliteWarehouseSchema
                     new WarehouseColumn('EffectiveYearQuarterEnd', sqlServer: 'varchar(30)'),
                     new WarehouseColumn('Credits', sqlServer: 'numeric(5,2)'),
                     new WarehouseColumn('VariableCredits', sqlServer: 'int'),
+                    new WarehouseColumn('note', sqlServer: 'varchar(255)'),
                 ],
                 'vw_CourseDescription' => [
                     new WarehouseColumn('id', sqliteOnly: true),
