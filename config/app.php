@@ -67,6 +67,8 @@ return [
 
     'timezone' => 'UTC',
 
+    'yearquarter_max' => env('YEARQUARTER_MAX', '9999'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
