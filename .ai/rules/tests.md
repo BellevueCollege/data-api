@@ -19,6 +19,12 @@ Tests must never write to production or development warehouse databases.
 - `Tests\TestCase` must keep the pre-`parent::setUp()` SQLite driver check and connection purge for all application connections (`default`, `da`, `ods`, `pciforms`, `evalforms`, `empdirectory`, `copilot`). Do not remove or bypass this guard.
 - Warehouse view data in tests comes from `Tests\Support\SqliteWarehouseSchema` and `Tests\Support\WarehouseFixtures`, not from live SQL Server connections.
 
+## Warehouse schema
+
+- Do not run `schema:compare` when implementing application or test code (it needs live SQL Server).
+- Warehouse columns used in tests are `WarehouseColumn` entries in `Tests\Support\SqliteWarehouseSchema`, each with a `sqlServer:` type including length when meaningful.
+- Developers may run `php artisan schema:compare` locally to correct type/length guesses against the warehouse; do not commit full warehouse column dumps.
+
 ## API integration tests
 
 Use PHPUnit HTTP tests against `/api/...` with `assertJsonFragment`. Do not assume factories or Mockery unless adding new isolated unit tests.
