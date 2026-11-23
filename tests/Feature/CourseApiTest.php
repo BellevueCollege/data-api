@@ -79,7 +79,6 @@ class CourseApiTest extends ApiFeatureTestCase
             'EffectiveYearQuarterEnd' => null,
             'Credits' => 2,
             'VariableCredits' => 0,
-            'note' => null,
         ]);
 
         $this->get('/api/v1/courses/multiple?courses[]=ACCT%20101&courses[]=BTS%20293')
