@@ -92,4 +92,101 @@ class CourseApiTest extends ApiFeatureTestCase
         $this->getJson('/api/v1/courses/multiple')
             ->assertStatus(422);
     }
+
+    public function test_returns_only_active_courses_for_subject(): void
+    {
+        WarehouseFixtures::seedCurrentYearQuarter();
+        WarehouseFixtures::seedSubjectAcct();
+
+        DB::connection('ods')->table('vw_Course')->insert([
+            [
+                'PSCourseID' => 'PS-ACCT-100',
+                'CourseID' => 'ACCT 100',
+                'CourseSubject' => 'ACCT',
+                'CatalogNumber' => '100',
+                'CourseTitle' => 'Ended Accounting',
+                'CourseTitle2' => '',
+                'EffectiveYearQuarterEnd' => 'B012',
+                'Credits' => 5,
+                'VariableCredits' => 0,
+            ],
+            [
+                'PSCourseID' => 'PS-ACCT-101',
+                'CourseID' => 'ACCT 101',
+                'CourseSubject' => 'ACCT',
+                'CatalogNumber' => '101',
+                'CourseTitle' => 'Current Accounting',
+                'CourseTitle2' => '',
+                'EffectiveYearQuarterEnd' => 'Z999',
+                'Credits' => 5,
+                'VariableCredits' => 0,
+            ],
+            [
+                'PSCourseID' => 'PS-ACCT-102',
+                'CourseID' => 'ACCT 102',
+                'CourseSubject' => 'ACCT',
+                'CatalogNumber' => '102',
+                'CourseTitle' => 'Open-Ended Accounting',
+                'CourseTitle2' => '',
+                'EffectiveYearQuarterEnd' => null,
+                'Credits' => 5,
+                'VariableCredits' => 0,
+            ],
+        ]);
+
+        $response = $this->get('/api/v1/courses/ACCT')
+            ->assertOk()
+            ->assertJsonFragment(['courseId' => 'ACCT 101'])
+            ->assertJsonFragment(['courseId' => 'ACCT 102']);
+
+        $courses = $response->json('courses');
+        if (is_array($courses) && isset($courses['data'])) {
+            $courses = $courses['data'];
+        }
+
+        $courseIds = collect(is_array($courses) ? $courses : [])
+            ->pluck('courseId')
+            ->filter()
+            ->values()
+            ->all();
+
+        $this->assertContains('ACCT 101', $courseIds);
+        $this->assertContains('ACCT 102', $courseIds);
+        $this->assertNotContains('ACCT 100', $courseIds);
+    }
+
+    public function test_normalizes_active_course_description_whitespace(): void
+    {
+        WarehouseFixtures::seedCurrentYearQuarter();
+        WarehouseFixtures::seedSubjectAcct();
+
+        DB::connection('ods')->table('vw_Course')->insert([
+            'PSCourseID' => 'PS-ACCT-101',
+            'CourseID' => 'ACCT 101',
+            'CourseSubject' => 'ACCT',
+            'CatalogNumber' => '101',
+            'CourseTitle' => 'Intro Accounting',
+            'CourseTitle2' => '',
+            'EffectiveYearQuarterEnd' => null,
+            'Credits' => 5,
+            'VariableCredits' => 0,
+        ]);
+
+        DB::connection('ods')->table('vw_CourseDescription')->insert([
+            [
+                'CourseID' => 'ACCT 101',
+                'Description' => '  Current   text  ',
+                'EffectiveYearQuarterBegin' => 'B012',
+            ],
+            [
+                'CourseID' => 'ACCT 101',
+                'Description' => 'Future description',
+                'EffectiveYearQuarterBegin' => 'Z999',
+            ],
+        ]);
+
+        $this->get('/api/v1/course/ACCT%20101')
+            ->assertOk()
+            ->assertJsonPath('course.description', 'Current text');
+    }
 }

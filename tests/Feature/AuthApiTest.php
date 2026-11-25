@@ -14,13 +14,16 @@ class AuthApiTest extends ApiFeatureTestCase
     public function test_public_login_returns_token_for_valid_client(): void
     {
         $client = $this->createApiClient();
+        auth('api')->factory()->setTTL(7);
 
         $this->postJson('/api/v1/auth/login', [
             'clientid' => $client->clientid,
             'clientkey' => self::DEFAULT_CLIENT_KEY,
         ])
             ->assertOk()
-            ->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+            ->assertJsonStructure(['access_token', 'token_type', 'expires_in'])
+            ->assertJsonPath('expires_in', 420)
+            ->assertJsonPath('token_type', 'bearer');
     }
 
     public function test_public_login_returns_401_for_invalid_client_key(): void
@@ -31,7 +34,28 @@ class AuthApiTest extends ApiFeatureTestCase
             'clientid' => $client->clientid,
             'clientkey' => 'not-the-right-key',
         ])
-            ->assertUnauthorized();
+            ->assertUnauthorized()
+            ->assertExactJson(['error' => 'Unauthorized']);
+    }
+
+    public function test_public_login_returns_422_when_clientid_is_missing(): void
+    {
+        $this->postJson('/api/v1/auth/login', [
+            'clientkey' => self::DEFAULT_CLIENT_KEY,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['clientid']);
+    }
+
+    public function test_public_login_returns_422_when_clientkey_is_missing(): void
+    {
+        $client = $this->createApiClient();
+
+        $this->postJson('/api/v1/auth/login', [
+            'clientid' => $client->clientid,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['clientkey']);
     }
 
     public function test_public_login_returns_422_when_credentials_are_missing(): void
@@ -43,13 +67,15 @@ class AuthApiTest extends ApiFeatureTestCase
     public function test_internal_login_returns_token_on_internal_domain(): void
     {
         $client = $this->createApiClient();
+        auth('api')->factory()->setTTL(7);
 
         $this->postJson($this->internalApiUrl('/api/v1/internal/auth/login'), [
             'clientid' => $client->clientid,
             'clientkey' => self::DEFAULT_CLIENT_KEY,
         ])
             ->assertOk()
-            ->assertJsonStructure(['access_token']);
+            ->assertJsonStructure(['access_token', 'token_type', 'expires_in'])
+            ->assertJsonPath('expires_in', 420);
     }
 
     public function test_internal_login_returns_401_for_invalid_client_key(): void
@@ -60,7 +86,28 @@ class AuthApiTest extends ApiFeatureTestCase
             'clientid' => $client->clientid,
             'clientkey' => 'not-the-right-key',
         ])
-            ->assertUnauthorized();
+            ->assertUnauthorized()
+            ->assertExactJson(['error' => 'Unauthorized']);
+    }
+
+    public function test_internal_login_returns_422_when_clientid_is_missing(): void
+    {
+        $this->postJson($this->internalApiUrl('/api/v1/internal/auth/login'), [
+            'clientkey' => self::DEFAULT_CLIENT_KEY,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['clientid']);
+    }
+
+    public function test_internal_login_returns_422_when_clientkey_is_missing(): void
+    {
+        $client = $this->createApiClient();
+
+        $this->postJson($this->internalApiUrl('/api/v1/internal/auth/login'), [
+            'clientid' => $client->clientid,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['clientkey']);
     }
 
     public function test_internal_login_returns_422_when_credentials_are_missing(): void

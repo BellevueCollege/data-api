@@ -245,6 +245,29 @@ class WarehouseFixtures
         ]);
     }
 
+    /**
+     * Directory employee whose display name contains "Lee" but not at the start.
+     */
+    public static function seedDirectoryEmployeeAveryLee(): void
+    {
+        DB::connection('empdirectory')->table('Employees')->insert([
+            'EMPLID' => '300000003',
+            'ADAccountName' => 'avery.lee',
+            'FirstName' => 'Avery',
+            'LastName' => 'Lee',
+            'AKA' => null,
+            'DisplayName' => 'Avery Lee',
+            'WorkingTitle' => 'Counselor',
+            'OfficialTitle' => 'Counselor',
+            'DepartmentName' => 'Counseling',
+            'BCCEmail' => 'avery.lee@example.test',
+            'WorkPhone' => '555-0302',
+            'DisplayPhone' => '555-0302',
+            'WorkOffice' => 'C3',
+            'MailStop' => 'MS-3',
+        ]);
+    }
+
     public static function seedLinks(): void
     {
         DB::connection('copilot')->table('vw_LinkFound')->insert([

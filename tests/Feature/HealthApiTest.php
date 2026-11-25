@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Tests\ApiFeatureTestCase;
 
 /**
@@ -13,13 +14,18 @@ class HealthApiTest extends ApiFeatureTestCase
 {
     public function test_returns_ok_when_ods_connection_is_available(): void
     {
-        $this->get('/api/v1/health')
+        $response = $this->get('/api/v1/health')
             ->assertOk()
-            ->assertJson(['status' => 'ok']);
+            ->assertExactJson(['status' => 'ok']);
+
+        $this->assertNotNull($response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
     }
 
     public function test_returns_503_when_ods_probe_fails(): void
     {
+        Log::spy();
+
         $connection = \Mockery::mock();
         $connection->shouldReceive('select')
             ->with('select 1')
@@ -29,9 +35,23 @@ class HealthApiTest extends ApiFeatureTestCase
             ->with('ods')
             ->andReturn($connection);
 
-        $this->get('/api/v1/health')
+        $response = $this->get('/api/v1/health')
             ->assertStatus(503)
-            ->assertJson(['status' => 'error']);
+            ->assertExactJson(['status' => 'error']);
+
+        $this->assertNotNull($response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
+        $this->assertStringNotContainsString('database unavailable', $response->getContent());
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->with(
+                'Health check database probe failed',
+                [
+                    'connection' => 'ods',
+                    'message' => 'database unavailable',
+                ]
+            );
     }
 
     public function test_health_route_uses_probe_throttle_instead_of_api_group_throttle(): void
