@@ -35,7 +35,10 @@ class InternalStudentApiTest extends ApiFeatureTestCase
         $this->withHeaders($headers)
             ->getJson($this->internalApiUrl('/api/v1/internal/student/student.test'))
             ->assertOk()
-            ->assertJsonFragment(['username' => 'student.test']);
+            ->assertJsonFragment(['username' => 'student.test'])
+            ->assertJsonFragment(['email' => 'student.test@example.test'])
+            ->assertJsonMissingPath('password')
+            ->assertJsonMissingPath('clientkey');
     }
 
     public function test_returns_student_by_upn_when_username_contains_at_sign(): void

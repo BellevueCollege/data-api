@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Tests\ApiFeatureTestCase;
 
@@ -31,5 +32,15 @@ class HealthApiTest extends ApiFeatureTestCase
         $this->get('/api/v1/health')
             ->assertStatus(503)
             ->assertJson(['status' => 'error']);
+    }
+
+    public function test_health_route_uses_probe_throttle_instead_of_api_group_throttle(): void
+    {
+        $route = app('router')->getRoutes()->match(
+            Request::create('/api/v1/health', 'GET')
+        );
+
+        $this->assertContains('throttle:600,1', $route->gatherMiddleware());
+        $this->assertContains('throttle:180,1', $route->excludedMiddleware());
     }
 }

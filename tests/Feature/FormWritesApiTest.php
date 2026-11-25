@@ -42,6 +42,8 @@ class FormWritesApiTest extends ApiFeatureTestCase
     {
         $client = $this->createApiClient(['write_transactions']);
 
+        DB::shouldReceive('connection')->with('pciforms')->never();
+
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
             ->postJson('/api/v1/forms/pci/transaction/test', [
                 'id' => 12345,
@@ -56,7 +58,14 @@ class FormWritesApiTest extends ApiFeatureTestCase
         $client = $this->createApiClient(['write_transactions']);
 
         $connection = \Mockery::mock();
-        $connection->shouldReceive('update')->once()->andReturn(1);
+        $connection->shouldReceive('update')
+            ->once()
+            ->withArgs(function (string $sql, array $bindings): bool {
+                return str_contains($sql, 'usp_InsertTransactionDetails')
+                    && (int) $bindings['TransactionID'] === 12345
+                    && (int) $bindings['FormID'] === 1;
+            })
+            ->andReturn(1);
         DB::shouldReceive('connection')->with('pciforms')->andReturn($connection);
 
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
@@ -89,7 +98,14 @@ class FormWritesApiTest extends ApiFeatureTestCase
         $client = $this->createApiClient(['write_transactions']);
 
         $connection = \Mockery::mock();
-        $connection->shouldReceive('update')->once()->andReturn(1);
+        $connection->shouldReceive('update')
+            ->once()
+            ->withArgs(function (string $sql, array $bindings): bool {
+                return str_contains($sql, 'usp_InsertIntoGradApps')
+                    && $bindings['grProgramCode'] === 'ABC123'
+                    && (int) $bindings['grSID'] === 123456789;
+            })
+            ->andReturn(1);
         DB::shouldReceive('connection')->with('evalforms')->andReturn($connection);
 
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
@@ -106,7 +122,14 @@ class FormWritesApiTest extends ApiFeatureTestCase
         $client = $this->createApiClient(['write_transactions']);
 
         $connection = \Mockery::mock();
-        $connection->shouldReceive('update')->once()->andReturn(1);
+        $connection->shouldReceive('update')
+            ->once()
+            ->withArgs(function (string $sql, array $bindings): bool {
+                return str_contains($sql, 'usp_InsertIntoGradApps')
+                    && $bindings['grProgramCode'] === 'ABC123'
+                    && (string) $bindings['grSID'] === '123456789';
+            })
+            ->andReturn(1);
         DB::shouldReceive('connection')->with('evalforms')->andReturn($connection);
 
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
@@ -134,7 +157,14 @@ class FormWritesApiTest extends ApiFeatureTestCase
         $client = $this->createApiClient(['write_transactions']);
 
         $connection = \Mockery::mock();
-        $connection->shouldReceive('update')->once()->andReturn(1);
+        $connection->shouldReceive('update')
+            ->once()
+            ->withArgs(function (string $sql, array $bindings): bool {
+                return str_contains($sql, 'usp_InsertIntoCreditReviews')
+                    && $bindings['crProgramCode'] === 'TRN001'
+                    && (int) $bindings['crSID'] === 123456789;
+            })
+            ->andReturn(1);
         DB::shouldReceive('connection')->with('evalforms')->andReturn($connection);
 
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
@@ -158,9 +188,23 @@ class FormWritesApiTest extends ApiFeatureTestCase
     {
         $client = $this->createApiClient(['write_user_questions']);
 
+        DB::shouldReceive('connection')->with('copilot')->never();
+
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
             ->postJson('/api/v1/copilot/userquestion/test', ['question' => 'Hello'])
-            ->assertOk();
+            ->assertOk()
+            ->assertJsonFragment(['NOTHING ACTUALLY WRITTEN TO DATABASE!']);
+    }
+
+    public function test_copilot_user_question_returns_422_when_question_is_too_long(): void
+    {
+        $client = $this->createApiClient(['write_user_questions']);
+
+        $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/copilot/userquestion', [
+                'question' => str_repeat('a', 4001),
+            ])
+            ->assertStatus(422);
     }
 
     public function test_copilot_user_question_returns_200_when_stored_procedure_succeeds(): void
@@ -168,12 +212,31 @@ class FormWritesApiTest extends ApiFeatureTestCase
         $client = $this->createApiClient(['write_user_questions']);
 
         $connection = \Mockery::mock();
-        $connection->shouldReceive('update')->once()->andReturn(1);
+        $connection->shouldReceive('update')
+            ->once()
+            ->withArgs(function (string $sql, array $bindings): bool {
+                return str_contains($sql, 'usp_InsertUserQuestions')
+                    && $bindings['Question'] === 'Hello';
+            })
+            ->andReturn(1);
         DB::shouldReceive('connection')->with('copilot')->andReturn($connection);
 
         $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
             ->postJson('/api/v1/copilot/userquestion', ['question' => 'Hello'])
             ->assertOk()
             ->assertJsonFragment(['message' => 'Transaction successfully written to database.']);
+    }
+
+    public function test_copilot_user_question_returns_503_when_stored_procedure_fails(): void
+    {
+        $client = $this->createApiClient(['write_user_questions']);
+
+        $connection = \Mockery::mock();
+        $connection->shouldReceive('update')->once()->andThrow(new \RuntimeException('procedure failed'));
+        DB::shouldReceive('connection')->with('copilot')->andReturn($connection);
+
+        $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/copilot/userquestion', ['question' => 'Hello'])
+            ->assertStatus(503);
     }
 }

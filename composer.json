@@ -57,7 +57,10 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ],
-        "test:mutation": "infection --threads=max"
+        "test:mutation": [
+            "Composer\\Config::disableProcessTimeout",
+            "infection --threads=1"
+        ]
     },
     "config": {
         "preferred-install": "dist",

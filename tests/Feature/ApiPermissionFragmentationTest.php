@@ -62,6 +62,26 @@ class ApiPermissionFragmentationTest extends ApiFeatureTestCase
                 '/api/v1/directory/employee/directory.test',
                 false,
             ],
+            'directory list denied for read_student_data' => [
+                ['read_student_data'],
+                '/api/v1/directory/employees',
+                false,
+            ],
+            'directory list denied for read_employee_data' => [
+                ['read_employee_data'],
+                '/api/v1/directory/employees',
+                false,
+            ],
+            'directory search denied for read_student_data' => [
+                ['read_student_data'],
+                '/api/v1/directory/employees/Directory',
+                false,
+            ],
+            'directory search denied for read_employee_data' => [
+                ['read_employee_data'],
+                '/api/v1/directory/employees/Directory',
+                false,
+            ],
         ];
     }
 

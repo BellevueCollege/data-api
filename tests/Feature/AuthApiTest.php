@@ -52,6 +52,23 @@ class AuthApiTest extends ApiFeatureTestCase
             ->assertJsonStructure(['access_token']);
     }
 
+    public function test_internal_login_returns_401_for_invalid_client_key(): void
+    {
+        $client = $this->createApiClient();
+
+        $this->postJson($this->internalApiUrl('/api/v1/internal/auth/login'), [
+            'clientid' => $client->clientid,
+            'clientkey' => 'not-the-right-key',
+        ])
+            ->assertUnauthorized();
+    }
+
+    public function test_internal_login_returns_422_when_credentials_are_missing(): void
+    {
+        $this->postJson($this->internalApiUrl('/api/v1/internal/auth/login'), [])
+            ->assertStatus(422);
+    }
+
     public function test_internal_login_is_not_available_on_public_host(): void
     {
         $client = $this->createApiClient();

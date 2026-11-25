@@ -222,6 +222,29 @@ class WarehouseFixtures
         ]);
     }
 
+    /**
+     * Second directory employee whose display name does not contain "Directory".
+     */
+    public static function seedOtherDirectoryEmployee(): void
+    {
+        DB::connection('empdirectory')->table('Employees')->insert([
+            'EMPLID' => '300000002',
+            'ADAccountName' => 'other.employee',
+            'FirstName' => 'Other',
+            'LastName' => 'Employee',
+            'AKA' => null,
+            'DisplayName' => 'Other Employee',
+            'WorkingTitle' => 'Advisor',
+            'OfficialTitle' => 'Advisor',
+            'DepartmentName' => 'Advising',
+            'BCCEmail' => 'other.employee@example.test',
+            'WorkPhone' => '555-0301',
+            'DisplayPhone' => '555-0301',
+            'WorkOffice' => 'B2',
+            'MailStop' => 'MS-2',
+        ]);
+    }
+
     public static function seedLinks(): void
     {
         DB::connection('copilot')->table('vw_LinkFound')->insert([
