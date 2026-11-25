@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 
 class UserQuestion
@@ -31,8 +32,14 @@ class UserQuestion
         }
         catch(\Exception $error)
         {
+            Log::warning('Copilot user question write failed', [
+                'connection' => 'copilot',
+                'message' => $error->getMessage(),
+            ]);
+
             return response()->json([
-                'message' => 'Database Error: ' . $error->getMessage()], 503);
+                'message' => 'Database Error',
+            ], 503);
         }
         return response()->json([
             'message' => 'Transaction successfully written to database.'], 200);

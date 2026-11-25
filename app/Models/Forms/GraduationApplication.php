@@ -56,8 +56,14 @@ class GraduationApplication
         }
         catch(\Exception $error)
         {
+            Log::warning('Graduation application write failed', [
+                'connection' => 'evalforms',
+                'message' => $error->getMessage(),
+            ]);
+
             return response()->json([
-                'message' => 'Database Error: ' . $error->getMessage()], 503);
+                'message' => 'Database Error',
+            ], 503);
         }
 
     }

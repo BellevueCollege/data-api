@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Tests\ApiFeatureTestCase;
 use Tests\Support\WarehouseFixtures;
 
@@ -70,18 +71,32 @@ class FormWritesApiTest extends ApiFeatureTestCase
 
     public function test_pci_transaction_returns_503_when_stored_procedure_fails(): void
     {
+        Log::spy();
         $client = $this->createApiClient(['write_transactions']);
 
         $connection = \Mockery::mock();
         $connection->shouldReceive('update')->once()->andThrow(new \RuntimeException('procedure failed'));
         DB::shouldReceive('connection')->with('pciforms')->andReturn($connection);
 
-        $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+        $response = $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
             ->postJson('/api/v1/forms/pci/transaction', [
                 'id' => 12345,
                 'form_id' => 1,
             ])
-            ->assertStatus(503);
+            ->assertStatus(503)
+            ->assertExactJson(['message' => 'Database Error']);
+
+        $this->assertStringNotContainsString('procedure failed', $response->getContent());
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->with(
+                'PCI transaction write failed',
+                [
+                    'connection' => 'pciforms',
+                    'message' => 'procedure failed',
+                ]
+            );
     }
 
     public function test_graduation_application_parses_program_code_from_program_string(): void
@@ -117,7 +132,7 @@ class FormWritesApiTest extends ApiFeatureTestCase
             ->assertOk();
     }
 
-    public function test_graduation_application_errors_when_email_has_no_matching_student(): void
+    public function test_graduation_application_returns_422_when_email_has_no_matching_student(): void
     {
         $client = $this->createApiClient(['write_transactions']);
 
@@ -126,7 +141,40 @@ class FormWritesApiTest extends ApiFeatureTestCase
                 'email' => 'missing@example.test',
                 'program_code' => 'ABC123',
             ])
-            ->assertStatus(500);
+            ->assertStatus(422)
+            ->assertExactJson([
+                'message' => 'The given data was invalid.',
+            ]);
+    }
+
+    public function test_graduation_application_returns_503_when_stored_procedure_fails(): void
+    {
+        Log::spy();
+        $client = $this->createApiClient(['write_transactions']);
+
+        $connection = \Mockery::mock();
+        $connection->shouldReceive('update')->once()->andThrow(new \RuntimeException('procedure failed'));
+        DB::shouldReceive('connection')->with('evalforms')->andReturn($connection);
+
+        $response = $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/forms/evaluations/graduation-application', [
+                'sid' => 123456789,
+                'program_code' => 'ABC123',
+            ])
+            ->assertStatus(503)
+            ->assertExactJson(['message' => 'Database Error']);
+
+        $this->assertStringNotContainsString('procedure failed', $response->getContent());
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->with(
+                'Graduation application write failed',
+                [
+                    'connection' => 'evalforms',
+                    'message' => 'procedure failed',
+                ]
+            );
     }
 
     public function test_transfer_credit_evaluation_writes_via_stored_procedure(): void
@@ -143,6 +191,21 @@ class FormWritesApiTest extends ApiFeatureTestCase
                 'program' => 'Transfer | TRN001',
             ])
             ->assertOk();
+    }
+
+    public function test_transfer_credit_evaluation_returns_422_when_email_has_no_matching_student(): void
+    {
+        $client = $this->createApiClient(['write_transactions']);
+
+        $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/forms/evaluations/transfer-credit-evaluation', [
+                'email' => 'missing@example.test',
+                'program_code' => 'TRN001',
+            ])
+            ->assertStatus(422)
+            ->assertExactJson([
+                'message' => 'The given data was invalid.',
+            ]);
     }
 
     public function test_copilot_user_question_returns_403_without_write_user_questions_permission(): void
@@ -175,5 +238,62 @@ class FormWritesApiTest extends ApiFeatureTestCase
             ->postJson('/api/v1/copilot/userquestion', ['question' => 'Hello'])
             ->assertOk()
             ->assertJsonFragment(['message' => 'Transaction successfully written to database.']);
+    }
+
+    public function test_copilot_user_question_returns_503_when_stored_procedure_fails(): void
+    {
+        Log::spy();
+        $client = $this->createApiClient(['write_user_questions']);
+
+        $connection = \Mockery::mock();
+        $connection->shouldReceive('update')->once()->andThrow(new \RuntimeException('procedure failed'));
+        DB::shouldReceive('connection')->with('copilot')->andReturn($connection);
+
+        $response = $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/copilot/userquestion', ['question' => 'Hello'])
+            ->assertStatus(503)
+            ->assertExactJson(['message' => 'Database Error']);
+
+        $this->assertStringNotContainsString('procedure failed', $response->getContent());
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->with(
+                'Copilot user question write failed',
+                [
+                    'connection' => 'copilot',
+                    'message' => 'procedure failed',
+                ]
+            );
+    }
+
+    public function test_transfer_credit_evaluation_returns_503_when_stored_procedure_fails(): void
+    {
+        Log::spy();
+        $client = $this->createApiClient(['write_transactions']);
+
+        $connection = \Mockery::mock();
+        $connection->shouldReceive('update')->once()->andThrow(new \RuntimeException('procedure failed'));
+        DB::shouldReceive('connection')->with('evalforms')->andReturn($connection);
+
+        $response = $this->withBasicAuth($client->clientid, self::DEFAULT_CLIENT_KEY)
+            ->postJson('/api/v1/forms/evaluations/transfer-credit-evaluation', [
+                'sid' => 123456789,
+                'program_code' => 'TRN001',
+            ])
+            ->assertStatus(503)
+            ->assertExactJson(['message' => 'Database Error']);
+
+        $this->assertStringNotContainsString('procedure failed', $response->getContent());
+
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->with(
+                'Transfer credit evaluation write failed',
+                [
+                    'connection' => 'evalforms',
+                    'message' => 'procedure failed',
+                ]
+            );
     }
 }
