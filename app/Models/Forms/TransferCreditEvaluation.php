@@ -42,8 +42,14 @@ class TransferCreditEvaluation
         try {
             $update = DB::connection('evalforms')->update($tsql, $input_data);
         } catch (\Exception $error) {
+            Log::warning('Transfer credit evaluation write failed', [
+                'connection' => 'evalforms',
+                'message' => $error->getMessage(),
+            ]);
+
             return response()->json([
-                'message' => 'Database Error: ' . $error->getMessage()], 503);
+                'message' => 'Database Error',
+            ], 503);
         }
     }
 }

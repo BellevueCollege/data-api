@@ -176,6 +176,14 @@ class GraduationApplicationController extends Controller
         if ($request->input('email') && !$request->input('sid'))
         {
             $stu = Student::where('Email', '=', $request->input('email', null))->first();
+
+            if ($stu === null) {
+                // Same shape/wording as validation failures; do not confirm email existence.
+                return response()->json([
+                    'message' => 'The given data was invalid.',
+                ], 422);
+            }
+
             $sid = $stu->SID;
         }
         else
