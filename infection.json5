@@ -1,0 +1,20 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "app"
+        ]
+    },
+    "timeout": 60,
+    "logs": {
+        "text": "storage/logs/infection.log",
+        "html": "storage/logs/infection.html",
+        "summary": "storage/logs/infection-summary.log",
+        "perMutator": "storage/logs/infection-per-mutator.md"
+    },
+    "tmpDir": "storage/infection",
+    "testFramework": "phpunit",
+    "testFrameworkExtraArgs": "--order-by=default",
+    "minMsi": 0,
+    "minCoveredMsi": 0
+}

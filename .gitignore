@@ -14,4 +14,6 @@ yarn-error.log
 /database/testing.sqlite
 .DS_Store
 /storage/api-docs
+/storage/logs/infection*
+/storage/infection
 /docker/nginx/ssl
