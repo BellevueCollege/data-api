@@ -222,6 +222,52 @@ class WarehouseFixtures
         ]);
     }
 
+    /**
+     * Second directory employee whose display name does not contain "Directory".
+     */
+    public static function seedOtherDirectoryEmployee(): void
+    {
+        DB::connection('empdirectory')->table('Employees')->insert([
+            'EMPLID' => '300000002',
+            'ADAccountName' => 'other.employee',
+            'FirstName' => 'Other',
+            'LastName' => 'Employee',
+            'AKA' => null,
+            'DisplayName' => 'Other Employee',
+            'WorkingTitle' => 'Advisor',
+            'OfficialTitle' => 'Advisor',
+            'DepartmentName' => 'Advising',
+            'BCCEmail' => 'other.employee@example.test',
+            'WorkPhone' => '555-0301',
+            'DisplayPhone' => '555-0301',
+            'WorkOffice' => 'B2',
+            'MailStop' => 'MS-2',
+        ]);
+    }
+
+    /**
+     * Directory employee whose display name contains "Lee" but not at the start.
+     */
+    public static function seedDirectoryEmployeeAveryLee(): void
+    {
+        DB::connection('empdirectory')->table('Employees')->insert([
+            'EMPLID' => '300000003',
+            'ADAccountName' => 'avery.lee',
+            'FirstName' => 'Avery',
+            'LastName' => 'Lee',
+            'AKA' => null,
+            'DisplayName' => 'Avery Lee',
+            'WorkingTitle' => 'Counselor',
+            'OfficialTitle' => 'Counselor',
+            'DepartmentName' => 'Counseling',
+            'BCCEmail' => 'avery.lee@example.test',
+            'WorkPhone' => '555-0302',
+            'DisplayPhone' => '555-0302',
+            'WorkOffice' => 'C3',
+            'MailStop' => 'MS-3',
+        ]);
+    }
+
     public static function seedLinks(): void
     {
         DB::connection('copilot')->table('vw_LinkFound')->insert([

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\DB;
 use Tests\ApiFeatureTestCase;
 use Tests\Support\WarehouseFixtures;
 
@@ -46,5 +47,30 @@ class LinkFoundApiTest extends ApiFeatureTestCase
         $this->get('/api/v1/linkscount/Financial%20Aid')
             ->assertOk()
             ->assertContent('1');
+    }
+
+    public function test_returns_exact_link_count_for_academic_affairs(): void
+    {
+        DB::connection('copilot')->table('vw_LinkFound')->insert([
+            [
+                'SourceArea' => 'Academic Affairs',
+                'LinkText' => 'Catalog',
+                'LinkDescr' => 'Catalog link',
+            ],
+            [
+                'SourceArea' => 'Academic Affairs',
+                'LinkText' => 'Programs',
+                'LinkDescr' => 'Programs link',
+            ],
+            [
+                'SourceArea' => 'Financial Aid',
+                'LinkText' => 'Apply for aid',
+                'LinkDescr' => 'Aid application',
+            ],
+        ]);
+
+        $this->get('/api/v1/linkscount/Academic+Affairs')
+            ->assertOk()
+            ->assertContent('2');
     }
 }

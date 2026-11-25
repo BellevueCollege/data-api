@@ -13,7 +13,8 @@ class DirectoryApiTest extends ApiFeatureTestCase
     public function test_returns_401_when_not_authenticated(): void
     {
         $this->getJson('/api/v1/directory/employee/directory.test')
-            ->assertUnauthorized();
+            ->assertUnauthorized()
+            ->assertExactJson(['error' => 'Unauthenticated.']);
     }
 
     public function test_returns_403_when_client_lacks_read_directory_data_permission(): void
@@ -25,6 +26,24 @@ class DirectoryApiTest extends ApiFeatureTestCase
             ->assertForbidden();
     }
 
+    public function test_returns_403_for_directory_list_without_read_directory_data_permission(): void
+    {
+        $headers = $this->withBearerToken([]);
+
+        $this->withHeaders($headers)
+            ->getJson('/api/v1/directory/employees')
+            ->assertForbidden();
+    }
+
+    public function test_returns_403_for_directory_search_without_read_directory_data_permission(): void
+    {
+        $headers = $this->withBearerToken([]);
+
+        $this->withHeaders($headers)
+            ->getJson('/api/v1/directory/employees/Directory')
+            ->assertForbidden();
+    }
+
     public function test_returns_directory_employee_by_username(): void
     {
         WarehouseFixtures::seedDirectoryEmployee();
@@ -33,7 +52,9 @@ class DirectoryApiTest extends ApiFeatureTestCase
         $this->withHeaders($headers)
             ->getJson('/api/v1/directory/employee/directory.test')
             ->assertOk()
-            ->assertJsonFragment(['email' => 'directory.test@example.test']);
+            ->assertJsonFragment(['email' => 'directory.test@example.test'])
+            ->assertJsonMissingPath('SID')
+            ->assertJsonMissingPath('EMPLID');
     }
 
     public function test_returns_directory_employee_usernames(): void
@@ -50,17 +71,41 @@ class DirectoryApiTest extends ApiFeatureTestCase
     public function test_returns_directory_employees_matching_display_name_substring(): void
     {
         WarehouseFixtures::seedDirectoryEmployee();
+        WarehouseFixtures::seedOtherDirectoryEmployee();
         $headers = $this->withBearerToken(['read_directory_data']);
 
-        $this->withHeaders($headers)
+        $response = $this->withHeaders($headers)
             ->getJson('/api/v1/directory/employees/Directory')
             ->assertOk()
             ->assertJsonFragment(['username' => 'directory.test']);
+
+        $usernames = collect($response->json('employees'))->pluck('username')->all();
+
+        $this->assertSame(['directory.test'], $usernames);
+        $this->assertNotContains('other.employee', $usernames);
+    }
+
+    public function test_returns_only_employees_whose_display_name_contains_lee_substring(): void
+    {
+        WarehouseFixtures::seedDirectoryEmployeeAveryLee();
+        WarehouseFixtures::seedOtherDirectoryEmployee();
+        $headers = $this->withBearerToken(['read_directory_data']);
+
+        $response = $this->withHeaders($headers)
+            ->getJson('/api/v1/directory/employees/Lee')
+            ->assertOk()
+            ->assertJsonFragment(['username' => 'avery.lee']);
+
+        $usernames = collect($response->json('employees'))->pluck('username')->all();
+
+        $this->assertSame(['avery.lee'], $usernames);
+        $this->assertNotContains('other.employee', $usernames);
     }
 
     public function test_returns_empty_collection_when_display_name_substring_does_not_match(): void
     {
         WarehouseFixtures::seedDirectoryEmployee();
+        WarehouseFixtures::seedOtherDirectoryEmployee();
         $headers = $this->withBearerToken(['read_directory_data']);
 
         $this->withHeaders($headers)

@@ -1,0 +1,26 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    // Default Composer script uses --threads=1 so PHPUnit workers do not share one SQLite file.
+    // SchemaCompare equivalents left alone (no observable behavior change):
+    // - ColumnNameDiff ArrayItemRemoval of unused server-side "name" key
+    // - SqlServerTypeNormalizer bare-type PregMatchMatches / ReturnRemoval / DecrementInteger (matches[0] === matches[1])
+    // Post Feature-hardening serial baseline (threads=1): 718 mutants, 599 killed, 119 escaped → Covered MSI ~83%.
+    // minCoveredMsi sits below that floor to avoid flaking on residual visibility/Concat noise; minMsi stays 0.
+    "source": {
+        "directories": [
+            "app"
+        ]
+    },
+    "timeout": 60,
+    "logs": {
+        "text": "storage/logs/infection.log",
+        "html": "storage/logs/infection.html",
+        "summary": "storage/logs/infection-summary.log",
+        "perMutator": "storage/logs/infection-per-mutator.md"
+    },
+    "tmpDir": "storage/infection",
+    "testFramework": "phpunit",
+    "testFrameworkExtraArgs": "--order-by=default",
+    "minMsi": 0,
+    "minCoveredMsi": 75
+}
