@@ -132,6 +132,24 @@ Run a single file or method with a path or `--filter`:
 ./vendor/bin/sail artisan test tests/Unit/Models/SubjectTest.php
 ```
 
+#### Mutation testing (local only)
+
+[Infection](https://infection.github.io/) mutates application code under `app/` and checks whether the PHPUnit suite catches the change. Config lives in `infection.json5`. This is a local quality check only — it is not run in Azure Pipelines.
+
+Run the full mutation suite (always serial; tests share one SQLite file):
+
+```bash
+./vendor/bin/sail composer test:mutation
+```
+
+Optional: limit Infection to one file after hardening tests for that area:
+
+```bash
+./vendor/bin/sail php vendor/bin/infection --threads=1 --filter=app/Path/To/File.php
+```
+
+Logs write under `storage/logs/` (`infection.log`, `infection.html`, `infection-summary.log`). Copy that folder aside before a filtered re-run if you need to keep a baseline. Thresholds (`minMsi` / `minCoveredMsi`) are in `infection.json5`; do not treat a filtered score as comparable to a full-app run.
+
 #### Test database safety
 
 The project uses PHPUnit. `phpunit.xml` forces `APP_ENV=testing` and forces every application database driver and database name onto SQLite (`database/testing.sqlite`), even when your shell already has warehouse connection variables exported.
