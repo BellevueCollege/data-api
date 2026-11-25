@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
         if ( !getenv('APP_DEBUG') ) {
 
             //provide more helpful errors for most likely exception types
-            if ( $exception instanceof PDOException ) {
+            if ( $exception instanceof \PDOException ) {
                 return response()->json(['error' => 500, 'message' => "Database unavailable."], 500);
             } elseif ( $exception instanceof NotFoundHttpException ) {
                 return response()->json(['error' => $exception->getStatusCode(), 'message' => $exception->getMessage()?: "API path does not exist."], 404);

@@ -4,8 +4,8 @@
     // SchemaCompare equivalents left alone (no observable behavior change):
     // - ColumnNameDiff ArrayItemRemoval of unused server-side "name" key
     // - SqlServerTypeNormalizer bare-type PregMatchMatches / ReturnRemoval / DecrementInteger (matches[0] === matches[1])
-    // Post-hardening serial baseline (threads=1): 718 mutants, 488 killed, 230 escaped → Covered MSI ~68%.
-    // minCoveredMsi is modestly below that floor; minMsi stays 0 (overall MSI is not the gate).
+    // Post Feature-hardening serial baseline (threads=1): 718 mutants, 599 killed, 119 escaped → Covered MSI ~83%.
+    // minCoveredMsi sits below that floor to avoid flaking on residual visibility/Concat noise; minMsi stays 0.
     "source": {
         "directories": [
             "app"
@@ -22,5 +22,5 @@
     "testFramework": "phpunit",
     "testFrameworkExtraArgs": "--order-by=default",
     "minMsi": 0,
-    "minCoveredMsi": 60
+    "minCoveredMsi": 75
 }
